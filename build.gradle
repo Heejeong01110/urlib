@@ -36,15 +36,21 @@ dependencies {
 	//RestDocs
 //	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
-	//jwt
-//	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
-//	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
-//	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
-
 	//test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation "org.testcontainers:junit-jupiter:1.19.0"
+
+	// Spring Security, JWT
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
+	implementation "com.auth0:java-jwt:3.19.2"
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly    'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	// OAuth2
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 }
 
