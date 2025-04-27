@@ -3,13 +3,11 @@ package com.heez.urlib.domain.auth.jwt;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class JwtHeaderUtil {
-  private static final String HEADER_AUTHORIZATION = "Authorization";
+  private static final String HEADER_AUTHORIZATION = "X-AUTH-TOKEN";
   private static final String TOKEN_PREFIX = "Bearer ";
 
-//  private JwtHeaderUtil() {
-//  }
 
-  public static String getAccessToken(HttpServletRequest request) {
+  public static String resolveToken(HttpServletRequest request) {
 
     String header = request.getHeader(HEADER_AUTHORIZATION);
 

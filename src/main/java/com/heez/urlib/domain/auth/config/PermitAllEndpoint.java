@@ -15,8 +15,11 @@ public class PermitAllEndpoint {
       "/favicon.ico",
       "/swagger-ui/**",
       "/swagger-resources/**",
-      "/ㅍ1/api-docs/**",
+      "/v1/api-docs/**",
       "/actuator/**",
-      "/metrics/**"
+      "/metrics/**",
+      "/assets/**",
+      "/api-docs/**",
+      "/h2-console/**"
   };
 }

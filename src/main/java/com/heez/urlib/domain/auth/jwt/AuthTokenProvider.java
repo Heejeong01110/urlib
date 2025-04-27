@@ -1,14 +1,11 @@
 package com.heez.urlib.domain.auth.jwt;
 
-import com.heez.urlib.domain.auth.model.CustomUserDetails;
-import com.heez.urlib.global.exception.ErrorMessage;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -28,30 +25,35 @@ public class AuthTokenProvider {
   @Value("${security.jwt.refresh-token-expiry}")
   private String refreshTokenExpiry;
 
-  private final Key key;
+  private final Key KEY;
 
   private static final String AUTHORITIES_KEY = "role";
 
   public AuthTokenProvider(@Value("${security.jwt.secret-key}") String secretKey) {
-    this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    this.KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
   }
 
-  public String createAccessToken(Long memberId) {
-    return createToken(memberId, accessTokenExpiry);
+  public String generateAccessToken(String name, String email, String role) {
+    return generateToken(name, email, role, accessTokenExpiry);
 
   }
 
-  public String createRefreshToken(Long memberId) {
-    return createToken(memberId, refreshTokenExpiry);
+  public String createRefreshToken(String name, String email, String role) {
+    return generateToken(name, email, role, refreshTokenExpiry);
   }
 
-  public String createToken(Long memberId,String expiry) {
+  //토큰 생성
+  public String generateToken(String name, String email, String role, String expiry) {
+    Claims claims = Jwts.claims().setSubject(email);
+    claims.put("name", name);
+    claims.put("role", role);
+
     return Jwts
         .builder()
-        .claim("memberId", memberId)
+        .setClaims(claims)
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(getExpiryDate(expiry))
-        .signWith(key, SignatureAlgorithm.HS256)
+        .signWith(KEY, SignatureAlgorithm.HS256)
         .compact();
   }
 
@@ -59,33 +61,27 @@ public class AuthTokenProvider {
   public boolean validateToken(String token) {
     try {
       Jws<Claims> claims = Jwts.parserBuilder()
-          .setSigningKey(key)
+          .setSigningKey(KEY)
           .build().parseClaimsJws(token);
-      return !claims.getBody().getExpiration().before(new Date());
+      return claims.getBody().getExpiration().after(new Date(System.currentTimeMillis()));
     } catch (Exception e) {
-      throw new IllegalArgumentException(ErrorMessage.UNAUTHORIZED_INVALID_TOKEN.getMessage()); //수정 필요
+      return false;
     }
   }
 
   //토큰에서 Authentication 객체를 가져오는 메서드
   public Authentication getAuthentication(String token) {
-
     Claims claims = Jwts.parserBuilder()
-        .setSigningKey(key)
+        .setSigningKey(KEY)
         .build().parseClaimsJws(token).getBody();
 
     List<SimpleGrantedAuthority> authorities = Arrays.stream(new String[]{claims.get(AUTHORITIES_KEY).toString()})
         .map(SimpleGrantedAuthority::new)
         .toList();
 
-    Long memberId = (Long) claims.get("memberId");
+    String email = (String) claims.get("email");
 
-    CustomUserDetails customUserDetails = CustomUserDetails.builder()
-        .memberId(memberId)
-        .authorities(authorities)
-        .build();
-
-    return new UsernamePasswordAuthenticationToken(customUserDetails, null, authorities);
+    return new UsernamePasswordAuthenticationToken(email, null, authorities);
   }
 
   //토큰 만료일자 설정
