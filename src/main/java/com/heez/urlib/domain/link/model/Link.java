@@ -1,6 +1,6 @@
-package com.heez.urlib.domain.member;
+package com.heez.urlib.domain.link.model;
 
-
+import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.domain.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,26 +12,27 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
-@Table(name = "follow")
+@Table(name = "link")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Follow extends BaseEntity {
-
+public class Link extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "follow_id", nullable = false)
-  private Long followId;
+  @Column(name = "link_id", nullable = false)
+  private Long linkId;
 
-  @Column(nullable = false, name = "is_follow")
-  private boolean isFollow;
+  @Column(nullable = false, name = "link_name")
+  private String link_name;
+
+  @Column(nullable = false, name = "url")
+  private String url;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "follower_id", nullable = false)
-  private Member follower;
+  @JoinColumn(name = "bookmark_id", nullable = false)
+  private Bookmark bookmark;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "followee_id", nullable = false)
-  private Member followee;
 }

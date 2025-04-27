@@ -1,8 +1,8 @@
-package com.heez.urlib.domain.comment;
+package com.heez.urlib.domain.comment.model;
 
-import com.heez.urlib.domain.bookmark.Bookmark;
+import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.domain.common.BaseEntity;
-import com.heez.urlib.domain.member.Member;
+import com.heez.urlib.domain.member.model.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,8 +13,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

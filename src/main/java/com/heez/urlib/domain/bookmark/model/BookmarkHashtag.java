@@ -1,7 +1,6 @@
-package com.heez.urlib.domain.comment;
+package com.heez.urlib.domain.bookmark.model;
 
 import com.heez.urlib.domain.common.BaseEntity;
-import com.heez.urlib.domain.member.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,25 +11,25 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
-@Table(name = "comment_like")
+@Table(name = "bookmark_hashtag")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommentLike extends BaseEntity {
+public class BookmarkHashtag extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "comment_like_id", nullable = false)
-  private Long commentLikeId;
-
-  @Column(nullable = false, name = "is_like")
-  private boolean isLike;
+  @Column(name = "bookmark_hashtag_id", nullable = false)
+  private Long bookmarkHashtagId;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  private Member member;
+  @JoinColumn(name = "bookmark_id")
+  private Bookmark bookmark;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "comment_id", nullable = false)
-  private Comment comment;
+  @JoinColumn(name = "hashtag_id")
+  private Hashtag hashtag;
 }

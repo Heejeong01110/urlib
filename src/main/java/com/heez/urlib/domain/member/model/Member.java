@@ -50,6 +50,7 @@ public class Member extends BaseEntity {
   private String imageUrl;
 
   @OneToMany(mappedBy = "loginTypeId", fetch = FetchType.LAZY)
+  @Enumerated(value = EnumType.STRING)
   private List<LoginType> loginType;
 
   @Column(nullable = false)

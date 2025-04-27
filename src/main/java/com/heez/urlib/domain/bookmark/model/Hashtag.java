@@ -1,4 +1,4 @@
-package com.heez.urlib.domain.bookmark;
+package com.heez.urlib.domain.bookmark.model;
 
 
 import com.heez.urlib.domain.common.BaseEntity;
@@ -13,8 +13,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "hashtag")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

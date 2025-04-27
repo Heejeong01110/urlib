@@ -1,10 +1,8 @@
-package com.heez.urlib.domain.bookmark;
+package com.heez.urlib.domain.bookmark.model;
 
 import com.heez.urlib.domain.common.BaseEntity;
-import com.heez.urlib.domain.link.Link;
-import com.heez.urlib.domain.member.Member;
+import com.heez.urlib.domain.member.model.Member;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -16,8 +14,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "bookmark")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
