@@ -1,12 +1,13 @@
 package com.heez.urlib.domain.auth.jwt;
 
+import com.heez.urlib.domain.auth.model.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import java.util.Arrays;
+import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,45 +15,46 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import java.security.Key;
 
 @Component
 public class AuthTokenProvider {
 
-  @Value("${security.jwt.access-token-expiry}")
+  private static final String AUTHORITIES_KEY = "role";
+  private final Key KEY;
+  @Value("${spring.security.jwt.access-token-expiry}")
   private String accessTokenExpiry;
-
-  @Value("${security.jwt.refresh-token-expiry}")
+  @Value("${spring.security.jwt.refresh-token-expiry}")
   private String refreshTokenExpiry;
 
-  private final Key KEY;
-
-  private static final String AUTHORITIES_KEY = "role";
-
-  public AuthTokenProvider(@Value("${security.jwt.secret-key}") String secretKey) {
+  public AuthTokenProvider(@Value("${spring.security.jwt.secret-key}") String secretKey) {
     this.KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
   }
 
-  public String generateAccessToken(String name, String email, String role) {
-    return generateToken(name, email, role, accessTokenExpiry);
-
+  //토큰 만료일자 설정
+  public static Date getExpiryDate(String expiry) {
+    return new Date(System.currentTimeMillis() + Long.parseLong(expiry));
   }
 
-  public String createRefreshToken(String name, String email, String role) {
-    return generateToken(name, email, role, refreshTokenExpiry);
-  }
-
-  //토큰 생성
-  public String generateToken(String name, String email, String role, String expiry) {
+  public String generateAccessToken(String nickname, String email, List<SimpleGrantedAuthority> role) {
     Claims claims = Jwts.claims().setSubject(email);
-    claims.put("name", name);
-    claims.put("role", role);
+    claims.put("name", nickname);
+    claims.put("roles", role);
 
     return Jwts
         .builder()
         .setClaims(claims)
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(getExpiryDate(expiry))
+        .setExpiration(getExpiryDate(accessTokenExpiry))
+        .signWith(KEY, SignatureAlgorithm.HS256)
+        .compact();
+  }
+
+  public String generateRefreshToken(String email) {
+    return Jwts
+        .builder()
+        .setSubject(email)
+        .setIssuedAt(new Date(System.currentTimeMillis()))
+        .setExpiration(getExpiryDate(refreshTokenExpiry))
         .signWith(KEY, SignatureAlgorithm.HS256)
         .compact();
   }
@@ -64,7 +66,7 @@ public class AuthTokenProvider {
           .setSigningKey(KEY)
           .build().parseClaimsJws(token);
       return claims.getBody().getExpiration().after(new Date(System.currentTimeMillis()));
-    } catch (Exception e) {
+    } catch (Exception e) { //예외처리
       return false;
     }
   }
@@ -75,18 +77,13 @@ public class AuthTokenProvider {
         .setSigningKey(KEY)
         .build().parseClaimsJws(token).getBody();
 
-    List<SimpleGrantedAuthority> authorities = Arrays.stream(new String[]{claims.get(AUTHORITIES_KEY).toString()})
-        .map(SimpleGrantedAuthority::new)
-        .toList();
+    String email = claims.getSubject();
+    String nickname = claims.get("nickname", String.class);
+    List<SimpleGrantedAuthority> authorities = List.of(
+        new SimpleGrantedAuthority(claims.get("role", String.class)));
+    CustomUserDetails customUserDetails = new CustomUserDetails(email, nickname, authorities);
 
-    String email = (String) claims.get("email");
-
-    return new UsernamePasswordAuthenticationToken(email, null, authorities);
-  }
-
-  //토큰 만료일자 설정
-  public static Date getExpiryDate(String expiry) {
-    return new Date(System.currentTimeMillis() + Long.parseLong(expiry));
+    return new UsernamePasswordAuthenticationToken(customUserDetails, token, authorities);
   }
 
 }

@@ -1,7 +1,8 @@
 package com.heez.urlib.domain.auth.exception;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.heez.urlib.global.error.response.ErrorCode;
+import com.heez.urlib.global.error.response.ErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,32 +21,24 @@ public class SecurityExceptionHandlerFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request,
       HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
-      try {
-        filterChain.doFilter(request, response);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-
-//    try {
-//      filterChain.doFilter(request, response);
-//    } catch (TokenExpiredException e) {
-//      setErrorResponse(e.getErrorCode(), response);
-//    } catch (TokenValidFailedException e) {
-//      setErrorResponse(e.getErrorCode(), response);
-//    } catch (TokenIsLogoutException e) {
-//      setErrorResponse(e.getErrorCode(), response);
-//    }
-
+    try {
+      filterChain.doFilter(request, response);
+    } catch (TokenExpiredException e) {
+      setErrorResponse(e.getErrorCode(), response);
+    } catch (TokenValidFailedException e) {
+      setErrorResponse(e.getErrorCode(), response);
+    } catch (TokenIsLogoutException e) {
+      setErrorResponse(e.getErrorCode(), response);
+    }
   }
 
-//  public void setErrorResponse(ErrorCode errorCode,
-//      HttpServletResponse response) throws IOException {
-//    ErrorResponse errorResponse = ErrorResponse.of(errorCode);
-//    ObjectMapper objectMapper = new ObjectMapper();
-//    String json = objectMapper.writeValueAsString(errorResponse);
-//
-//    response.setContentType(CONTENT_TYPE);
-//    response.getWriter().write(json);
-//  }
+  public void setErrorResponse(ErrorCode errorCode,
+      HttpServletResponse response) throws IOException {
+    ErrorResponse errorResponse = ErrorResponse.of(errorCode);
+    ObjectMapper objectMapper = new ObjectMapper();
+    String json = objectMapper.writeValueAsString(errorResponse);
 
+    response.setContentType(CONTENT_TYPE);
+    response.getWriter().write(json);
+  }
 }
