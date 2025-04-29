@@ -1,25 +1,24 @@
 package com.heez.urlib.domain.member.model;
 
 
+import com.heez.urlib.domain.auth.model.OAuthType;
 import com.heez.urlib.domain.common.BaseEntity;
+import com.heez.urlib.domain.member.model.vo.Email;
+import com.heez.urlib.domain.member.model.vo.Nickname;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-
 
 @Builder
 @Getter
@@ -34,27 +33,49 @@ public class Member extends BaseEntity {
   @Column(name = "member_id", nullable = false)
   private Long id;
 
-  @Column(nullable = false, name = "email")
-  private String email;
+  @Embedded
+  @Column(name = "email", unique = true)
+  private Email email;
 
-  @Column(nullable = false, name = "password")
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, name = "provider_type")
+  private OAuthType oauthType;
+
+  @Column(name = "identifier", unique = true)
+  private String identifier;
+
+  @Column(name = "password")
   private String password;
 
-  @Column(nullable = false, name = "nickname")
-  private String nickname;
+  @Embedded
+  @Column(unique = true, name = "nickname")
+  private Nickname nickname;
 
-  @Column(nullable = false, name = "description")
+  @Column(name = "description")
   private String description;
 
-  @Column(nullable = false, name = "image_url")
+  @Column(name = "image_url")
   private String imageUrl;
-
-  @OneToMany(mappedBy = "loginTypeId", fetch = FetchType.LAZY)
-  @Enumerated(value = EnumType.STRING)
-  private List<LoginType> loginType;
 
   @Column(nullable = false)
   @Enumerated(value = EnumType.STRING)
   private Role role;
+
+
+  public String getNickName() {
+    if (nickname == null) {
+      return "";
+    }
+
+    return nickname.getValue();
+  }
+
+  public String getEmail() {
+    if (email == null) {
+      return "";
+    }
+
+    return email.getValue();
+  }
 
 }
