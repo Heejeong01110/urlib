@@ -1,5 +1,6 @@
 package com.heez.urlib.domain.auth.service;
 
+import com.heez.urlib.domain.auth.model.CustomOAuth2User;
 import com.heez.urlib.domain.auth.model.OAuth2UserInfo;
 import com.heez.urlib.domain.auth.model.OAuthType;
 import com.heez.urlib.domain.auth.strategy.OAuth2StrategyComposite;
@@ -17,7 +18,6 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +33,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
     OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
     OAuth2User oAuth2User = delegate.loadUser(userRequest);
-    log.info("registrationId: {}", userRequest.getClientRegistration().getRegistrationId());
-
     OAuth2UserInfo userInfo = oAuth2StrategyComposite
         .getOAuth2Strategy(getSocialProvider(userRequest))
         .getUserInfo(oAuth2User);
@@ -43,7 +41,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         userInfo.oAuthType(), userInfo.oAuthId());
     if (member.isEmpty()) {
       //회원가입
-      memberRepository.save(Member.builder()
+      Member saveMember = memberRepository.save(Member.builder()
           .oauthType(userInfo.oAuthType())
           .identifier(userInfo.oAuthId())
           .email(new Email(userInfo.email()))
@@ -51,12 +49,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
           .imageUrl(userInfo.imageUrl())
           .role(Role.USER)
           .build());
+      return new CustomOAuth2User(saveMember.getId(), saveMember.getEmail(),
+          List.of(new SimpleGrantedAuthority(saveMember.getRole().getKey())),
+          oAuth2User.getAttributes(), "id");
     }
 
-    List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(
-        member.isPresent() ? member.get().getRole().getKey() : Role.USER.getKey()));
-
-    return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "id");
+    return new CustomOAuth2User(member.get().getId(), member.get().getEmail(),
+        List.of(new SimpleGrantedAuthority(member.get().getRole().getKey())),
+        oAuth2User.getAttributes(), "id");
   }
 
   private OAuthType getSocialProvider(OAuth2UserRequest userRequest) {

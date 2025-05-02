@@ -1,7 +1,6 @@
 package com.heez.urlib.domain.auth.config;
 
 import com.heez.urlib.domain.auth.exception.SecurityExceptionHandlerFilter;
-import com.heez.urlib.domain.auth.jwt.JwtAuthenticationFilter;
 import com.heez.urlib.domain.auth.service.CustomOAuth2UserService;
 import com.heez.urlib.global.config.CorsConfig;
 import lombok.RequiredArgsConstructor;

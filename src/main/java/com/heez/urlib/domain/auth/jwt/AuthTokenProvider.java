@@ -35,9 +35,10 @@ public class AuthTokenProvider {
     return new Date(System.currentTimeMillis() + Long.parseLong(expiry));
   }
 
-  public String generateAccessToken(String nickname, String email, List<SimpleGrantedAuthority> role) {
-    Claims claims = Jwts.claims().setSubject(email);
-    claims.put("name", nickname);
+  public String generateAccessToken(Long memberId, String email,
+      List<SimpleGrantedAuthority> role) {
+    Claims claims = Jwts.claims().setSubject(String.valueOf(memberId));
+    claims.put("email", email);
     claims.put("roles", role);
 
     return Jwts
@@ -49,10 +50,10 @@ public class AuthTokenProvider {
         .compact();
   }
 
-  public String generateRefreshToken(String email) {
+  public String generateRefreshToken(Long memberId) {
     return Jwts
         .builder()
-        .setSubject(email)
+        .setSubject(String.valueOf(memberId))
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(getExpiryDate(refreshTokenExpiry))
         .signWith(KEY, SignatureAlgorithm.HS256)
@@ -60,7 +61,15 @@ public class AuthTokenProvider {
   }
 
   //토큰 유효성 검증
-  public boolean validateToken(String token) {
+  public boolean validateAccessToken(String token) {
+    return validateToken(token);
+  }
+
+  public boolean validateRefreshToken(String token) {
+    return validateToken(token);
+  }
+
+  private boolean validateToken(String token) {
     try {
       Jws<Claims> claims = Jwts.parserBuilder()
           .setSigningKey(KEY)
