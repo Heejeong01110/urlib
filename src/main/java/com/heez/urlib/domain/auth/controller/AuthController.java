@@ -1,0 +1,38 @@
+package com.heez.urlib.domain.auth.controller;
+
+import com.heez.urlib.domain.auth.jwt.JwtHeaderUtil;
+import com.heez.urlib.domain.auth.service.AuthService;
+import com.heez.urlib.domain.auth.service.dto.ReissueDto;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController
+@RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+  private final AuthService authService;
+
+  @PostMapping("/re-issue")
+  public ResponseEntity<Void> reissue(
+      HttpServletRequest request,
+      HttpServletResponse response) {
+    String refreshToken = JwtHeaderUtil.resolveRefreshToken(request);
+    ReissueDto tokens = authService.reissue(refreshToken);
+
+    response.setHeader(JwtHeaderUtil.HEADER_AUTHORIZATION,
+        JwtHeaderUtil.TOKEN_PREFIX + tokens.accessToken());
+    response.addHeader(HttpHeaders.SET_COOKIE, JwtHeaderUtil.toCookie(tokens.refreshToken()));
+    response.setStatus(HttpServletResponse.SC_OK);
+    response.setContentType("application/json;charset=UTF-8");
+    return ResponseEntity.ok().build();
+  }
+}
