@@ -1,7 +1,7 @@
 package com.heez.urlib.domain.comment.model;
 
-import com.heez.urlib.domain.common.BaseEntity;
 import com.heez.urlib.domain.member.model.Member;
+import com.heez.urlib.global.common.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

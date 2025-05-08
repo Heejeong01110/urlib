@@ -1,6 +1,6 @@
 package com.heez.urlib.domain.bookmark.model;
 
-import com.heez.urlib.domain.common.BaseEntity;
+import com.heez.urlib.global.common.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

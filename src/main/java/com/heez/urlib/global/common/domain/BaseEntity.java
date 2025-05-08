@@ -1,4 +1,4 @@
-package com.heez.urlib.domain.common;
+package com.heez.urlib.global.common.domain;
 
 
 import jakarta.persistence.Column;

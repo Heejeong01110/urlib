@@ -2,9 +2,9 @@ package com.heez.urlib.domain.member.model;
 
 
 import com.heez.urlib.domain.auth.model.OAuthType;
-import com.heez.urlib.domain.common.BaseEntity;
 import com.heez.urlib.domain.member.model.vo.Email;
 import com.heez.urlib.domain.member.model.vo.Nickname;
+import com.heez.urlib.global.common.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
