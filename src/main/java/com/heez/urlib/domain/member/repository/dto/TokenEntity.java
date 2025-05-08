@@ -1,4 +1,4 @@
-package com.heez.urlib.domain.auth.repository.entity;
+package com.heez.urlib.domain.member.repository.dto;
 
 import com.heez.urlib.domain.member.model.Role;
 import com.heez.urlib.domain.member.model.vo.Email;
