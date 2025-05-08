@@ -3,9 +3,9 @@ package com.heez.urlib.domain.member.exception;
 import com.heez.urlib.global.error.exception.AbstractGlobalException;
 import com.heez.urlib.global.error.response.ErrorCode;
 
-public class EmailNotFoundException extends AbstractGlobalException {
+public class MemberNotFoundException extends AbstractGlobalException {
 
-  protected EmailNotFoundException() {
-    super(ErrorCode.NOT_FOUND_EMAIL);
+  public MemberNotFoundException() {
+    super(ErrorCode.NOT_FOUND_MEMBER);
   }
 }
