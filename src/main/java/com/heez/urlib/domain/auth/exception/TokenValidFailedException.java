@@ -4,13 +4,10 @@ import com.heez.urlib.global.error.response.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class TokenValidFailedException extends IllegalStateException {
+public class TokenValidFailedException extends AbstractJwtException {
 
-  private final ErrorCode errorCode;
-
-  public TokenValidFailedException(final ErrorCode errorCode) {
-    super(errorCode.getMessage());
-    this.errorCode = errorCode;
+  public TokenValidFailedException() {
+    super(ErrorCode.EXPIRED_TOKEN);
   }
 
 }

@@ -22,7 +22,19 @@ public enum ErrorCode {
   EXPIRED_REFRESH_TOKEN("L002", "리프레쉬 토큰도 만료되어 다시 로그인을 요청합니다."),
   UNAUTHORIZED_TOKEN("L003", "인증되지 않은 토큰입니다."),
   OAUTH_CLIENT_SERVER_ERROR("L004", "oauth 클라이언트 서버 에러입니다."),
-  IS_LOGOUT_TOKEN("L005", "이미 로그아웃한 토큰입니다.");
+  IS_LOGOUT_TOKEN("L005", "이미 로그아웃한 토큰입니다."),
+  FORBIDDEN("L006", "권한이 없는 사용자입니다."),
+
+  // --- JWT 검증 관련 신규 코드 ---
+  UNSUPPORTED_TOKEN("L007", "지원되지 않는 JWT 토큰입니다."),
+  INVALID_TOKEN_FORMAT("L008", "잘못된 JWT 토큰 형식입니다."),
+  INVALID_SIGNATURE("L009", "JWT 토큰 서명 검증에 실패했습니다."),
+  MISSING_TOKEN("L010", "JWT 토큰이 존재하지 않습니다."),
+  TOKEN_PROCESSING_ERROR("L011", "JWT 토큰 처리 중 알 수 없는 오류가 발생했습니다."),
+
+  //Member
+  NOT_FOUND_MEMBER("M001", "사용자 정보가 존재하지 않습니다."),
+  NOT_FOUND_EMAIL("M002", "사용자 email 정보가 존재하지 않습니다.");
 
   private final String code;
   private final String message;
