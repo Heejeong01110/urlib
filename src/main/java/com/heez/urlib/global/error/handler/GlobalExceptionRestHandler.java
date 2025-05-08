@@ -10,10 +10,17 @@ import static com.heez.urlib.global.error.response.ErrorCode.REQUEST_BODY_MISSIN
 import static com.heez.urlib.global.error.response.ErrorCode.REQUEST_PARAM_MISSING_ERROR;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.heez.urlib.domain.auth.exception.ExpiredRefreshTokenException;
+import com.heez.urlib.domain.auth.exception.InvalidRefreshTokenException;
+import com.heez.urlib.domain.auth.jwt.JwtHeaderUtil;
+import com.heez.urlib.domain.member.exception.MemberNotFoundException;
+import com.heez.urlib.global.error.exception.AbstractGlobalException;
 import com.heez.urlib.global.error.response.ErrorResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -27,7 +34,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RequiredArgsConstructor
 @RestControllerAdvice
 @Slf4j
-public class GolbalExceptionRestHandler {
+public class GlobalExceptionRestHandler {
 
   /**
    * [Exception] 객체 혹은 파라미터의 데이터 값이 유효하지 않은 경우
