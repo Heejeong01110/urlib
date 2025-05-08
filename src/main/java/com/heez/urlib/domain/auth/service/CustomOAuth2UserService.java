@@ -5,12 +5,8 @@ import com.heez.urlib.domain.auth.model.OAuth2UserInfo;
 import com.heez.urlib.domain.auth.model.OAuthType;
 import com.heez.urlib.domain.auth.strategy.OAuth2StrategyComposite;
 import com.heez.urlib.domain.member.model.Member;
-import com.heez.urlib.domain.member.model.Role;
-import com.heez.urlib.domain.member.model.vo.Email;
-import com.heez.urlib.domain.member.model.vo.Nickname;
-import com.heez.urlib.domain.member.repository.MemberRepository;
+import com.heez.urlib.domain.member.service.MemberService;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-  private final MemberRepository memberRepository;
+  private final MemberService memberService;
   private final OAuth2StrategyComposite oAuth2StrategyComposite;
 
   @Override
@@ -37,25 +33,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         .getOAuth2Strategy(getSocialProvider(userRequest))
         .getUserInfo(oAuth2User);
 
-    Optional<Member> member = memberRepository.findMemberByOauthTypeAndIdentifier(
-        userInfo.oAuthType(), userInfo.oAuthId());
-    if (member.isEmpty()) {
-      //회원가입
-      Member saveMember = memberRepository.save(Member.builder()
-          .oauthType(userInfo.oAuthType())
-          .identifier(userInfo.oAuthId())
-          .email(new Email(userInfo.email()))
-          .nickname(new Nickname(userInfo.nickname()))
-          .imageUrl(userInfo.imageUrl())
-          .role(Role.USER)
-          .build());
-      return new CustomOAuth2User(saveMember.getId(), saveMember.getEmail(),
-          List.of(new SimpleGrantedAuthority(saveMember.getRole().getKey())),
-          oAuth2User.getAttributes(), "id");
-    }
-
-    return new CustomOAuth2User(member.get().getId(), member.get().getEmail(),
-        List.of(new SimpleGrantedAuthority(member.get().getRole().getKey())),
+    Member member = memberService.findMemberOrCreate(userInfo);
+    return new CustomOAuth2User(member.getId(), member.getEmail(),
+        List.of(new SimpleGrantedAuthority(member.getRole().getKey())),
         oAuth2User.getAttributes(), "id");
   }
 

@@ -1,6 +1,5 @@
 package com.heez.urlib.domain.auth.config;
 
-import com.heez.urlib.domain.auth.exception.SecurityExceptionHandlerFilter;
 import com.heez.urlib.domain.auth.service.CustomOAuth2UserService;
 import com.heez.urlib.global.config.CorsConfig;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -21,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-  private final SecurityExceptionHandlerFilter securityExceptionHandlerFilter;
   private final JwtAuthenticationFilter jwtTokenValidationFilter;
   private final OAuth2SuccessHandler oAuth2SuccessHandler;
   private final CustomOAuth2UserService oAuth2UserService;
@@ -34,8 +31,7 @@ public class WebSecurityConfig {
   public SecurityFilterChain oauth2Chain(HttpSecurity http) throws Exception {
     applyCommon(http);
     http
-        .securityMatcher("/api/*/auth/**",
-            "/oauth2/authorization/**",
+        .securityMatcher("/oauth2/authorization/**",
             "/login/oauth2/code/kakao")
         .authorizeHttpRequests(a -> a.anyRequest().permitAll())
         .oauth2Login(o -> o
@@ -60,8 +56,8 @@ public class WebSecurityConfig {
         .exceptionHandling(handler -> handler
             .authenticationEntryPoint(new CustomJwtAuthenticationEntryPoint())
             .accessDeniedHandler(new CustomAccessDeniedHandler()))
-        .addFilterBefore(jwtTokenValidationFilter, UsernamePasswordAuthenticationFilter.class)
-        .addFilterBefore(securityExceptionHandlerFilter, ExceptionTranslationFilter.class);
+        .addFilterBefore(jwtTokenValidationFilter, UsernamePasswordAuthenticationFilter.class);
+
     return http.build();
   }
 
@@ -79,5 +75,4 @@ public class WebSecurityConfig {
         // 헤더 프레임 옵션 해제 (예: H2 Console)
         .headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
   }
-
 }
