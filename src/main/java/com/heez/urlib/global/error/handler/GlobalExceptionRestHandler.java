@@ -171,4 +171,32 @@ public class GlobalExceptionRestHandler {
         .body(response);
   }
 
+  /**
+   * [Exception] Refresh 토큰이 만료된 경우
+   */
+  @ExceptionHandler({ExpiredRefreshTokenException.class,
+      InvalidRefreshTokenException.class})
+  public ResponseEntity<ErrorResponse> handleRefreshError(
+      AbstractGlobalException ex,
+      HttpServletResponse response) {
+    log.error("Handle Exception :", ex);
+    response.addHeader(HttpHeaders.SET_COOKIE, JwtHeaderUtil.toCookie(""));
+    ErrorResponse body = ErrorResponse.of(ex.getErrorCode(), ex.getMessage());
+    return ResponseEntity
+        .status(HttpStatus.UNAUTHORIZED)
+        .body(body);
+  }
+
+  /**
+   * [Exception] 사용자 정보가 존재하지 않을 경우
+   */
+  @ExceptionHandler(MemberNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleMemberNotFoundException(Exception e) {
+    log.error("Handle Exception :", e);
+    final ErrorResponse response = ErrorResponse.of(INVALID_INPUT_VALUE_ERROR, e.getMessage());
+
+    return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(response);
+  }
 }
