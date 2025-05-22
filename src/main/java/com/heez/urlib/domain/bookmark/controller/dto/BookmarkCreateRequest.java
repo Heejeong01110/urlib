@@ -10,7 +10,7 @@ public record BookmarkCreateRequest(
     String title,
     List<String> tags,
     String description,
-    Boolean isPublic,
+    Boolean visibleToOthers,
     List<LinkCreateRequest> links
 ) {
 

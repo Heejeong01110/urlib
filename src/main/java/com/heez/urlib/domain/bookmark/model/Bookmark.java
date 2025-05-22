@@ -46,8 +46,8 @@ public class Bookmark extends BaseEntity {
   @Column(nullable = false, name = "image_url")
   private String imageUrl;
 
-  @Column(nullable = false, name = "is_public")
-  private boolean isPublic;
+  @Column(nullable = false, name = "visible_to_others")
+  private boolean visibleToOthers;
 
   @Column(nullable = false, name = "view_count")
   private Long viewCount;

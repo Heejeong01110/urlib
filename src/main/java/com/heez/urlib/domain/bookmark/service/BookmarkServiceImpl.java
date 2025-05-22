@@ -32,7 +32,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         .name(request.title())
         .description(request.description())
         .imageUrl(request.imageUrl())
-        .isPublic(request.isPublic())
+        .visibleToOthers(request.visibleToOthers())
         .member(member)
         .build();
 

@@ -53,7 +53,7 @@ class BookmarkServiceImplTest {
         .title("My Bookmark")
         .tags(tagNames)
         .description("A description")
-        .isPublic(true)
+        .visibleToOthers(true)
         .links(List.of(linkReq))
         .build();
 
@@ -70,13 +70,12 @@ class BookmarkServiceImplTest {
     );
     given(tagService.ensureTags(tagNames)).willReturn(hashtags);
 
-
     Bookmark saved = Bookmark.builder()
         .bookmarkId(100L)
         .name(request.title())
         .description(request.description())
         .imageUrl(request.imageUrl())
-        .isPublic(request.isPublic())
+        .visibleToOthers(request.visibleToOthers())
         .member(member)
         .build();
 
@@ -96,7 +95,7 @@ class BookmarkServiceImplTest {
     assertEquals(request.title(), response.name());
     assertEquals(request.description(), response.description());
     assertEquals(request.imageUrl(), response.imageUrl());
-    assertEquals(request.isPublic(), response.isPublic());
+    assertEquals(request.visibleToOthers(), response.visibleToOthers());
     assertIterableEquals(tagNames, response.tags());
     assertEquals(1, response.links().size());
     assertEquals(linkReq.url(), response.links().get(0).url());

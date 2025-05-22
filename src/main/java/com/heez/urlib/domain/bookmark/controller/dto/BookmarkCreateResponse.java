@@ -11,7 +11,7 @@ public record BookmarkCreateResponse(
     String name,
     String description,
     String imageUrl,
-    Boolean isPublic,
+    Boolean visibleToOthers,
     List<String> tags,
     List<LinkCreateResponse> links
 ) {
@@ -21,7 +21,7 @@ public record BookmarkCreateResponse(
         bookmark.getName(),
         bookmark.getDescription(),
         bookmark.getImageUrl(),
-        bookmark.isPublic(),
+        bookmark.isVisibleToOthers(),
         bookmark.getBookmarkHashtags().stream().map((tag) -> tag.getHashtag().getName()).toList(),
         bookmark.getLinks().stream().map(LinkCreateResponse::from).toList()
     );
