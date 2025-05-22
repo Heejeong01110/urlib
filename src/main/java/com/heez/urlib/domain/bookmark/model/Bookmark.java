@@ -1,7 +1,11 @@
 package com.heez.urlib.domain.bookmark.model;
 
+import com.heez.urlib.domain.link.model.Link;
 import com.heez.urlib.domain.member.model.Member;
+import com.heez.urlib.domain.tag.model.BookmarkHashtag;
+import com.heez.urlib.domain.tag.model.Hashtag;
 import com.heez.urlib.global.common.domain.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,15 +16,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@Builder
 @Table(name = "bookmark")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Bookmark extends BaseEntity {
 
   @Id
@@ -43,10 +52,30 @@ public class Bookmark extends BaseEntity {
   @Column(nullable = false, name = "view_count")
   private Long viewCount;
 
-  @OneToMany(mappedBy = "bookmarkHashtagId", fetch = FetchType.LAZY)
-  private List<BookmarkHashtag> bookmarkHashtags;
+  @Builder.Default
+  @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<BookmarkHashtag> bookmarkHashtags = new ArrayList<>();
+
+
+  @Builder.Default
+  @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Link> links = new ArrayList<>();
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
+
+  public void addHashtag(Hashtag tag) {
+    BookmarkHashtag bh = BookmarkHashtag.builder()
+        .bookmark(this)
+        .hashtag(tag)
+        .build();
+    bookmarkHashtags.add(bh);
+    tag.getBookmarkHashtags().add(bh);
+  }
+
+  public void addLink(Link link) {
+    links.add(link);
+    link.setBookmark(this);
+  }
 }

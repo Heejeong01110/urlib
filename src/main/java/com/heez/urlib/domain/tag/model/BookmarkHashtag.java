@@ -1,5 +1,6 @@
-package com.heez.urlib.domain.bookmark.model;
+package com.heez.urlib.domain.tag.model;
 
+import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.global.common.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,13 +12,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@Builder
 @Table(name = "bookmark_hashtag")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class BookmarkHashtag extends BaseEntity {
 
   @Id
