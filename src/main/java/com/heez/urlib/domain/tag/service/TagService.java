@@ -5,4 +5,6 @@ import java.util.List;
 
 public interface TagService {
   List<Hashtag> ensureTags(List<String> tags);
+
+  List<String> getTagTitlesByBookmarkId(Long bookmarkId);
 }

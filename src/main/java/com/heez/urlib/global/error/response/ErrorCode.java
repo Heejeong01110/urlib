@@ -34,7 +34,10 @@ public enum ErrorCode {
 
   //Member
   NOT_FOUND_MEMBER("M001", "사용자 정보가 존재하지 않습니다."),
-  NOT_FOUND_EMAIL("M002", "사용자 email 정보가 존재하지 않습니다.");
+  NOT_FOUND_EMAIL("M002", "사용자 email 정보가 존재하지 않습니다."),
+
+  //Bookmark
+  ACCESS_DENIED_BOOKMARK("B001", "북마크 접근 권한이 없습니다.");
 
   private final String code;
   private final String message;

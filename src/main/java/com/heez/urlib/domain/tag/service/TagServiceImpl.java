@@ -1,6 +1,7 @@
 package com.heez.urlib.domain.tag.service;
 
 import com.heez.urlib.domain.tag.model.Hashtag;
+import com.heez.urlib.domain.tag.repository.BookmarkHashtagRepository;
 import com.heez.urlib.domain.tag.repository.TagRepository;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TagServiceImpl implements TagService {
 
   private final TagRepository tagRepository;
+  private final BookmarkHashtagRepository bookmarkHashtagRepository;
 
   @Override
   @Transactional
@@ -53,5 +55,10 @@ public class TagServiceImpl implements TagService {
     return distinctNames.stream()
         .map(allByName::get)
         .toList();
+  }
+
+  @Override
+  public List<String> getTagTitlesByBookmarkId(Long bookmarkId) {
+    return bookmarkHashtagRepository.findTagNamesByBookmarkId(bookmarkId);
   }
 }
