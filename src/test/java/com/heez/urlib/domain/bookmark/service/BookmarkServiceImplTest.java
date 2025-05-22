@@ -65,14 +65,14 @@ class BookmarkServiceImplTest {
     given(memberService.findById(memberId)).willReturn(member);
 
     List<Hashtag> hashtags = List.of(
-        Hashtag.builder().hashtagId(1L).name("spring").build(),
-        Hashtag.builder().hashtagId(2L).name("java").build()
+        Hashtag.builder().hashtagId(1L).title("spring").build(),
+        Hashtag.builder().hashtagId(2L).title("java").build()
     );
     given(tagService.ensureTags(tagNames)).willReturn(hashtags);
 
     Bookmark saved = Bookmark.builder()
         .bookmarkId(100L)
-        .name(request.title())
+        .title(request.title())
         .description(request.description())
         .imageUrl(request.imageUrl())
         .visibleToOthers(request.visibleToOthers())
@@ -92,7 +92,7 @@ class BookmarkServiceImplTest {
 
     // then: response reflects saved data
     assertEquals(100L, response.id());
-    assertEquals(request.title(), response.name());
+    assertEquals(request.title(), response.title());
     assertEquals(request.description(), response.description());
     assertEquals(request.imageUrl(), response.imageUrl());
     assertEquals(request.visibleToOthers(), response.visibleToOthers());

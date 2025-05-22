@@ -8,7 +8,7 @@ import lombok.Builder;
 @Builder
 public record BookmarkCreateResponse(
     Long id,
-    String name,
+    String title,
     String description,
     String imageUrl,
     Boolean visibleToOthers,
@@ -18,11 +18,11 @@ public record BookmarkCreateResponse(
   public static BookmarkCreateResponse from(Bookmark bookmark) {
     return new BookmarkCreateResponse(
         bookmark.getBookmarkId(),
-        bookmark.getName(),
+        bookmark.getTitle(),
         bookmark.getDescription(),
         bookmark.getImageUrl(),
         bookmark.isVisibleToOthers(),
-        bookmark.getBookmarkHashtags().stream().map((tag) -> tag.getHashtag().getName()).toList(),
+        bookmark.getBookmarkHashtags().stream().map((tag) -> tag.getHashtag().getTitle()).toList(),
         bookmark.getLinks().stream().map(LinkCreateResponse::from).toList()
     );
   }

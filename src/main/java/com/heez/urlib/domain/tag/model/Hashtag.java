@@ -32,8 +32,8 @@ public class Hashtag extends BaseEntity {
   @Column(name = "hashtag_id", nullable = false)
   private Long hashtagId;
 
-  @Column(nullable = false, name = "name")
-  private String name;
+  @Column(nullable = false, name = "title")
+  private String title;
 
   @Builder.Default
   @OneToMany(mappedBy = "hashtag", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface BookmarkHashtagRepository extends JpaRepository<BookmarkHashtag, Long> {
   @Query("""
-      SELECT bh.hashtag.name
+      SELECT bh.hashtag.title
       FROM BookmarkHashtag bh
       WHERE bh.bookmark.bookmarkId = :bookmarkId
     """)

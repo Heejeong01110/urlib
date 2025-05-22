@@ -37,10 +37,10 @@ public class Bookmark extends BaseEntity {
   @Column(name = "bookmark_id", nullable = false)
   private Long bookmarkId;
 
-  @Column(name = "name", nullable = false)
-  private String name;
+  @Column(name = "title", nullable = false)
+  private String title;
 
-  @Column(nullable = false, name = "url")
+  @Column(nullable = false, name = "description")
   private String description;
 
   @Column(nullable = false, name = "image_url")
@@ -55,7 +55,6 @@ public class Bookmark extends BaseEntity {
   @Builder.Default
   @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<BookmarkHashtag> bookmarkHashtags = new ArrayList<>();
-
 
   @Builder.Default
   @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

@@ -35,7 +35,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     Member member = memberService.findById(memberId);
 
     Bookmark bookmark = Bookmark.builder()
-        .name(request.title())
+        .title(request.title())
         .description(request.description())
         .imageUrl(request.imageUrl())
         .visibleToOthers(request.visibleToOthers())

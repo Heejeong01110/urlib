@@ -35,10 +35,10 @@ class TagServiceImplTest {
   void ensureTags_existingNames_returnsExistingEntities() {
     // given
     List<String> names = List.of("spring", "java");
-    given(tagRepository.findAllByNameIn(names))
+    given(tagRepository.findAllByTitleIn(names))
         .willReturn(List.of(
-            Hashtag.builder().hashtagId(1L).name("spring").build(),
-            Hashtag.builder().hashtagId(2L).name("java").build()
+            Hashtag.builder().hashtagId(1L).title("spring").build(),
+            Hashtag.builder().hashtagId(2L).title("java").build()
         ));
 
     // when
@@ -46,9 +46,9 @@ class TagServiceImplTest {
 
     // then
     assertEquals(2, result.size());
-    assertTrue(result.stream().anyMatch(h -> "spring".equals(h.getName())));
-    assertTrue(result.stream().anyMatch(h -> "java".equals(h.getName())));
-    then(tagRepository).should().findAllByNameIn(names);
+    assertTrue(result.stream().anyMatch(h -> "spring".equals(h.getTitle())));
+    assertTrue(result.stream().anyMatch(h -> "java".equals(h.getTitle())));
+    then(tagRepository).should().findAllByTitleIn(names);
     then(tagRepository).shouldHaveNoMoreInteractions();
   }
 
@@ -56,9 +56,9 @@ class TagServiceImplTest {
   void ensureTags_newNames_createsAndReturnsAll() {
     // given
     List<String> names = List.of("spring", "hibernate");
-    given(tagRepository.findAllByNameIn(names))
+    given(tagRepository.findAllByTitleIn(names))
         .willReturn(List.of(
-            Hashtag.builder().hashtagId(1L).name("spring").build()
+            Hashtag.builder().hashtagId(1L).title("spring").build()
         ));
     given(tagRepository.saveAll(any()))
         .willAnswer(invocation -> invocation.getArgument(0));
@@ -68,9 +68,9 @@ class TagServiceImplTest {
 
     // then
     assertEquals(2, result.size());
-    assertTrue(result.stream().anyMatch(h -> "spring".equals(h.getName())));
-    assertTrue(result.stream().anyMatch(h -> "hibernate".equals(h.getName())));
-    then(tagRepository).should().findAllByNameIn(names);
+    assertTrue(result.stream().anyMatch(h -> "spring".equals(h.getTitle())));
+    assertTrue(result.stream().anyMatch(h -> "hibernate".equals(h.getTitle())));
+    then(tagRepository).should().findAllByTitleIn(names);
     then(tagRepository).should().saveAll(any());
   }
 
@@ -79,10 +79,10 @@ class TagServiceImplTest {
     // given
     List<String> namesWithDup = List.of("spring", "spring", "spring-boot");
     List<String> distinctNames = List.of("spring", "spring-boot");
-    given(tagRepository.findAllByNameIn(distinctNames))
+    given(tagRepository.findAllByTitleIn(distinctNames))
         .willReturn(List.of(
-            Hashtag.builder().hashtagId(1L).name("spring").build(),
-            Hashtag.builder().hashtagId(2L).name("spring-boot").build()
+            Hashtag.builder().hashtagId(1L).title("spring").build(),
+            Hashtag.builder().hashtagId(2L).title("spring-boot").build()
         ));
 
     // when
@@ -90,8 +90,8 @@ class TagServiceImplTest {
 
     // then
     assertEquals(2, result.size());
-    assertTrue(result.stream().anyMatch(h -> "spring".equals(h.getName())));
-    assertTrue(result.stream().anyMatch(h -> "spring-boot".equals(h.getName())));
-    then(tagRepository).should().findAllByNameIn(distinctNames);
+    assertTrue(result.stream().anyMatch(h -> "spring".equals(h.getTitle())));
+    assertTrue(result.stream().anyMatch(h -> "spring-boot".equals(h.getTitle())));
+    then(tagRepository).should().findAllByTitleIn(distinctNames);
   }
 }
