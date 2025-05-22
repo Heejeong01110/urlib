@@ -5,11 +5,14 @@ import lombok.Builder;
 
 @Builder
 public record LinkCreateResponse(
+    Long id,
     String title,
     String url
 ) {
-  public static LinkCreateResponse from(Link link){
+
+  public static LinkCreateResponse from(Link link) {
     return new LinkCreateResponse(
+        link.getLinkId(),
         link.getTitle(),
         link.getUrl()
     );

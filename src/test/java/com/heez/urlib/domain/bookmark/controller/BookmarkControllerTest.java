@@ -60,7 +60,7 @@ class BookmarkControllerTest {
     );
 
     List<LinkCreateResponse> linkRes = List.of(LinkCreateResponse.from(
-        new Link(null, linkReq.url(), linkReq.title(), null)
+        new Link(1L, linkReq.url(), linkReq.title(), null)
     ));
     BookmarkCreateResponse resp = new BookmarkCreateResponse(
         100L,
