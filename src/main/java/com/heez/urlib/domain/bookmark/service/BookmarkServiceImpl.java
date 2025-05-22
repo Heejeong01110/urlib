@@ -20,13 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookmarkServiceImpl implements BookmarkService {
 
   private final BookmarkRepository bookmarkRepository;
-  private final MemberService memberServiceImpl;
+  private final MemberService memberService;
   private final TagService tagService;
 
   @Override
   @Transactional
   public BookmarkCreateResponse createBookmark(Long memberId, BookmarkCreateRequest request) {
-    Member member = memberServiceImpl.findById(memberId);
+    Member member = memberService.findById(memberId);
 
     Bookmark bookmark = Bookmark.builder()
         .name(request.title())
