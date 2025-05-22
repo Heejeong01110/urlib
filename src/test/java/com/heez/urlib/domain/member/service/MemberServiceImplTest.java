@@ -25,25 +25,26 @@ class MemberServiceImplTest {
   @Mock
   private MemberRepository memberRepository;
 
-  @Mock
-  private OAuth2UserInfo userInfo;
-
   @InjectMocks
   private MemberServiceImpl memberService;
 
   @Test
   void findMemberOrCreate_existingMember() {
     // given
-    String identifier = "id123";
-    OAuthType oAuthType = OAuthType.valueOf("kakao");
-    given(userInfo.oAuthType()).willReturn(oAuthType);
-    given(userInfo.oAuthId()).willReturn(identifier);
+    OAuthType oAuthType = OAuthType.valueOf("KAKAO");
+    OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
+        .oAuthType(oAuthType)
+        .oAuthId("kakao_123456789asdfzxcv")
+        .nickname("nickname")
+        .imageUrl("https://image.url.co.kr")
+        .email("existing@example.com")
+        .build();
 
     Member existing = Member.builder()
         .id(1L)
         .email(new Email("existing@example.com"))
         .build();
-    given(memberRepository.findMemberByOauthTypeAndIdentifier(oAuthType, identifier))
+    given(memberRepository.findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId()))
         .willReturn(Optional.of(existing));
 
     // when
@@ -51,18 +52,23 @@ class MemberServiceImplTest {
 
     // then
     assertSame(existing, result);
-    then(memberRepository).should().findMemberByOauthTypeAndIdentifier(oAuthType, identifier);
+    then(memberRepository).should()
+        .findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId());
     then(memberRepository).shouldHaveNoMoreInteractions();
   }
 
   @Test
   void findMemberOrCreate_newMember() {
     // given
-    OAuthType oAuthType = OAuthType.valueOf("kakao");
-    String identifier = "id123";
-    given(userInfo.oAuthType()).willReturn(oAuthType);
-    given(userInfo.oAuthId()).willReturn(identifier);
-    given(memberRepository.findMemberByOauthTypeAndIdentifier(oAuthType, identifier))
+    OAuthType oAuthType = OAuthType.valueOf("KAKAO");
+    OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
+        .oAuthType(oAuthType)
+        .oAuthId("kakao_123456789asdfzxcv")
+        .nickname("nickname")
+        .imageUrl("https://image.url.co.kr")
+        .email("existing@example.com")
+        .build();
+    given(memberRepository.findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId()))
         .willReturn(Optional.empty());
 
     Member saved = Member.builder()
@@ -76,7 +82,8 @@ class MemberServiceImplTest {
 
     // then
     assertSame(saved, result);
-    then(memberRepository).should().findMemberByOauthTypeAndIdentifier(oAuthType, identifier);
+    then(memberRepository).should()
+        .findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId());
     then(memberRepository).should().save(any(Member.class));
   }
 
