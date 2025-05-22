@@ -125,7 +125,11 @@ public class AuthTokenProvider {
     String email = claims.getSubject();
     String nickname = claims.get("nickname", String.class);
 
-    List<String> roles = claims.get("roles", List.class);
+    List<?> rawRoles = claims.get("roles", List.class);
+    List<String> roles = rawRoles.stream()
+        .map(Object::toString)
+        .toList();
+
     List<SimpleGrantedAuthority> authorities = roles.stream()
         .map(SimpleGrantedAuthority::new)
         .toList();
