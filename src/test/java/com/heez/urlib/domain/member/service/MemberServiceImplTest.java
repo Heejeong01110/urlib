@@ -1,8 +1,9 @@
 package com.heez.urlib.domain.member.service;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -51,9 +52,9 @@ class MemberServiceImplTest {
     Member result = memberService.findMemberOrCreate(userInfo);
 
     // then
-    assertSame(existing, result);
-    then(memberRepository).should()
-        .findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId());
+    assertThat(result).isSameAs(existing);
+    then(memberRepository)
+        .should().findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId());
     then(memberRepository).shouldHaveNoMoreInteractions();
   }
 
@@ -81,9 +82,9 @@ class MemberServiceImplTest {
     Member result = memberService.findMemberOrCreate(userInfo);
 
     // then
-    assertSame(saved, result);
-    then(memberRepository).should()
-        .findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId());
+    assertThat(result).isSameAs(saved);
+    then(memberRepository)
+        .should().findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId());
     then(memberRepository).should().save(any(Member.class));
   }
 
@@ -100,7 +101,7 @@ class MemberServiceImplTest {
     Member result = memberService.findById(1L);
 
     // then
-    assertSame(member, result);
+    assertThat(result).isSameAs(member);
     then(memberRepository).should().findById(1L);
   }
 
@@ -110,9 +111,8 @@ class MemberServiceImplTest {
     given(memberRepository.findById(1L)).willReturn(Optional.empty());
 
     // when & then
-    assertThrows(MemberNotFoundException.class,
-        () -> memberService.findById(1L)
-    );
+    assertThatThrownBy(() -> memberService.findById(1L))
+        .isInstanceOf(MemberNotFoundException.class);
     then(memberRepository).should().findById(1L);
   }
 }

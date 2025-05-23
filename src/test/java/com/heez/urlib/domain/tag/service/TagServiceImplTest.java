@@ -1,16 +1,15 @@
 package com.heez.urlib.domain.tag.service;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.heez.urlib.domain.tag.model.Hashtag;
+import com.heez.urlib.domain.tag.repository.BookmarkHashtagRepository;
 import com.heez.urlib.domain.tag.repository.TagRepository;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,13 +22,11 @@ class TagServiceImplTest {
   @Mock
   private TagRepository tagRepository;
 
+  @Mock
+  private BookmarkHashtagRepository bookmarkHashtagRepository;
+
   @InjectMocks
   private TagServiceImpl tagService;
-
-  @BeforeEach
-  void setUp() {
-  }
-
 
   @Test
   void ensureTags_existingNames_returnsExistingEntities() {
@@ -45,9 +42,11 @@ class TagServiceImplTest {
     List<Hashtag> result = tagService.ensureTags(names);
 
     // then
-    assertEquals(2, result.size());
-    assertTrue(result.stream().anyMatch(h -> "spring".equals(h.getTitle())));
-    assertTrue(result.stream().anyMatch(h -> "java".equals(h.getTitle())));
+    assertThat(result)
+        .hasSize(2)
+        .extracting(Hashtag::getTitle)
+        .containsExactlyInAnyOrder("spring", "java");
+
     then(tagRepository).should().findAllByTitleIn(names);
     then(tagRepository).shouldHaveNoMoreInteractions();
   }
@@ -67,9 +66,11 @@ class TagServiceImplTest {
     List<Hashtag> result = tagService.ensureTags(names);
 
     // then
-    assertEquals(2, result.size());
-    assertTrue(result.stream().anyMatch(h -> "spring".equals(h.getTitle())));
-    assertTrue(result.stream().anyMatch(h -> "hibernate".equals(h.getTitle())));
+    assertThat(result)
+        .hasSize(2)
+        .extracting(Hashtag::getTitle)
+        .containsExactlyInAnyOrder("spring", "hibernate");
+
     then(tagRepository).should().findAllByTitleIn(names);
     then(tagRepository).should().saveAll(any());
   }
@@ -89,9 +90,41 @@ class TagServiceImplTest {
     List<Hashtag> result = tagService.ensureTags(namesWithDup);
 
     // then
-    assertEquals(2, result.size());
-    assertTrue(result.stream().anyMatch(h -> "spring".equals(h.getTitle())));
-    assertTrue(result.stream().anyMatch(h -> "spring-boot".equals(h.getTitle())));
+    assertThat(result)
+        .hasSize(2)
+        .extracting(Hashtag::getTitle)
+        .containsExactlyInAnyOrder("spring", "spring-boot");
+
     then(tagRepository).should().findAllByTitleIn(distinctNames);
+  }
+
+
+  @Test
+  void getTagTitlesByBookmarkId_returnsTagNames() {
+    // given
+    Long bookmarkId = 123L;
+    List<String> expectedTags = List.of("spring", "java", "testing");
+    given(bookmarkHashtagRepository.findTagNamesByBookmarkId(bookmarkId))
+        .willReturn(expectedTags);
+
+    // when
+    List<String> actual = tagService.getTagTitlesByBookmarkId(bookmarkId);
+
+    // then
+    assertThat(actual).containsExactlyElementsOf(expectedTags);
+  }
+
+  @Test
+  void getTagTitlesByBookmarkId_returnsEmptyListWhenNoTags() {
+    // given
+    Long bookmarkId = 456L;
+    given(bookmarkHashtagRepository.findTagNamesByBookmarkId(bookmarkId))
+        .willReturn(List.of());
+
+    // when
+    List<String> actual = tagService.getTagTitlesByBookmarkId(bookmarkId);
+
+    // then
+    assertThat(actual).isEmpty();
   }
 }
