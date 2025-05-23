@@ -1,7 +1,6 @@
 package com.heez.urlib.domain.bookmark.controller.dto;
 
 import com.heez.urlib.domain.bookmark.model.Bookmark;
-import com.heez.urlib.domain.link.controller.dto.LinkCreateResponse;
 import com.heez.urlib.domain.link.controller.dto.LinkDetailResponse;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +16,7 @@ public record BookmarkDetailResponse(
     Long viewCount,
     LocalDateTime createdAt,
     List<String> tags,
-    List<LinkCreateResponse> links,
+    List<LinkDetailResponse> links,
     Long writerId
 ) {
 

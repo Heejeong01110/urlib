@@ -28,8 +28,6 @@ public class BookmarkController {
 
   private final BookmarkService bookmarkService;
 
-//todo valid 검사
-
   @PostMapping("/")
   public ResponseEntity<BookmarkCreateResponse> generateBookmark(
       @AuthUser CustomOAuth2User oauth2User,
