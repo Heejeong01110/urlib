@@ -5,7 +5,7 @@ import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
 import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkException;
-import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkUpdateException;
+import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkModifyException;
 import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;
 import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.domain.bookmark.repository.BookmarkRepository;
@@ -91,7 +91,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         .orElseThrow(BookmarkNotFoundException::new);
 
     if (!bookmark.getMember().getId().equals(memberId)) {
-      throw new AccessDeniedBookmarkUpdateException();
+      throw new AccessDeniedBookmarkModifyException();
     }
 
     bookmark.changeTitle(request.title());

@@ -14,7 +14,7 @@ import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
-import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkUpdateException;
+import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkModifyException;
 import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;
 import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.domain.bookmark.repository.BookmarkRepository;
@@ -274,6 +274,7 @@ class BookmarkServiceImplTest {
                 "t", "d", "i", true, List.of(), List.of()
             )
         )
-    ).isInstanceOf(AccessDeniedBookmarkUpdateException.class);
+    ).isInstanceOf(AccessDeniedBookmarkModifyException.class);
+  }
   }
 }
