@@ -43,4 +43,12 @@ public class JwtHeaderUtil {
         .toString();
   }
 
+  public static String deleteCookie() {
+    return ResponseCookie.from(HEADER_REFRESH_COOKIE, "")
+        .path("/")
+        .httpOnly(true)
+        .maxAge(0)
+        .build()
+        .toString();
+  }
 }

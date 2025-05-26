@@ -35,4 +35,16 @@ public class AuthController {
     response.setContentType("application/json;charset=UTF-8");
     return ResponseEntity.ok().build();
   }
+
+  @PostMapping("/logout")
+  public ResponseEntity<Void> logout(
+      HttpServletRequest request,
+      HttpServletResponse response
+  ) {
+    authService.logout(JwtHeaderUtil.resolveRefreshToken(request));
+
+    response.setHeader(JwtHeaderUtil.HEADER_AUTHORIZATION, "");
+    response.setHeader(HttpHeaders.SET_COOKIE, JwtHeaderUtil.deleteCookie());
+    return ResponseEntity.noContent().build();
+  }
 }
