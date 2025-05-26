@@ -20,4 +20,6 @@ public interface BookmarkService {
 
   Page<BookmarkSummaryResponse> getBookmarkSummaryListByMemberId(Long viewerId, Long ownerId,
       Pageable pageable);
+
+  Page<BookmarkSummaryResponse> getBookmarkSummaryList(Long viewerId, Pageable pageable);
 }

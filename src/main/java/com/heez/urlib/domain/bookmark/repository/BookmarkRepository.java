@@ -18,14 +18,25 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
       @Param("id") Long memberId);
 
   @Query("""
-    select b
-      from Bookmark b
-     where b.member.id = :memberId
-       and ( :memberId = :viewerId or b.visibleToOthers = true )
-  """)
+        select b
+          from Bookmark b
+         where b.member.id = :memberId
+           and ( :memberId = :viewerId or b.visibleToOthers )
+      """)
   @EntityGraph(attributePaths = {"member"})
   Page<BookmarkSummaryProjection> findPageByMemberAndViewer(
       @Param("memberId") Long ownerId,
+      @Param("viewerId") Long viewerId,
+      Pageable pageable);
+
+
+  @Query("""
+        select b
+          from Bookmark b
+         where ( b.member.id = :viewerId or b.visibleToOthers )
+      """)
+  @EntityGraph(attributePaths = {"member"})
+  Page<BookmarkSummaryProjection> findPageByViewer(
       @Param("viewerId") Long viewerId,
       Pageable pageable);
 }

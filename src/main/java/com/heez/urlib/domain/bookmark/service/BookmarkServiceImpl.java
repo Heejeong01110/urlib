@@ -137,4 +137,10 @@ public class BookmarkServiceImpl implements BookmarkService {
     return bookmarkRepository.findPageByMemberAndViewer(ownerId, viewerId, pageable)
         .map(BookmarkSummaryResponse::from);
   }
+
+  @Override
+  public Page<BookmarkSummaryResponse> getBookmarkSummaryList(Long viewerId, Pageable pageable) {
+    return bookmarkRepository.findPageByViewer(viewerId, pageable)
+        .map(BookmarkSummaryResponse::from);
+  }
 }

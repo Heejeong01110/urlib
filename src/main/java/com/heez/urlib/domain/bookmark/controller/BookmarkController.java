@@ -5,6 +5,7 @@ import com.heez.urlib.domain.auth.model.CustomOAuth2User;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
+import com.heez.urlib.domain.bookmark.controller.dto.BookmarkSummaryResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
 import com.heez.urlib.domain.bookmark.service.BookmarkService;
 import com.heez.urlib.domain.member.model.AuthUser;
@@ -12,6 +13,10 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +36,17 @@ public class BookmarkController {
 
   private final BookmarkService bookmarkService;
 
-  @PostMapping("/")
+  @GetMapping("")
+  public ResponseEntity<Page<BookmarkSummaryResponse>> getBookmarks(
+      @AuthUser CustomOAuth2User oauth2User,
+      @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+      Pageable pageable
+  ) {
+    return ResponseEntity.ok(
+        bookmarkService.getBookmarkSummaryList(oauth2User.getMemberId(), pageable));
+  }
+
+  @PostMapping("")
   public ResponseEntity<BookmarkCreateResponse> generateBookmark(
       @AuthUser CustomOAuth2User oauth2User,
       @Valid @RequestBody BookmarkCreateRequest request) {
@@ -72,6 +87,5 @@ public class BookmarkController {
     bookmarkService.deleteBookmark(oauth2User.getMemberId(), bookmarkId);
     return ResponseEntity.noContent().build();
   }
-
 
 }
