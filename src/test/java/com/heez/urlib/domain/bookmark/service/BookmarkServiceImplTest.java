@@ -14,11 +14,13 @@ import static org.mockito.Mockito.when;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
+import com.heez.urlib.domain.bookmark.controller.dto.BookmarkSummaryResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
 import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkModifyException;
 import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;
 import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.domain.bookmark.repository.BookmarkRepository;
+import com.heez.urlib.domain.bookmark.service.dto.BookmarkSummaryProjection;
 import com.heez.urlib.domain.link.controller.dto.BaseLinkRequest;
 import com.heez.urlib.domain.link.controller.dto.LinkDetailResponse;
 import com.heez.urlib.domain.link.model.Link;
@@ -35,6 +37,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @ExtendWith(MockitoExtension.class)
 class BookmarkServiceImplTest {
@@ -330,5 +337,46 @@ class BookmarkServiceImplTest {
         .isInstanceOf(AccessDeniedBookmarkModifyException.class);
 
     verify(bookmarkRepository, never()).delete(any());
+  }
+
+  @Test
+  void getBookmarkSummaryListByMemberId_returnsMappedResponses() {
+    // given
+    Long viewerId = 1L;
+    Long ownerId = 2L;
+    Pageable pageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
+
+    BookmarkSummaryProjection projection = mock(BookmarkSummaryProjection.class);
+    when(projection.getBookmarkId()).thenReturn(10L);
+    when(projection.getTitle()).thenReturn("Sample Title");
+    when(projection.getDescription()).thenReturn("Sample Description");
+    when(projection.getImageUrl()).thenReturn("http://example.com/bookmark.png");
+
+    BookmarkSummaryProjection.MemberInfo memberInfo = mock(BookmarkSummaryProjection.MemberInfo.class);
+    when(memberInfo.getId()).thenReturn(ownerId);
+    when(memberInfo.getImageUrl()).thenReturn("http://example.com/member.png");
+    when(projection.getMember()).thenReturn(memberInfo);
+
+    Page<BookmarkSummaryProjection> repoPage =
+        new PageImpl<>(List.of(projection), pageable, 1);
+
+    given(bookmarkRepository.findPageByMemberAndViewer(ownerId, viewerId, pageable))
+        .willReturn(repoPage);
+
+    // when
+    Page<BookmarkSummaryResponse> result =
+        bookmarkService.getBookmarkSummaryListByMemberId(viewerId, ownerId, pageable);
+
+    // then
+    assertThat(result).isNotNull();
+    assertThat(result.getTotalElements()).isEqualTo(1);
+
+    BookmarkSummaryResponse dto = result.getContent().get(0);
+    assertThat(dto.id()).isEqualTo(10L);
+    assertThat(dto.title()).isEqualTo("Sample Title");
+    assertThat(dto.description()).isEqualTo("Sample Description");
+    assertThat(dto.bookmarkImageUrl()).isEqualTo("http://example.com/bookmark.png");
+    assertThat(dto.memberSummary().memberId()).isEqualTo(ownerId);
+    assertThat(dto.memberSummary().memberImageUrl()).isEqualTo("http://example.com/member.png");
   }
 }
