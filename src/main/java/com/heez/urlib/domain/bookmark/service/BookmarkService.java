@@ -7,8 +7,9 @@ import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
 
 public interface BookmarkService {
 
-  BookmarkCreateResponse createBookmark(Long userId, BookmarkCreateRequest req);
+  BookmarkCreateResponse createBookmark(Long memberId, BookmarkCreateRequest req);
 
-  BookmarkDetailResponse getBookmark(Long userId, Long bookmarkId);
+  BookmarkDetailResponse getBookmark(Long memberId, Long bookmarkId);
+
   BookmarkDetailResponse updateBookmark(Long memberId, Long bookmarkId, BookmarkUpdateRequest request);
 }
