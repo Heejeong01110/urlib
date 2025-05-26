@@ -13,6 +13,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.heez.urlib.domain.auth.exception.ExpiredRefreshTokenException;
 import com.heez.urlib.domain.auth.exception.InvalidRefreshTokenException;
 import com.heez.urlib.domain.auth.jwt.JwtHeaderUtil;
+import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkException;
+import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkModifyException;
+import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;
 import com.heez.urlib.domain.member.exception.MemberNotFoundException;
 import com.heez.urlib.global.error.exception.AbstractGlobalException;
 import com.heez.urlib.global.error.response.ErrorResponse;
@@ -197,6 +200,45 @@ public class GlobalExceptionRestHandler {
 
     return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
+        .body(response);
+  }
+
+  /**
+   * [Exception] 북마크 조회 권한이 없는 경우
+   */
+  @ExceptionHandler(AccessDeniedBookmarkException.class)
+  protected ResponseEntity<ErrorResponse> handleAccessDeniedBookmarkException(
+      AccessDeniedBookmarkException ex) {
+    log.error("Handle AccessDeniedBookmarkException : ", ex);
+    ErrorResponse response = ErrorResponse.of(ex.getErrorCode(), ex.getMessage());
+    return ResponseEntity
+        .status(HttpStatus.FORBIDDEN)
+        .body(response);
+  }
+
+  /**
+   * [Exception] 북마크 수정 권한이 없는 경우
+   */
+  @ExceptionHandler(AccessDeniedBookmarkModifyException.class)
+  protected ResponseEntity<ErrorResponse> handleAccessDeniedBookmarkModifyException(
+      AccessDeniedBookmarkModifyException ex) {
+    log.error("Handle AccessDeniedBookmarkModifyException : ", ex);
+    ErrorResponse response = ErrorResponse.of(ex.getErrorCode(), ex.getMessage());
+    return ResponseEntity
+        .status(HttpStatus.FORBIDDEN)
+        .body(response);
+  }
+
+  /**
+   * [Exception] 북마크를 찾을 수 없는 경우
+   */
+  @ExceptionHandler(BookmarkNotFoundException.class)
+  protected ResponseEntity<ErrorResponse> handleBookmarkNotFoundException(
+      BookmarkNotFoundException ex) {
+    log.warn("Handle BookmarkNotFoundException : ", ex);
+    ErrorResponse response = ErrorResponse.of(ex.getErrorCode(), ex.getMessage());
+    return ResponseEntity
+        .status(HttpStatus.NOT_FOUND)
         .body(response);
   }
 }
