@@ -13,6 +13,7 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,6 +62,15 @@ public class BookmarkController {
   ) {
     return ResponseEntity.ok(bookmarkService.updateBookmark(
         oauth2User.getMemberId(), bookmarkId, request));
+  }
+
+  @DeleteMapping("/{bookmarkId}")
+  public ResponseEntity<Void> deleteBookmark(
+      @AuthUser CustomOAuth2User oauth2User,
+      @PathVariable Long bookmarkId
+  ) {
+    bookmarkService.deleteBookmark(oauth2User.getMemberId(), bookmarkId);
+    return ResponseEntity.noContent().build();
   }
 
 

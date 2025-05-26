@@ -12,4 +12,6 @@ public interface BookmarkService {
   BookmarkDetailResponse getBookmark(Long memberId, Long bookmarkId);
 
   BookmarkDetailResponse updateBookmark(Long memberId, Long bookmarkId, BookmarkUpdateRequest request);
+
+  void deleteBookmark(Long memberId, Long bookmarkId);
 }

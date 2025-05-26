@@ -115,4 +115,16 @@ public class BookmarkServiceImpl implements BookmarkService {
             .toList(),
         memberId);
   }
+
+  @Override
+  public void deleteBookmark(Long memberId, Long bookmarkId) {
+    Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+        .orElseThrow(BookmarkNotFoundException::new);
+
+    if (!bookmark.getMember().getId().equals(memberId)) {
+      throw new AccessDeniedBookmarkModifyException();
+    }
+
+    bookmarkRepository.delete(bookmark);
+  }
 }
