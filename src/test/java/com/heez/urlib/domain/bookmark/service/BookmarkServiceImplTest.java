@@ -1,19 +1,24 @@
 package com.heez.urlib.domain.bookmark.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
+import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
+import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkUpdateException;
+import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;
 import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.domain.bookmark.repository.BookmarkRepository;
-import com.heez.urlib.domain.link.controller.dto.LinkCreateRequest;
+import com.heez.urlib.domain.link.controller.dto.BaseLinkRequest;
 import com.heez.urlib.domain.link.controller.dto.LinkDetailResponse;
 import com.heez.urlib.domain.link.model.Link;
 import com.heez.urlib.domain.link.service.LinkService;
@@ -53,7 +58,7 @@ class BookmarkServiceImplTest {
     // given
     Long memberId = 1L;
     List<String> tagNames = List.of("spring", "java");
-    LinkCreateRequest linkReq = LinkCreateRequest.builder()
+    BaseLinkRequest linkReq = BaseLinkRequest.builder()
         .title("Example")
         .url("http://example.com")
         .build();
@@ -119,11 +124,10 @@ class BookmarkServiceImplTest {
   }
 
   @Test
-  void getBookmark() {
+  void getBookmark_success() {
     // given
-    Member owner = Member.builder()
-        .id(999L)
-        .build();
+    Member owner = mock(Member.class);
+    given(owner.getId()).willReturn(999L);
     Long bookmarkId = 100L;
     Long memberId = 100L;
 
@@ -158,11 +162,118 @@ class BookmarkServiceImplTest {
     assertThat(result.description()).isEqualTo("D");
     assertThat(result.imageUrl()).isEqualTo("U");
     assertThat(result.visibleToOthers()).isTrue();
-    assertThat(result.viewCount()).isEqualTo(5L);
+    assertThat(result.viewCount()).isEqualTo(5L + 1);
     assertThat(result.tags()).containsExactly("a", "b");
     assertThat(result.links())
         .extracting(LinkDetailResponse::id, LinkDetailResponse::title, LinkDetailResponse::url)
         .containsExactly(tuple(11L, "L1", "URL1"));
     assertThat(result.writerId()).isEqualTo(999L);
+  }
+
+  @Test
+  void updateBookmark_success() {
+    // given
+    Long bookmarkId = 7L;
+    Long memberId = 7L;
+    Member owner = mock(Member.class);
+    given(owner.getId()).willReturn(memberId);
+
+    Bookmark bookmark = Bookmark.builder()
+        .bookmarkId(bookmarkId)
+        .title("old")
+        .description("old-desc")
+        .imageUrl("old-img")
+        .visibleToOthers(false)
+        .member(owner)
+        .build();
+
+    given(bookmarkRepository.findById(bookmarkId))
+        .willReturn(Optional.of(bookmark));
+
+    List<String> tagsReq = List.of("spring", "java");
+    List<BaseLinkRequest> linksReq = List.of(
+        BaseLinkRequest.builder().title("Example").url("http://example.com").build());
+    BookmarkUpdateRequest req = new BookmarkUpdateRequest(
+        "new-title",
+        "new-desc",
+        "new-img",
+        true,
+        tagsReq,
+        linksReq
+    );
+
+    List<Hashtag> tags = List.of(
+        Hashtag.builder().hashtagId(1L).title("spring").build(),
+        Hashtag.builder().hashtagId(2L).title("java").build());
+    given(tagService.ensureTags(tagsReq)).willReturn(tags);
+
+    List<Link> links = List.of(
+        Link.builder()
+            .linkId(1L)
+            .title("Example")
+            .url("http://example.com")
+            .build()
+    );
+    given(linkService.ensureLinks(bookmarkId, linksReq)).willReturn(links);
+
+    // when
+    BookmarkDetailResponse result = bookmarkService.updateBookmark(memberId, bookmarkId, req);
+
+    // then
+    assertThat(result.title()).isEqualTo("new-title");
+    assertThat(result.description()).isEqualTo("new-desc");
+    assertThat(result.imageUrl()).isEqualTo("new-img");
+    assertThat(result.visibleToOthers()).isTrue();
+
+    assertThat(result.tags()).containsExactly("spring", "java");
+    assertThat(result.links())
+        .extracting(LinkDetailResponse::url)
+        .containsExactly("http://example.com");
+
+    verify(bookmarkRepository).findById(bookmarkId);
+    verify(tagService).ensureTags(tagsReq);
+    verify(linkService).ensureLinks(bookmarkId, linksReq);
+  }
+
+  @Test
+  void updateBookmark_notFound() {
+    // given
+    Long bookmarkId = 7L;
+    Long memberId = 7L;
+    given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.empty());
+
+    // when & then
+    assertThatThrownBy(() ->
+        bookmarkService.updateBookmark(memberId, bookmarkId,
+            new BookmarkUpdateRequest(
+                "t", "d", "i", true, List.of(), List.of()
+            )
+        )
+    ).isInstanceOf(BookmarkNotFoundException.class);
+  }
+
+  @Test
+  void updateBookmark_accessDenied() {
+    // given
+    Long bookmarkId = 7L;
+    Long memberId = 7L;
+    Member owner = mock(Member.class);
+    given(owner.getId()).willReturn(memberId + 1);
+    Bookmark bookmark = Bookmark.builder()
+        .bookmarkId(bookmarkId)
+        .member(owner)
+        .build();
+
+    given(bookmarkRepository.findById(bookmarkId))
+        .willReturn(Optional.of(bookmark));
+
+    // when & then
+    assertThatThrownBy(() ->
+        bookmarkService.updateBookmark(memberId, bookmarkId,
+            new BookmarkUpdateRequest(
+                "t", "d", "i", true, List.of(), List.of()
+            )
+        )
+    ).isInstanceOf(AccessDeniedBookmarkUpdateException.class);
   }
 }
