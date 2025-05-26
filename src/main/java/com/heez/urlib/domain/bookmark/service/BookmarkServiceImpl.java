@@ -3,6 +3,7 @@ package com.heez.urlib.domain.bookmark.service;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
+import com.heez.urlib.domain.bookmark.controller.dto.BookmarkSummaryResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
 import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkException;
 import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkModifyException;
@@ -18,6 +19,8 @@ import com.heez.urlib.domain.tag.model.Hashtag;
 import com.heez.urlib.domain.tag.service.TagService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -126,5 +129,12 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     bookmarkRepository.delete(bookmark);
+  }
+
+  @Override
+  public Page<BookmarkSummaryResponse> getBookmarkSummaryListByMemberId(
+      Long viewerId, Long ownerId, Pageable pageable) {
+    return bookmarkRepository.findPageByMemberAndViewer(ownerId, viewerId, pageable)
+        .map(BookmarkSummaryResponse::from);
   }
 }
