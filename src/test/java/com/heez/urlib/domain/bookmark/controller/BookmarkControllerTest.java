@@ -1,5 +1,7 @@
 package com.heez.urlib.domain.bookmark.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doNothing;
@@ -19,6 +21,7 @@ import com.heez.urlib.domain.auth.model.WithMockCustomUser;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
+import com.heez.urlib.domain.bookmark.controller.dto.BookmarkSummaryResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
 import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.domain.bookmark.service.BookmarkService;
@@ -26,12 +29,18 @@ import com.heez.urlib.domain.link.controller.dto.BaseLinkRequest;
 import com.heez.urlib.domain.link.controller.dto.LinkCreateResponse;
 import com.heez.urlib.domain.link.controller.dto.LinkDetailResponse;
 import com.heez.urlib.domain.link.model.Link;
+import com.heez.urlib.domain.member.controller.dto.MemberSummaryResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -84,7 +93,7 @@ class BookmarkControllerTest {
 
     // when & then
     mockMvc.perform(
-            post("/api/v1/bookmarks/")
+            post("/api/v1/bookmarks")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req))
         )
@@ -243,5 +252,46 @@ class BookmarkControllerTest {
 
     // then
     then(bookmarkService).should().deleteBookmark(memberId, bookmarkId);
+  }
+
+  @Test
+  @WithMockCustomUser
+  void getBookmarks_success() throws Exception {
+    // given
+    long viewerId = 1L;
+    BookmarkSummaryResponse resp = new BookmarkSummaryResponse(
+        100L,
+        "목록 테스트 제목",
+        "목록 테스트 설명",
+        "http://example.com/list.png",
+        new MemberSummaryResponse(viewerId, "http://example.com/user.png")
+    );
+    Page<BookmarkSummaryResponse> page = new PageImpl<>(
+        List.of(resp),
+        PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt")),
+        1
+    );
+
+    given(bookmarkService.getBookmarkSummaryList(eq(viewerId), any(Pageable.class)))
+        .willReturn(page);
+
+    // when / then
+    mockMvc.perform(get("/api/v1/bookmarks")
+            .param("page", "0")
+            .param("size", "10")
+            .param("sort", "createdAt,desc")
+            .accept(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.content").isArray())
+        .andExpect(jsonPath("$.content.length()").value(1))
+        .andExpect(jsonPath("$.content[0].id").value(100))
+        .andExpect(jsonPath("$.content[0].title").value("목록 테스트 제목"))
+        .andExpect(jsonPath("$.content[0].description").value("목록 테스트 설명"))
+        .andExpect(jsonPath("$.content[0].bookmarkImageUrl").value("http://example.com/list.png"))
+        .andExpect(jsonPath("$.content[0].memberSummary.memberId").value(viewerId))
+        .andExpect(jsonPath("$.content[0].memberSummary.memberImageUrl").value(
+            "http://example.com/user.png"));
   }
 }

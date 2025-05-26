@@ -352,7 +352,8 @@ class BookmarkServiceImplTest {
     when(projection.getDescription()).thenReturn("Sample Description");
     when(projection.getImageUrl()).thenReturn("http://example.com/bookmark.png");
 
-    BookmarkSummaryProjection.MemberInfo memberInfo = mock(BookmarkSummaryProjection.MemberInfo.class);
+    BookmarkSummaryProjection.MemberInfo memberInfo = mock(
+        BookmarkSummaryProjection.MemberInfo.class);
     when(memberInfo.getId()).thenReturn(ownerId);
     when(memberInfo.getImageUrl()).thenReturn("http://example.com/member.png");
     when(projection.getMember()).thenReturn(memberInfo);
@@ -378,5 +379,44 @@ class BookmarkServiceImplTest {
     assertThat(dto.bookmarkImageUrl()).isEqualTo("http://example.com/bookmark.png");
     assertThat(dto.memberSummary().memberId()).isEqualTo(ownerId);
     assertThat(dto.memberSummary().memberImageUrl()).isEqualTo("http://example.com/member.png");
+  }
+
+  @Test
+  void getBookmarkSummaryList_returnsMappedResponses() {
+    // given
+    Long viewerId = 1L;
+    Pageable pageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
+
+    BookmarkSummaryProjection projection = mock(BookmarkSummaryProjection.class);
+    when(projection.getBookmarkId()).thenReturn(42L);
+    when(projection.getTitle()).thenReturn("Overview Title");
+    when(projection.getDescription()).thenReturn("Overview Description");
+    when(projection.getImageUrl()).thenReturn("http://example.com/overview.png");
+
+    BookmarkSummaryProjection.MemberInfo memberInfo = mock(
+        BookmarkSummaryProjection.MemberInfo.class);
+    when(memberInfo.getId()).thenReturn(99L);
+    when(memberInfo.getImageUrl()).thenReturn("http://example.com/user.png");
+    when(projection.getMember()).thenReturn(memberInfo);
+
+    Page<BookmarkSummaryProjection> repoPage = new PageImpl<>(List.of(projection), pageable, 1);
+
+    given(bookmarkRepository.findPageByViewer(viewerId, pageable)).willReturn(repoPage);
+
+    // when
+    Page<BookmarkSummaryResponse> result = bookmarkService.getBookmarkSummaryList(viewerId,
+        pageable);
+
+    // then
+    assertThat(result).isNotNull();
+    assertThat(result.getTotalElements()).isEqualTo(1);
+
+    BookmarkSummaryResponse dto = result.getContent().get(0);
+    assertThat(dto.id()).isEqualTo(42L);
+    assertThat(dto.title()).isEqualTo("Overview Title");
+    assertThat(dto.description()).isEqualTo("Overview Description");
+    assertThat(dto.bookmarkImageUrl()).isEqualTo("http://example.com/overview.png");
+    assertThat(dto.memberSummary().memberId()).isEqualTo(99L);
+    assertThat(dto.memberSummary().memberImageUrl()).isEqualTo("http://example.com/user.png");
   }
 }
