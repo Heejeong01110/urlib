@@ -76,6 +76,11 @@ public class Bookmark extends BaseEntity {
   public void changeVisibleToOthers(boolean visibleToOthers) {
     this.visibleToOthers = visibleToOthers;
   }
+
+  public void addViewCount() {
+    this.viewCount++;
+  }
+
   public void addHashtag(Hashtag tag) {
     BookmarkHashtag bh = BookmarkHashtag.builder()
         .bookmark(this)

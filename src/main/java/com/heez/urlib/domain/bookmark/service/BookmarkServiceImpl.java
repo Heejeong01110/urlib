@@ -77,7 +77,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         .stream()
         .map(LinkDetailResponse::from)
         .toList();
-
+    bookmark.addViewCount();
     return BookmarkDetailResponse.from(bookmark, tags, links, bookmark.getMember().getId());
   }
 
