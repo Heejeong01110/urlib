@@ -15,6 +15,7 @@ public record BookmarkDetailResponse(
     Boolean visibleToOthers,
     Long viewCount,
     LocalDateTime createdAt,
+    LocalDateTime updatedAt,
     List<String> tags,
     List<LinkDetailResponse> links,
     Long writerId
@@ -30,6 +31,7 @@ public record BookmarkDetailResponse(
         entity.isVisibleToOthers(),
         entity.getViewCount(),
         entity.getCreatedAt(),
+        entity.getUpdatedAt(),
         tags,
         links,
         memberId
