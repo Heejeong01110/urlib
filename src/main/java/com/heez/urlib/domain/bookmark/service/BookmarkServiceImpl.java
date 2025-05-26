@@ -3,7 +3,9 @@ package com.heez.urlib.domain.bookmark.service;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
+import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
 import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkException;
+import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkUpdateException;
 import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;
 import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.domain.bookmark.repository.BookmarkRepository;
@@ -77,5 +79,40 @@ public class BookmarkServiceImpl implements BookmarkService {
         .toList();
 
     return BookmarkDetailResponse.from(bookmark, tags, links, bookmark.getMember().getId());
+  }
+
+  @Override
+  @Transactional
+  public BookmarkDetailResponse updateBookmark(
+      Long memberId,
+      Long bookmarkId,
+      BookmarkUpdateRequest request) {
+    Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+        .orElseThrow(BookmarkNotFoundException::new);
+
+    if (!bookmark.getMember().getId().equals(memberId)) {
+      throw new AccessDeniedBookmarkUpdateException();
+    }
+
+    bookmark.changeTitle(request.title());
+    bookmark.changeDescription(request.description());
+    bookmark.changeImageUrl(request.imageUrl());
+    bookmark.changeVisibleToOthers(request.visibleToOthers());
+
+    List<Hashtag> tags = tagService.ensureTags(request.tags());
+    bookmark.replaceHashtags(tags);
+    List<Link> links = linkService.ensureLinks(bookmarkId, request.links());
+    bookmark.replaceLinks(links);
+
+    return BookmarkDetailResponse.from(bookmark,
+        bookmark.getBookmarkHashtags()
+            .stream()
+            .map(tag -> tag.getHashtag().getTitle())
+            .toList(),
+        bookmark.getLinks()
+            .stream()
+            .map(LinkDetailResponse::from)
+            .toList(),
+        memberId);
   }
 }

@@ -51,19 +51,31 @@ public class Bookmark extends BaseEntity {
 
   @Column(nullable = false, name = "view_count")
   private Long viewCount;
-
   @Builder.Default
   @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<BookmarkHashtag> bookmarkHashtags = new ArrayList<>();
-
   @Builder.Default
   @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Link> links = new ArrayList<>();
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
+  public void changeTitle(String title) {
+    this.title = title;
+  }
+
+  public void changeDescription(String description) {
+    this.description = description;
+  }
+
+  public void changeImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
+  }
+
+  public void changeVisibleToOthers(boolean visibleToOthers) {
+    this.visibleToOthers = visibleToOthers;
+  }
   public void addHashtag(Hashtag tag) {
     BookmarkHashtag bh = BookmarkHashtag.builder()
         .bookmark(this)
@@ -76,5 +88,15 @@ public class Bookmark extends BaseEntity {
   public void addLink(Link link) {
     links.add(link);
     link.setBookmark(this);
+  }
+
+  public void replaceHashtags(List<Hashtag> tags) {
+    this.bookmarkHashtags.clear();
+    tags.forEach(this::addHashtag);
+  }
+
+  public void replaceLinks(List<Link> links) {
+    this.links.clear();
+    links.forEach(this::addLink);
   }
 }
