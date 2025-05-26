@@ -26,33 +26,31 @@ public class TagServiceImpl implements TagService {
   @Override
   @Transactional
   public List<Hashtag> ensureTags(List<String> tags) {
-    List<String> distinctNames = tags.stream()
+    List<String> unique = tags.stream()
         .distinct()
         .toList();
 
-    List<Hashtag> existing = tagRepository.findAllByTitleIn(distinctNames);
+    List<Hashtag> existing = tagRepository.findAllByTitleIn(unique);
     Set<String> existingNames = existing.stream()
         .map(Hashtag::getTitle)
         .collect(Collectors.toSet());
 
-    // 없는 이름만 새로 생성
-    List<Hashtag> toCreate = distinctNames.stream()
+    List<Hashtag> toCreate = unique.stream()
         .filter(name -> !existingNames.contains(name))
         .map(name -> Hashtag.builder()
             .title(name)
             .build())
         .toList();
 
-    // 새 태그 일괄 저장
     List<Hashtag> saved = toCreate.isEmpty()
         ? Collections.emptyList()
         : tagRepository.saveAll(toCreate);
 
-    // 기존 + 새로 저장된 태그
-    Map<String, Hashtag> allByName = Stream.concat(existing.stream(), saved.stream())
-        .collect(Collectors.toMap(Hashtag::getTitle, Function.identity()));
+    Map<String, Hashtag> allByName = Stream.concat(
+        existing.stream(),
+        saved.stream()).collect(Collectors.toMap(Hashtag::getTitle, Function.identity()));
 
-    return distinctNames.stream()
+    return unique.stream()
         .map(allByName::get)
         .toList();
   }
