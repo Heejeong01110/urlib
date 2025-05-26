@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -276,5 +277,58 @@ class BookmarkServiceImplTest {
         )
     ).isInstanceOf(AccessDeniedBookmarkModifyException.class);
   }
+
+  @Test
+  void deleteBookmark_success() {
+    // given
+    Long ownerId = 2L;
+    Long bookmarkId = 10L;
+    Bookmark bm = Bookmark.builder()
+        .member(Member.builder()
+            .id(ownerId)
+            .build())
+        .build();
+    when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bm));
+
+    // when
+    bookmarkService.deleteBookmark(ownerId, bookmarkId);
+
+    // then
+    verify(bookmarkRepository).delete(bm);
+  }
+
+  @Test
+  void deleteBookmark_notFound_throwsBookmarkNotFoundException() {
+    // given
+    Long ownerId = 2L;
+    Long bookmarkId = 10L;
+    when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.empty());
+
+    // when + then
+    assertThatThrownBy(() -> bookmarkService.deleteBookmark(ownerId, bookmarkId))
+        .isInstanceOf(BookmarkNotFoundException.class);
+
+    verify(bookmarkRepository, never()).delete(any());
+  }
+
+  @Test
+  void deleteBookmark_memberMismatch_throwsAccessDenied() {
+    // given
+    Long memberId = 1L;
+    Long ownerId = 2L;
+    Long bookmarkId = 10L;
+    Bookmark bm = Bookmark.builder()
+        .member(Member.builder()
+            .id(ownerId)
+            .build())
+        .build();
+    when(bookmarkRepository.findById(bookmarkId))
+        .thenReturn(Optional.of(bm));
+
+    // when + then
+    assertThatThrownBy(() -> bookmarkService.deleteBookmark(memberId, bookmarkId))
+        .isInstanceOf(AccessDeniedBookmarkModifyException.class);
+
+    verify(bookmarkRepository, never()).delete(any());
   }
 }

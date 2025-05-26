@@ -2,6 +2,8 @@ package com.heez.urlib.domain.bookmark.controller;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -224,5 +226,22 @@ class BookmarkControllerTest {
         .andExpect(jsonPath("$.links[0].title").value("Example"));
 
     then(bookmarkService).should().updateBookmark(memberId, bookmarkId, req);
+  }
+
+  @Test
+  @WithMockCustomUser(memberId = 42L)
+  void deleteBookmark_success() throws Exception {
+    //given
+    Long bookmarkId = 7L;
+    Long memberId = 42L;
+    doNothing().when(bookmarkService).deleteBookmark(memberId, bookmarkId);
+
+    // when
+    mockMvc.perform(delete("/api/v1/bookmarks/{bookmarkId}", bookmarkId)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNoContent());
+
+    // then
+    then(bookmarkService).should().deleteBookmark(memberId, bookmarkId);
   }
 }
