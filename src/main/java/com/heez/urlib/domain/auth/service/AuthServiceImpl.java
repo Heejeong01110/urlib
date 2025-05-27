@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -20,6 +21,7 @@ public class AuthServiceImpl implements AuthService {
   private final MemberRepository memberRepository;
 
   @Override
+  @Transactional
   public ReissueDto reissue(String oldRefreshToken) {
     authTokenProvider.validateRefreshToken(oldRefreshToken);
     Long memberId = Long.valueOf(redisService.getValue(oldRefreshToken)
@@ -39,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  @Transactional
   public void logout(String refreshToken) {
     redisService.delete(refreshToken);
   }
