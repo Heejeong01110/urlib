@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.then;
 
 import com.heez.urlib.domain.auth.model.OAuth2UserInfo;
 import com.heez.urlib.domain.auth.model.OAuthType;
+import com.heez.urlib.domain.member.controller.dto.MemberDetailResponse;
 import com.heez.urlib.domain.member.exception.MemberNotFoundException;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.model.vo.Email;
@@ -114,5 +115,36 @@ class MemberServiceImplTest {
     assertThatThrownBy(() -> memberService.findById(1L))
         .isInstanceOf(MemberNotFoundException.class);
     then(memberRepository).should().findById(1L);
+  }
+
+  @Test
+  void getProfile_existingMember_returnsDetail() {
+    // given
+    Long memberId = 1L;
+    Member member = org.mockito.Mockito.mock(Member.class);
+    given(member.getId()).willReturn(memberId);
+    given(member.getImageUrl()).willReturn("http://example.com/profile.png");
+    given(member.getDescription()).willReturn("Profile description");
+    given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+
+    // when
+    MemberDetailResponse response = memberService.getProfile(memberId);
+
+    // then
+    assertThat(response).isNotNull();
+    assertThat(response.memberId()).isEqualTo(memberId);
+    assertThat(response.imageUrl()).isEqualTo("http://example.com/profile.png");
+    assertThat(response.description()).isEqualTo("Profile description");
+  }
+
+  @Test
+  void getProfile_missingMember_throwsException() {
+    // given
+    Long missingId = 99L;
+    given(memberRepository.findById(missingId)).willReturn(Optional.empty());
+
+    // when / then
+    assertThatThrownBy(() -> memberService.getProfile(missingId))
+        .isInstanceOf(MemberNotFoundException.class);
   }
 }
