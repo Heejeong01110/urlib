@@ -1,6 +1,7 @@
 package com.heez.urlib.domain.member.service;
 
 import com.heez.urlib.domain.auth.model.OAuth2UserInfo;
+import com.heez.urlib.domain.member.controller.dto.MemberDetailResponse;
 import com.heez.urlib.domain.member.exception.MemberNotFoundException;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.model.Role;
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
 
   private final MemberRepository memberRepository;
 
@@ -23,6 +24,12 @@ public class MemberServiceImpl implements MemberService{
     return memberRepository
         .findMemberByOauthTypeAndIdentifier(userInfo.oAuthType(), userInfo.oAuthId())
         .orElseGet(() -> memberRepository.save(createMemberFrom(userInfo)));
+  }
+
+  @Override
+  public MemberDetailResponse getProfile(Long memberId) {
+    return MemberDetailResponse.from(memberRepository.findById(memberId)
+        .orElseThrow(MemberNotFoundException::new));
   }
 
   public Member findById(Long memberId) {

@@ -120,6 +120,7 @@ public class BookmarkServiceImpl implements BookmarkService {
   }
 
   @Override
+  @Transactional
   public void deleteBookmark(Long memberId, Long bookmarkId) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
