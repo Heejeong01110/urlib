@@ -1,13 +1,13 @@
 package com.heez.urlib.global.error.handler;
 
-import static com.heez.urlib.global.error.response.ErrorCode.ILLEGAL_ARGUMENT_ERROR;
-import static com.heez.urlib.global.error.response.ErrorCode.ILLEGAL_STATE_ERROR;
-import static com.heez.urlib.global.error.response.ErrorCode.INTERNAL_SERVER_ERROR;
-import static com.heez.urlib.global.error.response.ErrorCode.INVALID_INPUT_VALUE_ERROR;
-import static com.heez.urlib.global.error.response.ErrorCode.INVALID_METHOD_ERROR;
-import static com.heez.urlib.global.error.response.ErrorCode.NOT_FOUND_ENTITY;
-import static com.heez.urlib.global.error.response.ErrorCode.REQUEST_BODY_MISSING_ERROR;
-import static com.heez.urlib.global.error.response.ErrorCode.REQUEST_PARAM_MISSING_ERROR;
+import static com.heez.urlib.global.error.handler.ErrorCode.ILLEGAL_ARGUMENT_ERROR;
+import static com.heez.urlib.global.error.handler.ErrorCode.ILLEGAL_STATE_ERROR;
+import static com.heez.urlib.global.error.handler.ErrorCode.INTERNAL_SERVER_ERROR;
+import static com.heez.urlib.global.error.handler.ErrorCode.INVALID_INPUT_VALUE_ERROR;
+import static com.heez.urlib.global.error.handler.ErrorCode.INVALID_METHOD_ERROR;
+import static com.heez.urlib.global.error.handler.ErrorCode.NOT_FOUND_ENTITY;
+import static com.heez.urlib.global.error.handler.ErrorCode.REQUEST_BODY_MISSING_ERROR;
+import static com.heez.urlib.global.error.handler.ErrorCode.REQUEST_PARAM_MISSING_ERROR;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.heez.urlib.domain.auth.exception.ExpiredRefreshTokenException;
@@ -18,7 +18,6 @@ import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkModifyExcept
 import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;
 import com.heez.urlib.domain.member.exception.MemberNotFoundException;
 import com.heez.urlib.global.error.exception.AbstractGlobalException;
-import com.heez.urlib.global.error.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

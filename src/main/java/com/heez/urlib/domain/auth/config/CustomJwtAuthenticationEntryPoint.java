@@ -2,8 +2,8 @@ package com.heez.urlib.domain.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heez.urlib.domain.auth.exception.JwtExceptionType;
-import com.heez.urlib.global.error.response.ErrorCode;
-import com.heez.urlib.global.error.response.ErrorResponse;
+import com.heez.urlib.global.error.handler.ErrorCode;
+import com.heez.urlib.global.error.handler.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
