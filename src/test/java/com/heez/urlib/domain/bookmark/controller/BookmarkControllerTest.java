@@ -23,7 +23,9 @@ import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkSummaryResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
+import com.heez.urlib.domain.bookmark.controller.dto.LikeResponse;
 import com.heez.urlib.domain.bookmark.model.Bookmark;
+import com.heez.urlib.domain.bookmark.service.BookmarkLikeService;
 import com.heez.urlib.domain.bookmark.service.BookmarkService;
 import com.heez.urlib.domain.link.controller.dto.BaseLinkRequest;
 import com.heez.urlib.domain.link.controller.dto.LinkCreateResponse;
@@ -57,6 +59,9 @@ class BookmarkControllerTest {
 
   @MockitoBean
   private BookmarkService bookmarkService;
+
+  @MockitoBean
+  private BookmarkLikeService bookmarkLikeService;
 
   @MockitoBean
   private AuthTokenProvider authTokenProvider;
@@ -293,5 +298,33 @@ class BookmarkControllerTest {
         .andExpect(jsonPath("$.content[0].memberSummary.memberId").value(viewerId))
         .andExpect(jsonPath("$.content[0].memberSummary.memberImageUrl").value(
             "http://example.com/user.png"));
+  }
+
+  @Test
+  @WithMockCustomUser
+  void like_Success() throws Exception {
+    Long bookmarkId = 1L;
+    LikeResponse response = new LikeResponse(true, 5L);
+    given(bookmarkLikeService.likeBookmark(1L, bookmarkId)).willReturn(response);
+
+    mockMvc.perform(post("/api/v1/bookmarks/{bookmarkId}/like", bookmarkId)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.liked").value(true))
+        .andExpect(jsonPath("$.likeCount").value(5));
+  }
+
+  @Test
+  @WithMockCustomUser
+  void unlike_Success() throws Exception {
+    Long bookmarkId = 1L;
+    LikeResponse response = new LikeResponse(false, 4L);
+    given(bookmarkLikeService.unlikeBookmark(1L, bookmarkId)).willReturn(response);
+
+    mockMvc.perform(delete("/api/v1/bookmarks/{bookmarkId}/like", bookmarkId)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.liked").value(false))
+        .andExpect(jsonPath("$.likeCount").value(4));
   }
 }

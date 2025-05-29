@@ -51,6 +51,9 @@ public class Bookmark extends BaseEntity {
 
   @Column(nullable = false, name = "view_count")
   private Long viewCount;
+
+  @Column(nullable = false, name = "like_count")
+  private Long likeCount;
   @Builder.Default
   @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<BookmarkHashtag> bookmarkHashtags = new ArrayList<>();
@@ -103,5 +106,15 @@ public class Bookmark extends BaseEntity {
   public void replaceLinks(List<Link> links) {
     this.links.clear();
     links.forEach(this::addLink);
+  }
+
+  public void incrementLikes() {
+    this.likeCount++;
+  }
+
+  public void decrementLikes() {
+    if (this.likeCount > 0) {
+      this.likeCount--;
+    }
   }
 }

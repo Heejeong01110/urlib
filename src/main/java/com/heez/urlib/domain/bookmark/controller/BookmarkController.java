@@ -7,6 +7,8 @@ import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkSummaryResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
+import com.heez.urlib.domain.bookmark.controller.dto.LikeResponse;
+import com.heez.urlib.domain.bookmark.service.BookmarkLikeService;
 import com.heez.urlib.domain.bookmark.service.BookmarkService;
 import com.heez.urlib.domain.member.model.AuthUser;
 import jakarta.validation.Valid;
@@ -35,6 +37,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class BookmarkController {
 
   private final BookmarkService bookmarkService;
+  private final BookmarkLikeService bookmarkLikeService;
 
   @GetMapping("")
   public ResponseEntity<Page<BookmarkSummaryResponse>> getBookmarks(
@@ -86,6 +89,24 @@ public class BookmarkController {
   ) {
     bookmarkService.deleteBookmark(oauth2User.getMemberId(), bookmarkId);
     return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/{bookmarkId}/like")
+  public ResponseEntity<LikeResponse> like(
+      @AuthUser CustomOAuth2User oauth2User,
+      @PathVariable Long bookmarkId
+  ) {
+    return ResponseEntity.ok(
+        bookmarkLikeService.likeBookmark(oauth2User.getMemberId(), bookmarkId));
+  }
+
+  @DeleteMapping("/{bookmarkId}/like")
+  public ResponseEntity<LikeResponse> unlike(
+      @AuthUser CustomOAuth2User oauth2User,
+      @PathVariable Long bookmarkId
+  ) {
+    return ResponseEntity.ok(
+        bookmarkLikeService.unlikeBookmark(oauth2User.getMemberId(), bookmarkId));
   }
 
 }
