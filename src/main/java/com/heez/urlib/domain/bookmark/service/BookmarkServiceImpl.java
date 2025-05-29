@@ -5,8 +5,6 @@ import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkSummaryResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
-import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkException;
-import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkModifyException;
 import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;
 import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.domain.bookmark.repository.BookmarkRepository;
@@ -31,6 +29,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
   private final BookmarkRepository bookmarkRepository;
   private final MemberService memberService;
+  private final BookmarkPermissionService bookmarkPermissionService;
   private final TagService tagService;
   private final LinkService linkService;
 
@@ -67,12 +66,7 @@ public class BookmarkServiceImpl implements BookmarkService {
   public BookmarkDetailResponse getBookmark(Long memberId, Long bookmarkId) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
-
-    // 북마크 공개 여부 확인
-    if (!bookmark.isVisibleToOthers()
-        && bookmarkRepository.existsByBookmarkIdAndMember_Id(bookmarkId, memberId)) {
-      throw new AccessDeniedBookmarkException();
-    }
+    bookmarkPermissionService.isVisible(bookmark, memberId);
 
     List<String> tags = tagService.getTagTitlesByBookmarkId(bookmarkId);
 
@@ -92,10 +86,7 @@ public class BookmarkServiceImpl implements BookmarkService {
       BookmarkUpdateRequest request) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
-
-    if (!bookmark.getMember().getId().equals(memberId)) {
-      throw new AccessDeniedBookmarkModifyException();
-    }
+    bookmarkPermissionService.isEditable(bookmark, memberId);
 
     bookmark.changeTitle(request.title());
     bookmark.changeDescription(request.description());
@@ -124,11 +115,7 @@ public class BookmarkServiceImpl implements BookmarkService {
   public void deleteBookmark(Long memberId, Long bookmarkId) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
-
-    if (!bookmark.getMember().getId().equals(memberId)) {
-      throw new AccessDeniedBookmarkModifyException();
-    }
-
+    bookmarkPermissionService.isEditable(bookmark, memberId);
     bookmarkRepository.delete(bookmark);
   }
 

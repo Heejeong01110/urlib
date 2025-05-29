@@ -4,6 +4,7 @@ package com.heez.urlib.domain.bookmark.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
@@ -41,6 +42,9 @@ public class BookmarkServiceImplEntityStateTest {
   @Mock
   private LinkService linkService;
 
+  @Mock
+  private BookmarkPermissionService bookmarkPermissionService;
+
   @InjectMocks
   private BookmarkServiceImpl bookmarkService;
 
@@ -50,7 +54,6 @@ public class BookmarkServiceImplEntityStateTest {
     Long memberId = 42L;
     // given
     Member member = mock(Member.class);
-    given(member.getId()).willReturn(memberId);
 
     Bookmark bookmark = Bookmark.builder()
         .bookmarkId(bookmarkId)
@@ -62,6 +65,7 @@ public class BookmarkServiceImplEntityStateTest {
         .build();
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
+    doNothing().when(bookmarkPermissionService).isEditable(bookmark, memberId);
 
     BookmarkUpdateRequest req = new BookmarkUpdateRequest(
         "new-title",

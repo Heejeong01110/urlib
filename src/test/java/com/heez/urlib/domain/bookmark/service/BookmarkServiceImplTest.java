@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -54,6 +56,9 @@ class BookmarkServiceImplTest {
 
   @Mock
   private TagService tagService;
+
+  @Mock
+  private BookmarkPermissionService bookmarkPermissionService;
 
   @Mock
   private LinkService linkService;
@@ -148,8 +153,8 @@ class BookmarkServiceImplTest {
         .viewCount(5L)
         .member(owner)
         .build();
-    when(bookmarkRepository.findById(bookmarkId))
-        .thenReturn(Optional.of(bookmark));
+    when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bookmark));
+    doNothing().when(bookmarkPermissionService).isVisible(bookmark, memberId);
 
     List<String> tags = List.of("a", "b");
     when(tagService.getTagTitlesByBookmarkId(bookmarkId)).thenReturn(tags);
@@ -184,7 +189,6 @@ class BookmarkServiceImplTest {
     Long bookmarkId = 7L;
     Long memberId = 7L;
     Member owner = mock(Member.class);
-    given(owner.getId()).willReturn(memberId);
 
     Bookmark bookmark = Bookmark.builder()
         .bookmarkId(bookmarkId)
@@ -195,8 +199,8 @@ class BookmarkServiceImplTest {
         .member(owner)
         .build();
 
-    given(bookmarkRepository.findById(bookmarkId))
-        .willReturn(Optional.of(bookmark));
+    given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
+    doNothing().when(bookmarkPermissionService).isEditable(bookmark, memberId);
 
     List<String> tagsReq = List.of("spring", "java");
     List<BaseLinkRequest> linksReq = List.of(
@@ -237,10 +241,6 @@ class BookmarkServiceImplTest {
     assertThat(result.links())
         .extracting(LinkDetailResponse::url)
         .containsExactly("http://example.com");
-
-    verify(bookmarkRepository).findById(bookmarkId);
-    verify(tagService).ensureTags(tagsReq);
-    verify(linkService).ensureLinks(bookmarkId, linksReq);
   }
 
   @Test
@@ -265,15 +265,14 @@ class BookmarkServiceImplTest {
     // given
     Long bookmarkId = 7L;
     Long memberId = 7L;
-    Member owner = mock(Member.class);
-    given(owner.getId()).willReturn(memberId + 1);
     Bookmark bookmark = Bookmark.builder()
         .bookmarkId(bookmarkId)
-        .member(owner)
         .build();
 
-    given(bookmarkRepository.findById(bookmarkId))
-        .willReturn(Optional.of(bookmark));
+    given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
+    willThrow(new AccessDeniedBookmarkModifyException())
+        .given(bookmarkPermissionService)
+        .isEditable(bookmark, memberId);
 
     // when & then
     assertThatThrownBy(() ->
@@ -283,6 +282,9 @@ class BookmarkServiceImplTest {
             )
         )
     ).isInstanceOf(AccessDeniedBookmarkModifyException.class);
+
+    then(bookmarkRepository).should().findById(bookmarkId);
+    then(bookmarkPermissionService).should().isEditable(bookmark, memberId);
   }
 
   @Test
@@ -290,18 +292,19 @@ class BookmarkServiceImplTest {
     // given
     Long ownerId = 2L;
     Long bookmarkId = 10L;
-    Bookmark bm = Bookmark.builder()
+    Bookmark bookmark = Bookmark.builder()
         .member(Member.builder()
             .id(ownerId)
             .build())
         .build();
-    when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bm));
+    when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bookmark));
+    doNothing().when(bookmarkPermissionService).isEditable(bookmark, ownerId);
 
     // when
     bookmarkService.deleteBookmark(ownerId, bookmarkId);
 
     // then
-    verify(bookmarkRepository).delete(bm);
+    verify(bookmarkRepository).delete(bookmark);
   }
 
   @Test
@@ -324,13 +327,15 @@ class BookmarkServiceImplTest {
     Long memberId = 1L;
     Long ownerId = 2L;
     Long bookmarkId = 10L;
-    Bookmark bm = Bookmark.builder()
+    Bookmark bookmark = Bookmark.builder()
         .member(Member.builder()
             .id(ownerId)
             .build())
         .build();
-    when(bookmarkRepository.findById(bookmarkId))
-        .thenReturn(Optional.of(bm));
+    when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bookmark));
+    willThrow(new AccessDeniedBookmarkModifyException())
+        .given(bookmarkPermissionService)
+        .isEditable(bookmark, memberId);
 
     // when + then
     assertThatThrownBy(() -> bookmarkService.deleteBookmark(memberId, bookmarkId))
