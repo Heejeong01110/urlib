@@ -1,6 +1,8 @@
 package com.heez.urlib.domain.bookmark.service;
 
 import com.heez.urlib.domain.bookmark.controller.dto.LikeResponse;
+import com.heez.urlib.domain.bookmark.exception.AlreadyLikedException;
+import com.heez.urlib.domain.bookmark.exception.AlreadyUnlikedException;
 import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;
 import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.domain.bookmark.model.BookmarkLike;
@@ -8,8 +10,8 @@ import com.heez.urlib.domain.bookmark.repository.BookmarkLikeRepository;
 import com.heez.urlib.domain.bookmark.repository.BookmarkRepository;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.service.MemberService;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,14 +27,13 @@ public class BookmarkLikeServiceImpl implements BookmarkLikeService {
 
 
   @Override
+  @Transactional
   public LikeResponse likeBookmark(Long memberId, Long bookmarkId) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
     bookmarkPermissionService.isVisible(bookmark, memberId);
-    Optional<BookmarkLike> bookmarkLike = bookmarkLikeRepository
-        .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId);
 
-    if (!bookmarkLike.isPresent()) {
+    try {
       Member member = memberService.findById(memberId);
       BookmarkLike like = BookmarkLike.builder()
           .bookmark(bookmark)
@@ -40,6 +41,8 @@ public class BookmarkLikeServiceImpl implements BookmarkLikeService {
           .build();
       bookmarkLikeRepository.save(like);
       bookmark.incrementLikes();
+    } catch (DataIntegrityViolationException e) {
+      throw new AlreadyLikedException();
     }
 
     return LikeResponse.builder()
@@ -49,17 +52,18 @@ public class BookmarkLikeServiceImpl implements BookmarkLikeService {
   }
 
   @Override
+  @Transactional
   public LikeResponse unlikeBookmark(Long memberId, Long bookmarkId) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
     bookmarkPermissionService.isVisible(bookmark, memberId);
-    Optional<BookmarkLike> bookmarkLike = bookmarkLikeRepository
-        .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId);
 
-    if (bookmarkLike.isPresent()) {
-      bookmarkLikeRepository.delete(bookmarkLike.get());
-      bookmark.decrementLikes();
-    }
+    BookmarkLike bookmarkLike = bookmarkLikeRepository
+        .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId)
+        .orElseThrow(AlreadyUnlikedException::new);
+
+    bookmarkLikeRepository.delete(bookmarkLike);
+    bookmark.decrementLikes();
 
     return LikeResponse.builder()
         .liked(false)

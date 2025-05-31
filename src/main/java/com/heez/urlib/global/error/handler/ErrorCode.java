@@ -38,7 +38,9 @@ public enum ErrorCode {
 
   //Bookmark
   ACCESS_DENIED_BOOKMARK("B001", "북마크 접근 권한이 없습니다."),
-  ACCESS_DENIED_BOOKMARK_MODIFY("B002", "북마크 수정 권한이 없습니다.");
+  ACCESS_DENIED_BOOKMARK_MODIFY("B002", "북마크 수정 권한이 없습니다."),
+  ALREADY_LIKED_BOOKMARK("B003", "이미 좋아요 한 북마크입니다."),
+  ALREADY_UNLIKED_BOOKMARK("B004", "이미 좋아요를 취소한 북마크입니다.");
 
   private final String code;
   private final String message;
