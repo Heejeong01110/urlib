@@ -25,7 +25,7 @@ public enum ErrorCode {
   IS_LOGOUT_TOKEN("L005", "이미 로그아웃한 토큰입니다."),
   FORBIDDEN("L006", "권한이 없는 사용자입니다."),
 
-  // --- JWT 검증 관련 신규 코드 ---
+  //jwt
   UNSUPPORTED_TOKEN("L007", "지원되지 않는 JWT 토큰입니다."),
   INVALID_TOKEN_FORMAT("L008", "잘못된 JWT 토큰 형식입니다."),
   INVALID_SIGNATURE("L009", "JWT 토큰 서명 검증에 실패했습니다."),
@@ -35,6 +35,11 @@ public enum ErrorCode {
   //Member
   NOT_FOUND_MEMBER("M001", "사용자 정보가 존재하지 않습니다."),
   NOT_FOUND_EMAIL("M002", "사용자 email 정보가 존재하지 않습니다."),
+
+  //follow
+  SELF_FOLLOW("F001", "자기 자신을 팔로우 할 수 없습니다."),
+  ALREADY_FOLLOWING_MEMBER("F002", "이미 팔로우중인 사용자입니다."),
+  NOT_FOLLOWING_MEMBER("F003", "이미 팔로우하지 않은 사용자입니다."),
 
   //Bookmark
   ACCESS_DENIED_BOOKMARK("B001", "북마크 접근 권한이 없습니다."),
