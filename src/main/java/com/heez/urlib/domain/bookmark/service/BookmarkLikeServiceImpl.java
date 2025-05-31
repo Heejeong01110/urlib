@@ -52,18 +52,17 @@ public class BookmarkLikeServiceImpl implements BookmarkLikeService {
   public LikeResponse unlikeBookmark(Long memberId, Long bookmarkId) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
-    Member member = memberService.findById(memberId);
     bookmarkPermissionService.isVisible(bookmark, memberId);
     Optional<BookmarkLike> bookmarkLike = bookmarkLikeRepository
         .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId);
 
     if (bookmarkLike.isPresent()) {
       bookmarkLikeRepository.delete(bookmarkLike.get());
-      bookmark.incrementLikes();
+      bookmark.decrementLikes();
     }
 
     return LikeResponse.builder()
-        .liked(true)
+        .liked(false)
         .likeCount(bookmark.getLikeCount())
         .build();
   }

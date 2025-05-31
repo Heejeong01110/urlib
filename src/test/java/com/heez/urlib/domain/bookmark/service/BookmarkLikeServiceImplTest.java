@@ -47,7 +47,9 @@ class BookmarkLikeServiceImplTest {
     // given
     Long memberId = 1L;
     Long bookmarkId = 2L;
-    Bookmark bookmark = mock(Bookmark.class);
+    Bookmark bookmark = Bookmark.builder()
+        .likeCount(5L)
+        .build();
     Member member = mock(Member.class);
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
@@ -56,7 +58,38 @@ class BookmarkLikeServiceImplTest {
     given(bookmarkLikeRepository
         .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId))
         .willReturn(Optional.empty());
-    given(bookmark.getLikeCount()).willReturn(5L);
+
+    // when
+    LikeResponse response = bookmarkLikeService.likeBookmark(memberId, bookmarkId);
+
+    // then
+    assertThat(response.liked()).isTrue();
+    assertThat(response.likeCount()).isEqualTo(6);
+
+    then(bookmarkRepository).should().findById(bookmarkId);
+    then(memberService).should().findById(memberId);
+    then(bookmarkPermissionService).should().isVisible(bookmark, memberId);
+    then(bookmarkLikeRepository).should()
+        .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId);
+    then(bookmarkLikeRepository).should().save(any(BookmarkLike.class));
+  }
+
+  @Test
+  void likeBookmark_alreadyLiked_returnsLikeResponseWithoutSaving() {
+    // given
+    Long memberId = 1L;
+    Long bookmarkId = 2L;
+    Bookmark bookmark = Bookmark.builder()
+        .likeCount(5L)
+        .visibleToOthers(true)
+        .build();
+    BookmarkLike existingLike = mock(BookmarkLike.class);
+
+    given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
+    willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, memberId);
+    given(bookmarkLikeRepository
+        .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId))
+        .willReturn(Optional.of(existingLike));
 
     // when
     LikeResponse response = bookmarkLikeService.likeBookmark(memberId, bookmarkId);
@@ -65,41 +98,7 @@ class BookmarkLikeServiceImplTest {
     assertThat(response.liked()).isTrue();
     assertThat(response.likeCount()).isEqualTo(5);
 
-    then(bookmarkRepository).should().findById(bookmarkId);
-    then(memberService).should().findById(memberId);
-    then(bookmarkPermissionService).should().isVisible(bookmark, memberId);
-    then(bookmarkLikeRepository).should()
-        .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId);
-    then(bookmarkLikeRepository).should().save(any(BookmarkLike.class));
-    then(bookmark).should().incrementLikes();
-  }
-
-  @Test
-  void likeBookmark_alreadyLiked_returnsLikeResponseWithoutSaving() {
-    // given
-    Long memberId = 1L;
-    Long bookmarkId = 2L;
-    Bookmark bookmark = mock(Bookmark.class);
-    Member member = mock(Member.class);
-    BookmarkLike existingLike = mock(BookmarkLike.class);
-
-    given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
-    given(memberService.findById(memberId)).willReturn(member);
-    willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, memberId);
-    given(bookmarkLikeRepository
-        .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId))
-        .willReturn(Optional.of(existingLike));
-    given(bookmark.getLikeCount()).willReturn(3L);
-
-    // when
-    LikeResponse response = bookmarkLikeService.likeBookmark(memberId, bookmarkId);
-
-    // then
-    assertThat(response.liked()).isTrue();
-    assertThat(response.likeCount()).isEqualTo(3);
-
     then(bookmarkLikeRepository).should(never()).save(any(BookmarkLike.class));
-    then(bookmark).should(never()).incrementLikes();
   }
 
   @Test
@@ -120,27 +119,25 @@ class BookmarkLikeServiceImplTest {
     // given
     Long memberId = 1L;
     Long bookmarkId = 2L;
-    Bookmark bookmark = mock(Bookmark.class);
-    Member member = mock(Member.class);
+    Bookmark bookmark = Bookmark.builder()
+        .likeCount(5L)
+        .build();
     BookmarkLike existingLike = mock(BookmarkLike.class);
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
-    given(memberService.findById(memberId)).willReturn(member);
     willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, memberId);
     given(bookmarkLikeRepository
         .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId))
         .willReturn(Optional.of(existingLike));
-    given(bookmark.getLikeCount()).willReturn(7L);
 
     // when
     LikeResponse response = bookmarkLikeService.unlikeBookmark(memberId, bookmarkId);
 
     // then
-    assertThat(response.liked()).isTrue();
-    assertThat(response.likeCount()).isEqualTo(7);
+    assertThat(response.liked()).isFalse();
+    assertThat(response.likeCount()).isEqualTo(4);
 
     then(bookmarkLikeRepository).should().delete(existingLike);
-    then(bookmark).should().incrementLikes();
   }
 
   @Test
@@ -149,10 +146,8 @@ class BookmarkLikeServiceImplTest {
     Long memberId = 1L;
     Long bookmarkId = 2L;
     Bookmark bookmark = mock(Bookmark.class);
-    Member member = mock(Member.class);
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
-    given(memberService.findById(memberId)).willReturn(member);
     willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, memberId);
     given(bookmarkLikeRepository
         .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId))
@@ -163,11 +158,10 @@ class BookmarkLikeServiceImplTest {
     LikeResponse response = bookmarkLikeService.unlikeBookmark(memberId, bookmarkId);
 
     // then
-    assertThat(response.liked()).isTrue();
+    assertThat(response.liked()).isFalse();
     assertThat(response.likeCount()).isEqualTo(2);
 
     then(bookmarkLikeRepository).should(never()).delete(any(BookmarkLike.class));
-    then(bookmark).should(never()).incrementLikes();
   }
 
   @Test
