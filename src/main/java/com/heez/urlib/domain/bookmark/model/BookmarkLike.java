@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Builder
-@Table(name = "bookmark_like")
+@Table(name = "bookmark_like",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "bookmark_id"}))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class BookmarkLike extends BaseEntity {
