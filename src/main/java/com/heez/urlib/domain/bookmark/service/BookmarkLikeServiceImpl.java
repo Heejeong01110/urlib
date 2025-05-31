@@ -28,12 +28,12 @@ public class BookmarkLikeServiceImpl implements BookmarkLikeService {
   public LikeResponse likeBookmark(Long memberId, Long bookmarkId) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
-    Member member = memberService.findById(memberId);
     bookmarkPermissionService.isVisible(bookmark, memberId);
     Optional<BookmarkLike> bookmarkLike = bookmarkLikeRepository
         .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId);
 
     if (!bookmarkLike.isPresent()) {
+      Member member = memberService.findById(memberId);
       BookmarkLike like = BookmarkLike.builder()
           .bookmark(bookmark)
           .member(member)
