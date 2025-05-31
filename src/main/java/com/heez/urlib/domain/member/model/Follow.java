@@ -13,13 +13,19 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Builder
+@Getter
 @Entity
 @Table(name = "follows",
     uniqueConstraints = @UniqueConstraint(
         name = "uq_follow_follower_followee", columnNames = {"follower_id", "followee_id"}))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Follow extends BaseEntity {
 
   @Id
@@ -32,6 +38,6 @@ public class Follow extends BaseEntity {
   private Member follower;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "followee_id", nullable = false)
-  private Member followee;
+  @JoinColumn(name = "following_id", nullable = false)
+  private Member following;
 }
