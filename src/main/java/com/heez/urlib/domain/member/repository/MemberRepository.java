@@ -1,10 +1,10 @@
 package com.heez.urlib.domain.member.repository;
 
 import com.heez.urlib.domain.auth.model.OAuthType;
+import com.heez.urlib.domain.auth.service.dto.TokenEntity;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.model.vo.Email;
 import com.heez.urlib.domain.member.model.vo.Nickname;
-import com.heez.urlib.domain.member.repository.dto.TokenEntity;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
