@@ -42,7 +42,7 @@ public class FollowController {
     return ResponseEntity.noContent().build();
   }
 
-  @DeleteMapping("/{memberId}/follow")
+  @DeleteMapping("/{memberId}/unfollow")
   public ResponseEntity<Void> unfollowOther(
       @AuthUser CustomOAuth2User oauth2User,
       @PathVariable Long memberId
