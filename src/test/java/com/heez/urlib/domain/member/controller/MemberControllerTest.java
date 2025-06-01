@@ -49,8 +49,7 @@ class MemberControllerTest {
 
     // when / then
     mockMvc.perform(get("/api/v1/users/me")
-            .accept(MediaType.APPLICATION_JSON)
-        )
+            .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.memberId").value(1))
