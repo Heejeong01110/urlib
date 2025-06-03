@@ -13,12 +13,13 @@ import static org.mockito.Mockito.mock;
 
 import com.heez.urlib.domain.auth.exception.InvalidRefreshTokenException;
 import com.heez.urlib.domain.auth.jwt.AuthTokenProvider;
+import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.auth.service.dto.ReissueDto;
-import com.heez.urlib.domain.auth.service.dto.TokenEntity;
 import com.heez.urlib.domain.member.exception.MemberNotFoundException;
 import com.heez.urlib.domain.member.model.Role;
 import com.heez.urlib.domain.member.model.vo.Email;
 import com.heez.urlib.domain.member.repository.MemberRepository;
+import com.heez.urlib.domain.member.service.dto.TokenProjection;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -30,8 +31,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceImplTest {
 
-  private final String oldRefreshToken = "old-refresh";
-  private final Long memberId = 42L;
   @Mock
   private RedisService redisService;
   @Mock
@@ -44,21 +43,24 @@ class AuthServiceImplTest {
   @Test
   void reissue_success() {
     // given
+    String oldRefreshToken = "old-refresh";
+    Long memberId = 42L;
     given(redisService.getValue(oldRefreshToken))
         .willReturn(Optional.of(memberId.toString()));
 
-    TokenEntity tokenEntity = mock(TokenEntity.class);
+    TokenProjection tokenProjection = mock(TokenProjection.class);
     Email email = new Email("user@example.com");
-    given(tokenEntity.email()).willReturn(email);
-    given(tokenEntity.role()).willReturn(Role.USER);
+    given(tokenProjection.getEmail()).willReturn(email);
+    given(tokenProjection.getRole()).willReturn(Role.USER);
     given(memberRepository.findEmailAndRoleById(memberId))
-        .willReturn(Optional.of(tokenEntity));
+        .willReturn(Optional.of(tokenProjection));
 
     String newAccess = "new-access-token";
     given(authTokenProvider.generateAccessToken(
         eq(memberId),
         eq(email.getValue()),
-        any(List.class)))
+        any(List.class),
+        eq(AuthType.NONE)))
         .willReturn(newAccess);
 
     String newRefresh = "new-refresh-token";
@@ -78,9 +80,12 @@ class AuthServiceImplTest {
 
   @Test
   void reissue_invalidRefreshToken_throws() {
+    // given
+    String oldRefreshToken = "old-refresh";
     given(redisService.getValue(oldRefreshToken))
         .willReturn(Optional.empty());
 
+    // when / then
     assertThrows(InvalidRefreshTokenException.class,
         () -> authService.reissue(oldRefreshToken));
 
@@ -89,19 +94,27 @@ class AuthServiceImplTest {
 
   @Test
   void reissue_memberNotFound_throws() {
+    // given
+    String oldRefreshToken = "old-refresh";
+    Long memberId = 42L;
     given(redisService.getValue(oldRefreshToken))
         .willReturn(Optional.of(memberId.toString()));
     given(memberRepository.findEmailAndRoleById(memberId))
         .willReturn(Optional.empty());
 
+    // when / then
     assertThrows(MemberNotFoundException.class,
         () -> authService.reissue(oldRefreshToken));
 
-    then(authTokenProvider).should(never()).generateAccessToken(anyLong(), anyString(), any());
+    then(authTokenProvider).should(never())
+        .generateAccessToken(anyLong(), anyString(), any(), any());
   }
 
   @Test
   void logout_deletesToken() {
+    // given
+    String oldRefreshToken = "old-refresh";
+
     // when
     authService.logout(oldRefreshToken);
 

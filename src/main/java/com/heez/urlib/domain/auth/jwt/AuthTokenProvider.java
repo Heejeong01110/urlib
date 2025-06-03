@@ -8,7 +8,9 @@ import com.heez.urlib.domain.auth.exception.JwtTokenProcessingException;
 import com.heez.urlib.domain.auth.exception.MissingJwtTokenException;
 import com.heez.urlib.domain.auth.exception.TokenExpiredException;
 import com.heez.urlib.domain.auth.exception.UnsupportedJwtTokenException;
-import com.heez.urlib.domain.auth.model.CustomUserDetails;
+import com.heez.urlib.domain.auth.model.AuthType;
+import com.heez.urlib.domain.auth.model.CustomOAuth2Principal;
+import com.heez.urlib.domain.auth.model.CustomUsernamePasswordPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -20,6 +22,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +55,7 @@ public class AuthTokenProvider {
   }
 
   public String generateAccessToken(Long memberId, String email,
-      List<SimpleGrantedAuthority> authorities) {
+      List<SimpleGrantedAuthority> authorities, AuthType authType) {
     List<String> roles = authorities.stream()
         .map(SimpleGrantedAuthority::getAuthority)
         .toList();
@@ -60,6 +63,7 @@ public class AuthTokenProvider {
     Claims claims = Jwts.claims().setSubject(String.valueOf(memberId));
     claims.put("email", email);
     claims.put("roles", roles);
+    claims.put("oAuthType", authType.getProvider());
 
     return Jwts
         .builder()
@@ -122,8 +126,9 @@ public class AuthTokenProvider {
         .setSigningKey(KEY)
         .build().parseClaimsJws(token).getBody();
 
-    String email = claims.getSubject();
-    String nickname = claims.get("nickname", String.class);
+    Long memberId = Long.valueOf(claims.getSubject());
+    String email = claims.get("email", String.class);
+    String oAuthType = claims.get("oAuthType", String.class);
 
     List<?> rawRoles = claims.get("roles", List.class);
     List<String> roles = rawRoles.stream()
@@ -134,9 +139,16 @@ public class AuthTokenProvider {
         .map(SimpleGrantedAuthority::new)
         .toList();
 
-    CustomUserDetails customUserDetails = new CustomUserDetails(email, nickname, authorities);
-
-    return new UsernamePasswordAuthenticationToken(customUserDetails, token, authorities);
+    if (oAuthType.equals(AuthType.EMAIL.getProvider()) ||
+        oAuthType.equals(AuthType.NONE.getProvider())) {
+      new UsernamePasswordAuthenticationToken(
+          new CustomUsernamePasswordPrincipal(memberId, email, null, authorities, AuthType.ofType(oAuthType)),
+          token, authorities);
+    }
+    return new UsernamePasswordAuthenticationToken(
+        new CustomOAuth2Principal(memberId, email, authorities, Collections.emptyMap(), "id",
+            AuthType.ofType(oAuthType)),
+        token, authorities);
   }
 
 }

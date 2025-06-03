@@ -1,8 +1,8 @@
 package com.heez.urlib.domain.auth.service;
 
-import com.heez.urlib.domain.auth.model.CustomOAuth2User;
+import com.heez.urlib.domain.auth.model.AuthType;
+import com.heez.urlib.domain.auth.model.CustomOAuth2Principal;
 import com.heez.urlib.domain.auth.model.OAuth2UserInfo;
-import com.heez.urlib.domain.auth.model.OAuthType;
 import com.heez.urlib.domain.auth.strategy.OAuth2StrategyComposite;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.service.MemberService;
@@ -34,12 +34,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         .getUserInfo(oAuth2User);
 
     Member member = memberService.findMemberOrCreate(userInfo);
-    return new CustomOAuth2User(member.getId(), member.getEmail(),
+    return new CustomOAuth2Principal(member.getId(), member.getEmail(),
         List.of(new SimpleGrantedAuthority(member.getRole().getKey())),
-        oAuth2User.getAttributes(), "id");
+        oAuth2User.getAttributes(), "id", userInfo.authType());
   }
 
-  private OAuthType getSocialProvider(OAuth2UserRequest userRequest) {
-    return OAuthType.ofType(userRequest.getClientRegistration().getRegistrationId());
+  private AuthType getSocialProvider(OAuth2UserRequest userRequest) {
+    return AuthType.ofType(userRequest.getClientRegistration().getRegistrationId());
   }
 }

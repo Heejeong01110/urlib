@@ -1,6 +1,6 @@
 package com.heez.urlib.domain.member.controller;
 
-import com.heez.urlib.domain.auth.model.CustomOAuth2User;
+import com.heez.urlib.domain.auth.model.UserPrincipal;
 import com.heez.urlib.domain.member.controller.dto.MemberDetailResponse;
 import com.heez.urlib.domain.member.model.AuthUser;
 import com.heez.urlib.domain.member.service.MemberService;
@@ -22,10 +22,10 @@ public class MemberController {
 
   @GetMapping("/me")
   public ResponseEntity<MemberDetailResponse> getMyProfile(
-      @AuthUser CustomOAuth2User oauth2User
+      @AuthUser UserPrincipal userPrincipal
   ) {
     return ResponseEntity.ok(
-        memberService.getProfile(oauth2User.getMemberId()));
+        memberService.getProfile(userPrincipal.getMemberId()));
   }
 
 

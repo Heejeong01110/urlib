@@ -6,12 +6,14 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum OAuthType {
-  KAKAO("KAKAO");
+public enum AuthType {
+  KAKAO("KAKAO"),
+  EMAIL("EMAIL"),
+  NONE("NONE");
 
   private final String provider;
 
-  public static OAuthType ofType(String provider) {
+  public static AuthType ofType(String provider) {
     return Arrays.stream(values())
         .filter(OAuthType -> OAuthType.provider.equals(provider.toUpperCase()))
         .findFirst()

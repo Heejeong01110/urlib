@@ -1,7 +1,7 @@
 package com.heez.urlib.domain.bookmark.controller;
 
 
-import com.heez.urlib.domain.auth.model.CustomOAuth2User;
+import com.heez.urlib.domain.auth.model.UserPrincipal;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
@@ -41,19 +41,19 @@ public class BookmarkController {
 
   @GetMapping("")
   public ResponseEntity<Page<BookmarkSummaryResponse>> getBookmarks(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {
     return ResponseEntity.ok(
-        bookmarkService.getBookmarkSummaryList(oauth2User.getMemberId(), pageable));
+        bookmarkService.getBookmarkSummaryList(userPrincipal.getMemberId(), pageable));
   }
 
   @PostMapping("")
   public ResponseEntity<BookmarkCreateResponse> generateBookmark(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @Valid @RequestBody BookmarkCreateRequest request) {
-    BookmarkCreateResponse response = bookmarkService.createBookmark(oauth2User.getMemberId(),
+    BookmarkCreateResponse response = bookmarkService.createBookmark(userPrincipal.getMemberId(),
         request);
     URI location = ServletUriComponentsBuilder
         .fromCurrentRequest()
@@ -66,47 +66,47 @@ public class BookmarkController {
 
   @GetMapping("/{bookmarkId}")
   public ResponseEntity<BookmarkDetailResponse> getBookmark(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @PathVariable("bookmarkId") Long bookmarkId
   ) {
-    return ResponseEntity.ok(bookmarkService.getBookmark(oauth2User.getMemberId(), bookmarkId));
+    return ResponseEntity.ok(bookmarkService.getBookmark(userPrincipal.getMemberId(), bookmarkId));
   }
 
   @PutMapping("/{bookmarkId}")
   public ResponseEntity<BookmarkDetailResponse> updateBookmark(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @PathVariable Long bookmarkId,
       @RequestBody @Valid BookmarkUpdateRequest request
   ) {
     return ResponseEntity.ok(bookmarkService.updateBookmark(
-        oauth2User.getMemberId(), bookmarkId, request));
+        userPrincipal.getMemberId(), bookmarkId, request));
   }
 
   @DeleteMapping("/{bookmarkId}")
   public ResponseEntity<Void> deleteBookmark(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @PathVariable Long bookmarkId
   ) {
-    bookmarkService.deleteBookmark(oauth2User.getMemberId(), bookmarkId);
+    bookmarkService.deleteBookmark(userPrincipal.getMemberId(), bookmarkId);
     return ResponseEntity.noContent().build();
   }
 
   @PostMapping("/{bookmarkId}/like")
   public ResponseEntity<LikeResponse> like(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @PathVariable Long bookmarkId
   ) {
     return ResponseEntity.ok(
-        bookmarkLikeService.likeBookmark(oauth2User.getMemberId(), bookmarkId));
+        bookmarkLikeService.likeBookmark(userPrincipal.getMemberId(), bookmarkId));
   }
 
   @DeleteMapping("/{bookmarkId}/like")
   public ResponseEntity<LikeResponse> unlike(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @PathVariable Long bookmarkId
   ) {
     return ResponseEntity.ok(
-        bookmarkLikeService.unlikeBookmark(oauth2User.getMemberId(), bookmarkId));
+        bookmarkLikeService.unlikeBookmark(userPrincipal.getMemberId(), bookmarkId));
   }
 
 }

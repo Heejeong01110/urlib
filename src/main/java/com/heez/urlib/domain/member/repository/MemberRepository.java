@@ -1,13 +1,13 @@
 package com.heez.urlib.domain.member.repository;
 
-import com.heez.urlib.domain.auth.model.OAuthType;
-import com.heez.urlib.domain.auth.service.dto.TokenEntity;
+import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.model.vo.Email;
-import com.heez.urlib.domain.member.model.vo.Nickname;
+import com.heez.urlib.domain.member.service.dto.TokenProjection;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
@@ -16,16 +16,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
   Optional<Member> findMemberByEmail(Email email);
 
-  @Query("SELECT new com.heez.urlib.domain.member.repository.dto.TokenEntity(m.email, m.role) FROM Member m WHERE m.id = :id")
-  Optional<TokenEntity> findEmailAndRoleById(Long id);
+  @Query("SELECT m.email AS email, m.role AS role " +
+      "FROM Member m " +
+      "WHERE m.id = :id")
+  Optional<TokenProjection> findEmailAndRoleById(@Param("id") Long id);
 
-  boolean existsByEmail(Email email);
-
-  Optional<Member> findMemberByNickname(Nickname nickname);
-
-  Optional<Member> findMemberByOauthTypeAndIdentifier(OAuthType oAuthType, String identifier);
-
-  boolean existsByOauthTypeAndIdentifier(OAuthType oAuthType, String identifier);
-
+  Optional<Member> findMemberByOauthTypeAndIdentifier(AuthType authType, String identifier);
 
 }

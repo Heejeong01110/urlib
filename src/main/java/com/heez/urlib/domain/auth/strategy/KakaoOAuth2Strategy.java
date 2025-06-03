@@ -2,8 +2,8 @@ package com.heez.urlib.domain.auth.strategy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.auth.model.OAuth2UserInfo;
-import com.heez.urlib.domain.auth.model.OAuthType;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 public class KakaoOAuth2Strategy implements OAuth2Strategy {
 
   @Override
-  public OAuthType getOAuth2ProviderType() {
+  public AuthType getOAuth2ProviderType() {
 
-    return OAuthType.KAKAO;
+    return AuthType.KAKAO;
   }
 
   @Override
@@ -40,6 +40,6 @@ public class KakaoOAuth2Strategy implements OAuth2Strategy {
         .path("profile_image")
         .asText();
 
-    return new OAuth2UserInfo(OAuthType.KAKAO, oAuthId, oAuthNickname, oAuthEmail, oAuthImageUrl);
+    return new OAuth2UserInfo(AuthType.KAKAO, oAuthId, oAuthNickname, oAuthEmail, oAuthImageUrl);
   }
 }

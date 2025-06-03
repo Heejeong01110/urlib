@@ -7,8 +7,8 @@ import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
+import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.auth.model.OAuth2UserInfo;
-import com.heez.urlib.domain.auth.model.OAuthType;
 import com.heez.urlib.domain.member.controller.dto.MemberDetailResponse;
 import com.heez.urlib.domain.member.exception.MemberNotFoundException;
 import com.heez.urlib.domain.member.model.Member;
@@ -33,9 +33,9 @@ class MemberServiceImplTest {
   @Test
   void findMemberOrCreate_existingMember() {
     // given
-    OAuthType oAuthType = OAuthType.valueOf("KAKAO");
+    AuthType authType = AuthType.valueOf("KAKAO");
     OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
-        .oAuthType(oAuthType)
+        .authType(authType)
         .oAuthId("kakao_123456789asdfzxcv")
         .nickname("nickname")
         .imageUrl("https://image.url.co.kr")
@@ -46,7 +46,7 @@ class MemberServiceImplTest {
         .id(1L)
         .email(new Email("existing@example.com"))
         .build();
-    given(memberRepository.findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId()))
+    given(memberRepository.findMemberByOauthTypeAndIdentifier(authType, userInfo.oAuthId()))
         .willReturn(Optional.of(existing));
 
     // when
@@ -55,22 +55,22 @@ class MemberServiceImplTest {
     // then
     assertThat(result).isSameAs(existing);
     then(memberRepository)
-        .should().findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId());
+        .should().findMemberByOauthTypeAndIdentifier(authType, userInfo.oAuthId());
     then(memberRepository).shouldHaveNoMoreInteractions();
   }
 
   @Test
   void findMemberOrCreate_newMember() {
     // given
-    OAuthType oAuthType = OAuthType.valueOf("KAKAO");
+    AuthType authType = AuthType.valueOf("KAKAO");
     OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
-        .oAuthType(oAuthType)
+        .authType(authType)
         .oAuthId("kakao_123456789asdfzxcv")
         .nickname("nickname")
         .imageUrl("https://image.url.co.kr")
         .email("existing@example.com")
         .build();
-    given(memberRepository.findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId()))
+    given(memberRepository.findMemberByOauthTypeAndIdentifier(authType, userInfo.oAuthId()))
         .willReturn(Optional.empty());
 
     Member saved = Member.builder()
@@ -85,7 +85,7 @@ class MemberServiceImplTest {
     // then
     assertThat(result).isSameAs(saved);
     then(memberRepository)
-        .should().findMemberByOauthTypeAndIdentifier(oAuthType, userInfo.oAuthId());
+        .should().findMemberByOauthTypeAndIdentifier(authType, userInfo.oAuthId());
     then(memberRepository).should().save(any(Member.class));
   }
 

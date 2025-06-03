@@ -1,7 +1,7 @@
 package com.heez.urlib.domain.member.model;
 
 
-import com.heez.urlib.domain.auth.model.OAuthType;
+import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.member.model.vo.Email;
 import com.heez.urlib.domain.member.model.vo.Nickname;
 import com.heez.urlib.global.common.domain.BaseEntity;
@@ -39,7 +39,7 @@ public class Member extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, name = "provider_type")
-  private OAuthType oauthType;
+  private AuthType oauthType;
 
   @Column(name = "identifier", unique = true)
   private String identifier;

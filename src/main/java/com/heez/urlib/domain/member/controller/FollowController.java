@@ -1,6 +1,6 @@
 package com.heez.urlib.domain.member.controller;
 
-import com.heez.urlib.domain.auth.model.CustomOAuth2User;
+import com.heez.urlib.domain.auth.model.UserPrincipal;
 import com.heez.urlib.domain.member.controller.dto.FollowStatusResponse;
 import com.heez.urlib.domain.member.controller.dto.MemberSummaryResponse;
 import com.heez.urlib.domain.member.model.AuthUser;
@@ -27,27 +27,27 @@ public class FollowController {
 
   @GetMapping("/{memberId}/follow")
   public ResponseEntity<FollowStatusResponse> getFollowStatus(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @PathVariable Long memberId
   ) {
-    return ResponseEntity.ok(followService.getFollowStatus(memberId, oauth2User.getMemberId()));
+    return ResponseEntity.ok(followService.getFollowStatus(memberId, userPrincipal.getMemberId()));
   }
 
   @PostMapping("/{memberId}/follow")
   public ResponseEntity<Void> followOther(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @PathVariable Long memberId
   ) {
-    followService.follow(memberId, oauth2User.getMemberId());
+    followService.follow(memberId, userPrincipal.getMemberId());
     return ResponseEntity.noContent().build();
   }
 
   @DeleteMapping("/{memberId}/unfollow")
   public ResponseEntity<Void> unfollowOther(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @PathVariable Long memberId
   ) {
-    followService.unfollow(memberId, oauth2User.getMemberId());
+    followService.unfollow(memberId, userPrincipal.getMemberId());
     return ResponseEntity.noContent().build();
   }
 
@@ -70,18 +70,18 @@ public class FollowController {
 
   @GetMapping("/me/following")
   public ResponseEntity<Page<MemberSummaryResponse>> getMyFollowingList(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       Pageable pageable
   ) {
-    return ResponseEntity.ok(followService.getFollowingList(oauth2User.getMemberId(), pageable));
+    return ResponseEntity.ok(followService.getFollowingList(userPrincipal.getMemberId(), pageable));
   }
 
   @GetMapping("/me/follower")
   public ResponseEntity<Page<MemberSummaryResponse>> getMyFollowerList(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       Pageable pageable
   ) {
-    return ResponseEntity.ok(followService.getFollowerList(oauth2User.getMemberId(), pageable));
+    return ResponseEntity.ok(followService.getFollowerList(userPrincipal.getMemberId(), pageable));
   }
 
 }

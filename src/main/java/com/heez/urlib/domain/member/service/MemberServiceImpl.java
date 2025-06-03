@@ -22,7 +22,7 @@ public class MemberServiceImpl implements MemberService {
   @Transactional
   public Member findMemberOrCreate(OAuth2UserInfo userInfo) {
     return memberRepository
-        .findMemberByOauthTypeAndIdentifier(userInfo.oAuthType(), userInfo.oAuthId())
+        .findMemberByOauthTypeAndIdentifier(userInfo.authType(), userInfo.oAuthId())
         .orElseGet(() -> memberRepository.save(createMemberFrom(userInfo)));
   }
 
@@ -39,7 +39,7 @@ public class MemberServiceImpl implements MemberService {
 
   private Member createMemberFrom(OAuth2UserInfo userInfo) {
     return Member.builder()
-        .oauthType(userInfo.oAuthType())
+        .oauthType(userInfo.authType())
         .identifier(userInfo.oAuthId())
         .email(new Email(userInfo.email()))
         .nickname(new Nickname(userInfo.nickname()))

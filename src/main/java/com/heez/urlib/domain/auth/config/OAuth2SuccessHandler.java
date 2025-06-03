@@ -2,7 +2,7 @@ package com.heez.urlib.domain.auth.config;
 
 import com.heez.urlib.domain.auth.jwt.AuthTokenProvider;
 import com.heez.urlib.domain.auth.jwt.JwtHeaderUtil;
-import com.heez.urlib.domain.auth.model.CustomOAuth2User;
+import com.heez.urlib.domain.auth.model.CustomOAuth2Principal;
 import com.heez.urlib.domain.auth.service.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,12 +32,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
       HttpServletResponse response,
       Authentication authentication) throws IOException {
 
-    CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+    CustomOAuth2Principal oAuth2User = (CustomOAuth2Principal) authentication.getPrincipal();
     Long memberId = oAuth2User.getMemberId();
     String email = oAuth2User.getEmail();
     List<SimpleGrantedAuthority> authorities = toSimpleAuthorities(oAuth2User.getAuthorities());
 
-    String accessToken = authTokenProvider.generateAccessToken(memberId, email, authorities);
+    String accessToken = authTokenProvider.generateAccessToken(memberId, email, authorities, oAuth2User.getAuthType());
     String refreshToken = authTokenProvider.generateRefreshToken(memberId);
     redis.saveToken(refreshToken, memberId);
 

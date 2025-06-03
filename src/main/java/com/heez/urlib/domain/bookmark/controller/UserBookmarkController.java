@@ -1,6 +1,6 @@
 package com.heez.urlib.domain.bookmark.controller;
 
-import com.heez.urlib.domain.auth.model.CustomOAuth2User;
+import com.heez.urlib.domain.auth.model.UserPrincipal;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkSummaryResponse;
 import com.heez.urlib.domain.bookmark.service.BookmarkService;
 import com.heez.urlib.domain.member.model.AuthUser;
@@ -26,25 +26,25 @@ public class UserBookmarkController {
 
   @GetMapping("/me/bookmarks")
   public ResponseEntity<Page<BookmarkSummaryResponse>> getMyBookmarks(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {
     return ResponseEntity.ok(
         bookmarkService.getBookmarkSummaryListByMemberId(
-            oauth2User.getMemberId(),oauth2User.getMemberId(),pageable));
+            userPrincipal.getMemberId(), userPrincipal.getMemberId(), pageable));
   }
 
 
   @GetMapping("/{memberId}/bookmarks")
   public ResponseEntity<Page<BookmarkSummaryResponse>> getBookmarks(
-      @AuthUser CustomOAuth2User oauth2User,
+      @AuthUser UserPrincipal userPrincipal,
       @PathVariable("memberId") Long memberId,
       @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {
     return ResponseEntity.ok(
         bookmarkService.getBookmarkSummaryListByMemberId(
-            oauth2User.getMemberId(), memberId, pageable));
+            userPrincipal.getMemberId(), memberId, pageable));
   }
 }
