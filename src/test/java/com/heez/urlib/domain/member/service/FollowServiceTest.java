@@ -31,16 +31,16 @@ import org.springframework.data.domain.Pageable;
 
 
 @ExtendWith(MockitoExtension.class)
-class FollowServiceImplTest {
+class FollowServiceTest {
 
   @Mock
   private FollowRepository followRepository;
 
   @Mock
-  private MemberServiceImpl memberService;
+  private MemberService memberService;
 
   @InjectMocks
-  private FollowServiceImpl followService;
+  private FollowService followService;
 
   @Test
   void follow_validMembers_savesFollow() {

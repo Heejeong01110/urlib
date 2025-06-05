@@ -22,13 +22,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class MemberServiceImplTest {
+class MemberServiceTest {
 
   @Mock
   private MemberRepository memberRepository;
 
   @InjectMocks
-  private MemberServiceImpl memberService;
+  private MemberService memberService;
 
   @Test
   void findMemberOrCreate_existingMember() {

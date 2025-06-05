@@ -19,13 +19,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class BookmarkPermissionServiceImplTest {
+class BookmarkPermissionServiceTest {
 
   @Mock
   private BookmarkRepository bookmarkRepository;
 
   @InjectMocks
-  private BookmarkPermissionServiceImpl bookmarkPermissionService;
+  private BookmarkPermissionService bookmarkPermissionService;
 
   @Test
   void isVisible_publicBookmarkAndAnonymousUser_doesNotThrowException() {

@@ -15,13 +15,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class LinkServiceImplTest {
+class LinkServiceTest {
 
   @Mock
   private LinkRepository linkRepository;
 
   @InjectMocks
-  private LinkServiceImpl linkService;
+  private LinkService linkService;
 
   @Test
   void findLinksByBookmarkId_returnsLinks() {

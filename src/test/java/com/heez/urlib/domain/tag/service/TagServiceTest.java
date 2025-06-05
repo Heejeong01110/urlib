@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class TagServiceImplTest {
+class TagServiceTest {
 
   @Mock
   private TagRepository tagRepository;
@@ -26,7 +26,7 @@ class TagServiceImplTest {
   private BookmarkHashtagRepository bookmarkHashtagRepository;
 
   @InjectMocks
-  private TagServiceImpl tagService;
+  private TagService tagService;
 
   @Test
   void ensureTags_existingNames_returnsExistingEntities() {

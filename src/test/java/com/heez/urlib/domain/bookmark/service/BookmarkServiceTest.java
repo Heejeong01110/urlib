@@ -46,7 +46,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 @ExtendWith(MockitoExtension.class)
-class BookmarkServiceImplTest {
+class BookmarkServiceTest {
 
   @Mock
   private BookmarkRepository bookmarkRepository;
@@ -64,7 +64,7 @@ class BookmarkServiceImplTest {
   private LinkService linkService;
 
   @InjectMocks
-  private BookmarkServiceImpl bookmarkService;
+  private BookmarkService bookmarkService;
 
   @Test
   void createBookmark_callsDependenciesAndReturnsResponse() {

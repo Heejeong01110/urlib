@@ -28,7 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
-class BookmarkLikeServiceImplTest {
+class BookmarkLikeServiceTest {
 
   @Mock
   private BookmarkRepository bookmarkRepository;
@@ -43,7 +43,7 @@ class BookmarkLikeServiceImplTest {
   private BookmarkPermissionService bookmarkPermissionService;
 
   @InjectMocks
-  private BookmarkLikeServiceImpl bookmarkLikeService;
+  private BookmarkLikeService bookmarkLikeService;
 
   @Test
   void likeBookmark_notPreviouslyLiked_savesAndReturnsLikeResponse() {

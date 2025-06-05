@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class BookmarkServiceImplEntityStateTest {
+public class BookmarkServiceEntityStateTest {
 
   @Mock
   private BookmarkRepository bookmarkRepository;
@@ -46,7 +46,7 @@ public class BookmarkServiceImplEntityStateTest {
   private BookmarkPermissionService bookmarkPermissionService;
 
   @InjectMocks
-  private BookmarkServiceImpl bookmarkService;
+  private BookmarkService bookmarkService;
 
   @Test
   void updateBookmark_mutatesEntityCorrectly() {

@@ -29,7 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceImplTest {
+class AuthServiceTest {
 
   @Mock
   private RedisService redisService;
@@ -38,7 +38,7 @@ class AuthServiceImplTest {
   @Mock
   private MemberRepository memberRepository;
   @InjectMocks
-  private AuthServiceImpl authService;
+  private AuthService authService;
 
   @Test
   void reissue_success() {
