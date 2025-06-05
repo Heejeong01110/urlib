@@ -34,7 +34,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         .getUserInfo(oAuth2User);
 
     Member member = memberService.findMemberOrCreate(userInfo);
-    return new CustomOAuth2Principal(member.getId(), member.getEmail(),
+    return new CustomOAuth2Principal(member.getMemberId(), member.getEmail(),
         List.of(new SimpleGrantedAuthority(member.getRole().getKey())),
         oAuth2User.getAttributes(), "id", userInfo.authType());
   }

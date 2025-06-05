@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BookmarkLikeRepository extends JpaRepository<BookmarkLike, Long> {
 
-  Optional<BookmarkLike> findByBookmark_BookmarkIdAndMember_Id(Long bookmarkId, Long memberId);
+  Optional<BookmarkLike> findByBookmark_BookmarkIdAndMember_MemberId(Long bookmarkId, Long memberId);
 }

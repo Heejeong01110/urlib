@@ -14,14 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookmarkPermissionService {
 
   public void isVisible(Bookmark bookmark, Optional<Long> viewerId) {
-    boolean isOwner = viewerId.map(id -> bookmark.getMember().getId().equals(id)).orElse(false);
+    boolean isOwner = viewerId.map(id -> bookmark.getMember().getMemberId().equals(id)).orElse(false);
     if (!bookmark.isVisibleToOthers() && !isOwner) {
       throw new AccessDeniedBookmarkException();
     }
   }
 
   public void isEditable(Bookmark bookmark, Long viewerId) {
-    if (!bookmark.getMember().getId().equals(viewerId)) {
+    if (!bookmark.getMember().getMemberId().equals(viewerId)) {
       throw new AccessDeniedBookmarkModifyException();
     }
   }

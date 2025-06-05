@@ -74,7 +74,7 @@ public class BookmarkService {
         .map(LinkDetailResponse::from)
         .toList();
     bookmark.addViewCount();
-    return BookmarkDetailResponse.from(bookmark, tags, links, bookmark.getMember().getId());
+    return BookmarkDetailResponse.from(bookmark, tags, links, bookmark.getMember().getMemberId());
   }
 
   @Transactional

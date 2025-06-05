@@ -13,14 +13,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
-  boolean existsByBookmarkIdAndMember_Id(
+  boolean existsByBookmarkIdAndMember_MemberId(
       @Param("bookmarkId") Long bookmarkId,
       @Param("id") Long memberId);
 
   @Query("""
         select b
           from Bookmark b
-         where b.member.id = :memberId
+         where b.member.memberId = :memberId
            and ( :memberId = :viewerId or b.visibleToOthers )
       """)
   @EntityGraph(attributePaths = {"member"})
@@ -32,7 +32,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
   @Query("""
         select b
           from Bookmark b
-         where b.member.id = :memberId
+         where b.member.memberId = :memberId
            and b.visibleToOthers
       """)
   @EntityGraph(attributePaths = {"member"})
@@ -41,7 +41,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
   @Query("""
         select b
           from Bookmark b
-         where ( b.member.id = :viewerId or b.visibleToOthers )
+         where ( b.member.memberId = :viewerId or b.visibleToOthers )
       """)
   @EntityGraph(attributePaths = {"member"})
   Page<BookmarkSummaryProjection> findPageByViewer(

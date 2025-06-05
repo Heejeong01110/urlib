@@ -11,15 +11,15 @@ import org.springframework.data.repository.query.Param;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 
-  boolean existsFollowByFollower_IdAndFollowing_Id(Long followerId, Long followingId);
+  boolean existsFollowByFollower_MemberIdAndFollowing_MemberId(Long followerId, Long followingId);
 
-  Optional<Follow> findByFollowerIdAndFollowingId(Long followerId, Long followingId);
+  Optional<Follow> findByFollowerMemberIdAndFollowingMemberId(Long followerId, Long followingId);
 
   @Query("""
       select m
         from Member m
-        join Follow f on f.following.id = m.id
-       where f.follower.id = :followerId
+        join Follow f on f.following.memberId = m.memberId
+       where f.follower.memberId = :followerId
       """)
   Page<MemberSummaryProjection> findFollowingSummaryListByFollowerId(
       @Param("followerId") Long followerId,
@@ -28,8 +28,8 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
   @Query("""
       select m
       from Member m
-      join Follow f on f.follower.id = m.id
-      where f.following.id = :followingId
+      join Follow f on f.follower.memberId = m.memberId
+      where f.following.memberId = :followingId
       """)
   Page<MemberSummaryProjection> findFollowerSummaryListByFollowingId(
       @Param("followingId") Long followingId,

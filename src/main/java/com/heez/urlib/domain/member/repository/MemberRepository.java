@@ -11,14 +11,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-  @Override
-  Optional<Member> findById(Long id);
-
   Optional<Member> findMemberByEmail(Email email);
 
   @Query("SELECT m.email AS email, m.role AS role " +
       "FROM Member m " +
-      "WHERE m.id = :id")
+      "WHERE m.memberId = :id")
   Optional<TokenProjection> findEmailAndRoleById(@Param("id") Long id);
 
   Optional<Member> findMemberByOauthTypeAndIdentifier(AuthType authType, String identifier);

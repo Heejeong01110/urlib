@@ -31,7 +31,7 @@ public class FollowService {
     Member following = memberService.findById(followingId);
     Member follower = memberService.findById(followerId);
 
-    if (followRepository.existsFollowByFollower_IdAndFollowing_Id(followerId, followingId)) {
+    if (followRepository.existsFollowByFollower_MemberIdAndFollowing_MemberId(followerId, followingId)) {
       throw new AlreadyFollowingException();
     }
 
@@ -47,7 +47,7 @@ public class FollowService {
     memberService.findById(followingId);
     memberService.findById(followerId);
 
-    Follow existing = followRepository.findByFollowerIdAndFollowingId(followerId, followingId)
+    Follow existing = followRepository.findByFollowerMemberIdAndFollowingMemberId(followerId, followingId)
         .orElseThrow(NotFollowingException::new);
 
     followRepository.delete(existing);
@@ -55,7 +55,7 @@ public class FollowService {
 
   public FollowStatusResponse getFollowStatus(Long followingId, Long followerId) {
     Optional<Follow> follow = followRepository
-        .findByFollowerIdAndFollowingId(followerId, followingId);
+        .findByFollowerMemberIdAndFollowingMemberId(followerId, followingId);
     return FollowStatusResponse.builder()
         .follow(follow.isPresent())
         .build();

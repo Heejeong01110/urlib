@@ -58,7 +58,7 @@ public class BookmarkLikeService {
     bookmarkPermissionService.isVisible(bookmark, Optional.of(memberId));
 
     BookmarkLike bookmarkLike = bookmarkLikeRepository
-        .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId)
+        .findByBookmark_BookmarkIdAndMember_MemberId(bookmarkId, memberId)
         .orElseThrow(AlreadyUnlikedException::new);
 
     bookmarkLikeRepository.delete(bookmarkLike);
