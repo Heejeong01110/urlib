@@ -17,6 +17,6 @@ public @interface WithMockCustomUser {
 
   String[] roles() default {"ROLE_USER"};
 
-  String registration() default "kakao";
+  AuthType authType() default AuthType.NONE;
 
 }
