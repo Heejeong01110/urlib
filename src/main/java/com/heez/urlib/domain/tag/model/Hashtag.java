@@ -14,17 +14,14 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Builder
 @Table(name = "hashtag")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Hashtag extends BaseEntity {
 
   @Id
@@ -35,8 +32,12 @@ public class Hashtag extends BaseEntity {
   @Column(nullable = false, name = "title")
   private String title;
 
-  @Builder.Default
   @OneToMany(mappedBy = "hashtag", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<BookmarkHashtag> bookmarkHashtags = new ArrayList<>();
 
+  @Builder
+  public Hashtag(String title, List<BookmarkHashtag> bookmarkHashtags) {
+    this.title = title;
+    this.bookmarkHashtags = (bookmarkHashtags != null) ? bookmarkHashtags : new ArrayList<>();
+  }
 }

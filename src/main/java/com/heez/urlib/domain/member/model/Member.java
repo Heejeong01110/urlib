@@ -15,17 +15,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Getter
 @Entity
 @Table(name = "member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Member extends BaseEntity {
 
   @Id
@@ -61,6 +58,18 @@ public class Member extends BaseEntity {
   @Enumerated(value = EnumType.STRING)
   private Role role;
 
+  @Builder
+  public Member(Email email, AuthType oauthType, String identifier, String password,
+      Nickname nickname, String description, String imageUrl, Role role) {
+    this.email = email;
+    this.oauthType = oauthType;
+    this.identifier = identifier;
+    this.password = password;
+    this.nickname = nickname;
+    this.description = description;
+    this.imageUrl = imageUrl;
+    this.role = role;
+  }
 
   public String getNickName() {
     if (nickname == null) {

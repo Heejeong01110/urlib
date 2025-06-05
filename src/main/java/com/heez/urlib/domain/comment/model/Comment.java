@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,4 +41,11 @@ public class Comment extends BaseEntity {
   @Column(nullable = false, name = "content")
   private String content;
 
+  @Builder
+  public Comment(Bookmark bookmark, Member member, Comment parentComment, String content) {
+    this.bookmark = bookmark;
+    this.member = member;
+    this.parentComment = parentComment;
+    this.content = content;
+  }
 }

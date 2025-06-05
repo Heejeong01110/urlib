@@ -12,17 +12,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Builder
 @Table(name = "bookmark_hashtag")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class BookmarkHashtag extends BaseEntity {
 
   @Id
@@ -37,4 +34,10 @@ public class BookmarkHashtag extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "hashtag_id")
   private Hashtag hashtag;
+
+  @Builder
+  public BookmarkHashtag(Bookmark bookmark, Hashtag hashtag) {
+    this.bookmark = bookmark;
+    this.hashtag = hashtag;
+  }
 }

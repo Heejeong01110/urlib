@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,4 +36,12 @@ public class CommentLike extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "comment_id", nullable = false)
   private Comment comment;
+
+  @Builder
+  public CommentLike(Long commentLikeId, boolean isLike, Member member, Comment comment) {
+    this.commentLikeId = commentLikeId;
+    this.isLike = isLike;
+    this.member = member;
+    this.comment = comment;
+  }
 }

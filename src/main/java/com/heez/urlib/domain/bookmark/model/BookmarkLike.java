@@ -13,18 +13,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Builder
 @Table(name = "bookmark_like",
     uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "bookmark_id"}))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class BookmarkLike extends BaseEntity {
 
   @Id
@@ -39,4 +36,10 @@ public class BookmarkLike extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "bookmark_id", nullable = false)
   private Bookmark bookmark;
+
+  @Builder
+  public BookmarkLike(Member member, Bookmark bookmark) {
+    this.member = member;
+    this.bookmark = bookmark;
+  }
 }

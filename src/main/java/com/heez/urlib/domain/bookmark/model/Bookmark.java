@@ -19,17 +19,14 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Builder
 @Table(name = "bookmark")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Bookmark extends BaseEntity {
 
   @Id
@@ -54,15 +51,31 @@ public class Bookmark extends BaseEntity {
 
   @Column(nullable = false, name = "like_count")
   private Long likeCount;
-  @Builder.Default
+
   @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<BookmarkHashtag> bookmarkHashtags = new ArrayList<>();
-  @Builder.Default
+
   @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Link> links = new ArrayList<>();
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
+
+  @Builder
+  public Bookmark(String title, String description, String imageUrl, boolean visibleToOthers,
+      Long viewCount, Long likeCount, List<BookmarkHashtag> bookmarkHashtags, List<Link> links,
+      Member member) {
+    this.title = title;
+    this.description = description;
+    this.imageUrl = imageUrl;
+    this.visibleToOthers = visibleToOthers;
+    this.viewCount = viewCount;
+    this.likeCount = likeCount;
+    this.bookmarkHashtags = (bookmarkHashtags != null) ? bookmarkHashtags : new ArrayList<>();
+    this.links = (links != null) ? links : new ArrayList<>();
+    this.member = member;
+  }
 
   public void changeTitle(String title) {
     this.title = title;

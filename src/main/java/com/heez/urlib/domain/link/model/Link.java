@@ -12,17 +12,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @Entity
 @Table(name = "link")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Link extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +35,13 @@ public class Link extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "bookmark_id", nullable = false)
   private Bookmark bookmark;
+
+  @Builder
+  public Link(String title, String url, Bookmark bookmark) {
+    this.title = title;
+    this.url = url;
+    this.bookmark = bookmark;
+  }
 
   public void setBookmark(Bookmark bookmark) {
     this.bookmark = bookmark;
