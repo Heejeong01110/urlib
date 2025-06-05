@@ -4,6 +4,7 @@ import com.heez.urlib.domain.auth.model.UserPrincipal;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkSummaryResponse;
 import com.heez.urlib.domain.bookmark.service.BookmarkService;
 import com.heez.urlib.domain.member.model.AuthUser;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,25 +27,25 @@ public class UserBookmarkController {
 
   @GetMapping("/me/bookmarks")
   public ResponseEntity<Page<BookmarkSummaryResponse>> getMyBookmarks(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser(required = true) UserPrincipal userPrincipal,
       @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {
     return ResponseEntity.ok(
         bookmarkService.getBookmarkSummaryListByMemberId(
-            userPrincipal.getMemberId(), userPrincipal.getMemberId(), pageable));
+            Optional.of(userPrincipal.getMemberId()), userPrincipal.getMemberId(), pageable));
   }
 
 
   @GetMapping("/{memberId}/bookmarks")
   public ResponseEntity<Page<BookmarkSummaryResponse>> getBookmarks(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser Optional<UserPrincipal> userPrincipal,
       @PathVariable("memberId") Long memberId,
       @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {
     return ResponseEntity.ok(
         bookmarkService.getBookmarkSummaryListByMemberId(
-            userPrincipal.getMemberId(), memberId, pageable));
+            userPrincipal.map(UserPrincipal::getMemberId), memberId, pageable));
   }
 }

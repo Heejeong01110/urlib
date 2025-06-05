@@ -22,7 +22,7 @@ public class MemberController {
 
   @GetMapping("/me")
   public ResponseEntity<MemberDetailResponse> getMyProfile(
-      @AuthUser UserPrincipal userPrincipal
+      @AuthUser(required = true) UserPrincipal userPrincipal
   ) {
     return ResponseEntity.ok(
         memberService.getProfile(userPrincipal.getMemberId()));

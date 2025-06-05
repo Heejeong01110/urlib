@@ -56,7 +56,7 @@ class BookmarkLikeServiceImplTest {
     Member member = mock(Member.class);
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
-    willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, memberId);
+    willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
     given(memberService.findById(memberId)).willReturn(member);
 
     // when
@@ -68,7 +68,7 @@ class BookmarkLikeServiceImplTest {
 
     then(bookmarkRepository).should().findById(bookmarkId);
     then(memberService).should().findById(memberId);
-    then(bookmarkPermissionService).should().isVisible(bookmark, memberId);
+    then(bookmarkPermissionService).should().isVisible(bookmark, Optional.of(memberId));
     then(bookmarkLikeRepository).should().save(any(BookmarkLike.class));
   }
 
@@ -84,7 +84,7 @@ class BookmarkLikeServiceImplTest {
     Member member = mock(Member.class);
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
-    willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, memberId);
+    willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
     given(memberService.findById(memberId)).willReturn(member);
     willThrow(new DataIntegrityViolationException("duplicate key"))
         .given(bookmarkLikeRepository).save(any(BookmarkLike.class));
@@ -120,7 +120,7 @@ class BookmarkLikeServiceImplTest {
     BookmarkLike existingLike = mock(BookmarkLike.class);
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
-    willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, memberId);
+    willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
     given(bookmarkLikeRepository
         .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId))
         .willReturn(Optional.of(existingLike));
@@ -143,7 +143,7 @@ class BookmarkLikeServiceImplTest {
     Bookmark bookmark = mock(Bookmark.class);
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
-    willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, memberId);
+    willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
     willThrow(new AlreadyUnlikedException())
         .given(bookmarkLikeRepository).findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId);
 

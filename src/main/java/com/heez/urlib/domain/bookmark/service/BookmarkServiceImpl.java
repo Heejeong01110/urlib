@@ -16,6 +16,7 @@ import com.heez.urlib.domain.member.service.MemberService;
 import com.heez.urlib.domain.tag.model.Hashtag;
 import com.heez.urlib.domain.tag.service.TagService;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,7 +64,7 @@ public class BookmarkServiceImpl implements BookmarkService {
   }
 
   @Override
-  public BookmarkDetailResponse getBookmark(Long memberId, Long bookmarkId) {
+  public BookmarkDetailResponse getBookmark(Optional<Long> memberId, Long bookmarkId) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
     bookmarkPermissionService.isVisible(bookmark, memberId);
@@ -121,14 +122,20 @@ public class BookmarkServiceImpl implements BookmarkService {
 
   @Override
   public Page<BookmarkSummaryResponse> getBookmarkSummaryListByMemberId(
-      Long viewerId, Long ownerId, Pageable pageable) {
-    return bookmarkRepository.findPageByMemberAndViewer(ownerId, viewerId, pageable)
-        .map(BookmarkSummaryResponse::from);
+      Optional<Long> viewerId, Long ownerId, Pageable pageable) {
+    return viewerId.map(
+            id -> bookmarkRepository.findPageByMemberAndViewer(ownerId, id, pageable)
+                .map(BookmarkSummaryResponse::from))
+        .orElseGet(() -> bookmarkRepository.findPageByMember(ownerId, pageable)
+            .map(BookmarkSummaryResponse::from));
   }
 
   @Override
-  public Page<BookmarkSummaryResponse> getBookmarkSummaryList(Long viewerId, Pageable pageable) {
-    return bookmarkRepository.findPageByViewer(viewerId, pageable)
-        .map(BookmarkSummaryResponse::from);
+  public Page<BookmarkSummaryResponse> getBookmarkSummaryList(Optional<Long> viewerId,
+      Pageable pageable) {
+    return viewerId.map(id -> bookmarkRepository.findPageByViewer(id, pageable)
+            .map(BookmarkSummaryResponse::from))
+        .orElseGet(() -> bookmarkRepository.findPageByAnonymous(pageable)
+            .map(BookmarkSummaryResponse::from));
   }
 }

@@ -91,7 +91,7 @@ class FollowControllerTest {
     doNothing().when(followService).unfollow(eq(targetMemberId), eq(authMemberId));
 
     // when / then
-    mockMvc.perform(delete("/api/v1/users/{memberId}/unfollow", targetMemberId))
+    mockMvc.perform(delete("/api/v1/users/{memberId}/follow", targetMemberId))
         .andExpect(status().isNoContent());
   }
 

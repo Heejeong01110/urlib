@@ -154,7 +154,7 @@ class BookmarkServiceImplTest {
         .member(owner)
         .build();
     when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bookmark));
-    doNothing().when(bookmarkPermissionService).isVisible(bookmark, memberId);
+    doNothing().when(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
 
     List<String> tags = List.of("a", "b");
     when(tagService.getTagTitlesByBookmarkId(bookmarkId)).thenReturn(tags);
@@ -167,7 +167,7 @@ class BookmarkServiceImplTest {
         .thenReturn(List.of(link1));
 
     // when
-    BookmarkDetailResponse result = bookmarkService.getBookmark(memberId, bookmarkId);
+    BookmarkDetailResponse result = bookmarkService.getBookmark(Optional.of(memberId), bookmarkId);
 
     // then
     assertThat(result.id()).isEqualTo(bookmarkId);
@@ -371,7 +371,7 @@ class BookmarkServiceImplTest {
 
     // when
     Page<BookmarkSummaryResponse> result =
-        bookmarkService.getBookmarkSummaryListByMemberId(viewerId, ownerId, pageable);
+        bookmarkService.getBookmarkSummaryListByMemberId(Optional.of(viewerId), ownerId, pageable);
 
     // then
     assertThat(result).isNotNull();
@@ -409,8 +409,8 @@ class BookmarkServiceImplTest {
     given(bookmarkRepository.findPageByViewer(viewerId, pageable)).willReturn(repoPage);
 
     // when
-    Page<BookmarkSummaryResponse> result = bookmarkService.getBookmarkSummaryList(viewerId,
-        pageable);
+    Page<BookmarkSummaryResponse> result =
+        bookmarkService.getBookmarkSummaryList(Optional.of(viewerId), pageable);
 
     // then
     assertThat(result).isNotNull();

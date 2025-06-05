@@ -15,6 +15,7 @@ import com.heez.urlib.domain.bookmark.controller.dto.BookmarkSummaryResponse;
 import com.heez.urlib.domain.bookmark.service.BookmarkService;
 import com.heez.urlib.domain.member.controller.dto.MemberSummaryResponse;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -61,7 +62,7 @@ class UserBookmarkControllerTest {
         1
     );
 
-    given(bookmarkService.getBookmarkSummaryListByMemberId(eq(1L), eq(1L), any(Pageable.class)))
+    given(bookmarkService.getBookmarkSummaryListByMemberId(eq(Optional.of(1L)), eq(1L), any(Pageable.class)))
         .willReturn(page);
 
     // when / then
@@ -104,7 +105,7 @@ class UserBookmarkControllerTest {
         1
     );
 
-    given(bookmarkService.getBookmarkSummaryListByMemberId(eq(viewerId), eq(ownerId),
+    given(bookmarkService.getBookmarkSummaryListByMemberId(eq(Optional.of(viewerId)), eq(ownerId),
         any(Pageable.class)))
         .willReturn(page);
 

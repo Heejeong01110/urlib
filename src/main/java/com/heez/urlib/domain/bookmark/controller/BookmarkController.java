@@ -13,6 +13,7 @@ import com.heez.urlib.domain.bookmark.service.BookmarkService;
 import com.heez.urlib.domain.member.model.AuthUser;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -41,20 +42,21 @@ public class BookmarkController {
 
   @GetMapping("")
   public ResponseEntity<Page<BookmarkSummaryResponse>> getBookmarks(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser Optional<UserPrincipal> userPrincipal,
       @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {
     return ResponseEntity.ok(
-        bookmarkService.getBookmarkSummaryList(userPrincipal.getMemberId(), pageable));
+        bookmarkService.getBookmarkSummaryList(
+            userPrincipal.map(UserPrincipal::getMemberId), pageable));
   }
 
   @PostMapping("")
   public ResponseEntity<BookmarkCreateResponse> generateBookmark(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser(required = true) UserPrincipal userPrincipal,
       @Valid @RequestBody BookmarkCreateRequest request) {
-    BookmarkCreateResponse response = bookmarkService.createBookmark(userPrincipal.getMemberId(),
-        request);
+    BookmarkCreateResponse response =
+        bookmarkService.createBookmark(userPrincipal.getMemberId(), request);
     URI location = ServletUriComponentsBuilder
         .fromCurrentRequest()
         .path("/{id}")
@@ -66,15 +68,16 @@ public class BookmarkController {
 
   @GetMapping("/{bookmarkId}")
   public ResponseEntity<BookmarkDetailResponse> getBookmark(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser Optional<UserPrincipal> userPrincipal,
       @PathVariable("bookmarkId") Long bookmarkId
   ) {
-    return ResponseEntity.ok(bookmarkService.getBookmark(userPrincipal.getMemberId(), bookmarkId));
+    return ResponseEntity.ok(
+        bookmarkService.getBookmark(userPrincipal.map(UserPrincipal::getMemberId), bookmarkId));
   }
 
   @PutMapping("/{bookmarkId}")
   public ResponseEntity<BookmarkDetailResponse> updateBookmark(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser(required = true) UserPrincipal userPrincipal,
       @PathVariable Long bookmarkId,
       @RequestBody @Valid BookmarkUpdateRequest request
   ) {
@@ -84,7 +87,7 @@ public class BookmarkController {
 
   @DeleteMapping("/{bookmarkId}")
   public ResponseEntity<Void> deleteBookmark(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser(required = true) UserPrincipal userPrincipal,
       @PathVariable Long bookmarkId
   ) {
     bookmarkService.deleteBookmark(userPrincipal.getMemberId(), bookmarkId);
@@ -93,7 +96,7 @@ public class BookmarkController {
 
   @PostMapping("/{bookmarkId}/like")
   public ResponseEntity<LikeResponse> like(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser(required = true) UserPrincipal userPrincipal,
       @PathVariable Long bookmarkId
   ) {
     return ResponseEntity.ok(
@@ -102,7 +105,7 @@ public class BookmarkController {
 
   @DeleteMapping("/{bookmarkId}/like")
   public ResponseEntity<LikeResponse> unlike(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser(required = true) UserPrincipal userPrincipal,
       @PathVariable Long bookmarkId
   ) {
     return ResponseEntity.ok(

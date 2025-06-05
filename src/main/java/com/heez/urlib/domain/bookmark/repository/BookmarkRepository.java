@@ -29,6 +29,14 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
       @Param("viewerId") Long viewerId,
       Pageable pageable);
 
+  @Query("""
+        select b
+          from Bookmark b
+         where b.member.id = :memberId
+           and b.visibleToOthers
+      """)
+  @EntityGraph(attributePaths = {"member"})
+  Page<BookmarkSummaryProjection> findPageByMember(Long ownerId, Pageable pageable);
 
   @Query("""
         select b
@@ -39,4 +47,13 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
   Page<BookmarkSummaryProjection> findPageByViewer(
       @Param("viewerId") Long viewerId,
       Pageable pageable);
+
+  @Query("""
+        select b
+          from Bookmark b
+         where b.visibleToOthers
+      """)
+  @EntityGraph(attributePaths = {"member"})
+  Page<BookmarkSummaryProjection> findPageByAnonymous(Pageable pageable);
+
 }

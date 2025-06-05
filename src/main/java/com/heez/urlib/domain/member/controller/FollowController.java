@@ -27,7 +27,7 @@ public class FollowController {
 
   @GetMapping("/{memberId}/follow")
   public ResponseEntity<FollowStatusResponse> getFollowStatus(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser(required = true) UserPrincipal userPrincipal,
       @PathVariable Long memberId
   ) {
     return ResponseEntity.ok(followService.getFollowStatus(memberId, userPrincipal.getMemberId()));
@@ -35,16 +35,16 @@ public class FollowController {
 
   @PostMapping("/{memberId}/follow")
   public ResponseEntity<Void> followOther(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser(required = true) UserPrincipal userPrincipal,
       @PathVariable Long memberId
   ) {
     followService.follow(memberId, userPrincipal.getMemberId());
     return ResponseEntity.noContent().build();
   }
 
-  @DeleteMapping("/{memberId}/unfollow")
+  @DeleteMapping("/{memberId}/follow")
   public ResponseEntity<Void> unfollowOther(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser(required = true) UserPrincipal userPrincipal,
       @PathVariable Long memberId
   ) {
     followService.unfollow(memberId, userPrincipal.getMemberId());
@@ -70,7 +70,7 @@ public class FollowController {
 
   @GetMapping("/me/following")
   public ResponseEntity<Page<MemberSummaryResponse>> getMyFollowingList(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser(required = true) UserPrincipal userPrincipal,
       Pageable pageable
   ) {
     return ResponseEntity.ok(followService.getFollowingList(userPrincipal.getMemberId(), pageable));
@@ -78,7 +78,7 @@ public class FollowController {
 
   @GetMapping("/me/follower")
   public ResponseEntity<Page<MemberSummaryResponse>> getMyFollowerList(
-      @AuthUser UserPrincipal userPrincipal,
+      @AuthUser(required = true) UserPrincipal userPrincipal,
       Pageable pageable
   ) {
     return ResponseEntity.ok(followService.getFollowerList(userPrincipal.getMemberId(), pageable));

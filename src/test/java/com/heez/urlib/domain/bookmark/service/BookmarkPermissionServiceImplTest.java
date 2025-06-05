@@ -4,7 +4,6 @@ package com.heez.urlib.domain.bookmark.service;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkException;
@@ -12,6 +11,7 @@ import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkModifyExcept
 import com.heez.urlib.domain.bookmark.model.Bookmark;
 import com.heez.urlib.domain.bookmark.repository.BookmarkRepository;
 import com.heez.urlib.domain.member.model.Member;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,85 +25,74 @@ class BookmarkPermissionServiceImplTest {
   private BookmarkRepository bookmarkRepository;
 
   @InjectMocks
-  private BookmarkPermissionServiceImpl BookmarkPermissionService;
+  private BookmarkPermissionServiceImpl bookmarkPermissionService;
 
   @Test
-  void isVisible_viewerIsOwner() {
+  void isVisible_publicBookmarkAndAnonymousUser_doesNotThrowException() {
     // given
     Bookmark bookmark = mock(Bookmark.class);
-    when(bookmark.getBookmarkId()).thenReturn(1L);
-    when(bookmarkRepository.existsByBookmarkIdAndMember_Id(1L, 42L)).thenReturn(true);
-
-    // when + then
-    assertThatThrownBy(() -> BookmarkPermissionService.isVisible(bookmark, 42L))
-        .isInstanceOf(AccessDeniedBookmarkException.class);
-
-    verify(bookmarkRepository).existsByBookmarkIdAndMember_Id(1L, 42L);
-  }
-
-  @Test
-  void isVisible_notVisibleToOthers() {
-    // given
-    Bookmark bookmark = mock(Bookmark.class);
-    when(bookmark.getBookmarkId()).thenReturn(2L);
-    when(bookmarkRepository.existsByBookmarkIdAndMember_Id(2L, 43L)).thenReturn(false);
-    when(bookmark.isVisibleToOthers()).thenReturn(false);
-
-    // when + then
-    assertThatThrownBy(() -> BookmarkPermissionService.isVisible(bookmark, 43L))
-        .isInstanceOf(AccessDeniedBookmarkException.class);
-
-    verify(bookmarkRepository).existsByBookmarkIdAndMember_Id(2L, 43L);
-    verify(bookmark).isVisibleToOthers();
-  }
-
-  @Test
-  void isVisible_visibleToOthersAndNotOwner() {
-    // given
-    Bookmark bookmark = mock(Bookmark.class);
-    when(bookmark.getBookmarkId()).thenReturn(3L);
-    when(bookmarkRepository.existsByBookmarkIdAndMember_Id(3L, 44L)).thenReturn(false);
     when(bookmark.isVisibleToOthers()).thenReturn(true);
 
-    // when + then
-    assertThatCode(() -> BookmarkPermissionService.isVisible(bookmark, 44L))
+    // when & then
+    assertThatCode(() -> bookmarkPermissionService.isVisible(bookmark, Optional.empty()))
         .doesNotThrowAnyException();
-
-    verify(bookmarkRepository).existsByBookmarkIdAndMember_Id(3L, 44L);
-    verify(bookmark).isVisibleToOthers();
   }
 
-  // --- isEditable tests ---
+  @Test
+  void isVisible_privateBookmarkAndOwner_doesNotThrowException() {
+    // given
+    Member owner = mock(Member.class);
+    when(owner.getId()).thenReturn(1L);
+
+    Bookmark bookmark = mock(Bookmark.class);
+    when(bookmark.getMember()).thenReturn(owner);
+    when(bookmark.isVisibleToOthers()).thenReturn(false);
+
+    // when & then
+    assertThatCode(() -> bookmarkPermissionService.isVisible(bookmark, Optional.of(1L)))
+        .doesNotThrowAnyException();
+  }
 
   @Test
-  void isEditable_viewerIsNotOwner() {
+  void isVisible_privateBookmarkAndNonOwner_throwsAccessDeniedBookmarkException() {
     // given
-    Bookmark bookmark = mock(Bookmark.class);
     Member owner = mock(Member.class);
-    when(bookmark.getMember()).thenReturn(owner);
-    when(owner.getId()).thenReturn(10L);
+    when(owner.getId()).thenReturn(1L);
 
-    // when + then
-    assertThatThrownBy(() -> BookmarkPermissionService.isEditable(bookmark, 20L))
+    Bookmark bookmark = mock(Bookmark.class);
+    when(bookmark.getMember()).thenReturn(owner);
+    when(bookmark.isVisibleToOthers()).thenReturn(false);
+
+    // when & then
+    assertThatThrownBy(() -> bookmarkPermissionService.isVisible(bookmark, Optional.of(2L)))
+        .isInstanceOf(AccessDeniedBookmarkException.class);
+  }
+
+  @Test
+  void isEditable_owner_doesNotThrowException() {
+    // given
+    Member owner = mock(Member.class);
+    when(owner.getId()).thenReturn(1L);
+
+    Bookmark bookmark = mock(Bookmark.class);
+    when(bookmark.getMember()).thenReturn(owner);
+
+    // when & then
+    assertThatCode(() -> bookmarkPermissionService.isEditable(bookmark, 1L))
+        .doesNotThrowAnyException();
+  }
+
+  @Test
+  void isEditable_nonOwner_throwsAccessDeniedBookmarkModifyException() {
+    // given
+    Member owner = mock(Member.class);
+    when(owner.getId()).thenReturn(1L);
+
+    Bookmark bookmark = mock(Bookmark.class);
+    when(bookmark.getMember()).thenReturn(owner);
+
+    // when & then
+    assertThatThrownBy(() -> bookmarkPermissionService.isEditable(bookmark, 2L))
         .isInstanceOf(AccessDeniedBookmarkModifyException.class);
-
-    verify(bookmark).getMember();
-    verify(owner).getId();
-  }
-
-  @Test
-  void isEditable_viewerIsOwner() {
-    // given
-    Bookmark bookmark = mock(Bookmark.class);
-    Member owner = mock(Member.class);
-    when(bookmark.getMember()).thenReturn(owner);
-    when(owner.getId()).thenReturn(30L);
-
-    // when + then
-    assertThatCode(() -> BookmarkPermissionService.isEditable(bookmark, 30L))
-        .doesNotThrowAnyException();
-
-    verify(bookmark).getMember();
-    verify(owner).getId();
   }
 }

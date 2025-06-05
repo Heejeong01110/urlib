@@ -34,6 +34,7 @@ import com.heez.urlib.domain.link.model.Link;
 import com.heez.urlib.domain.member.controller.dto.MemberSummaryResponse;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -152,7 +153,8 @@ class BookmarkControllerTest {
         writerId
     );
 
-    given(bookmarkService.getBookmark(memberId, bookmark.getBookmarkId())).willReturn(resp);
+    given(bookmarkService.getBookmark(Optional.of(memberId), bookmark.getBookmarkId())).willReturn(
+        resp);
 
     // when & then
     mockMvc.perform(
@@ -181,7 +183,7 @@ class BookmarkControllerTest {
         .andExpect(jsonPath("$.links[1].url").value("https://github.com"))
         .andExpect(jsonPath("$.writerId").value(writerId));
 
-    then(bookmarkService).should().getBookmark(memberId, bookmarkId);
+    then(bookmarkService).should().getBookmark(Optional.of(memberId), bookmarkId);
   }
 
   @Test
@@ -277,7 +279,7 @@ class BookmarkControllerTest {
         1
     );
 
-    given(bookmarkService.getBookmarkSummaryList(eq(viewerId), any(Pageable.class)))
+    given(bookmarkService.getBookmarkSummaryList(eq(Optional.of(viewerId)), any(Pageable.class)))
         .willReturn(page);
 
     // when / then

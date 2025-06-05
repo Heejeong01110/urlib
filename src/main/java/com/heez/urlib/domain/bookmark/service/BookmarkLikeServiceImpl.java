@@ -10,6 +10,7 @@ import com.heez.urlib.domain.bookmark.repository.BookmarkLikeRepository;
 import com.heez.urlib.domain.bookmark.repository.BookmarkRepository;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.service.MemberService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class BookmarkLikeServiceImpl implements BookmarkLikeService {
   public LikeResponse likeBookmark(Long memberId, Long bookmarkId) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
-    bookmarkPermissionService.isVisible(bookmark, memberId);
+    bookmarkPermissionService.isVisible(bookmark, Optional.of(memberId));
 
     try {
       Member member = memberService.findById(memberId);
@@ -56,7 +57,7 @@ public class BookmarkLikeServiceImpl implements BookmarkLikeService {
   public LikeResponse unlikeBookmark(Long memberId, Long bookmarkId) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
-    bookmarkPermissionService.isVisible(bookmark, memberId);
+    bookmarkPermissionService.isVisible(bookmark, Optional.of(memberId));
 
     BookmarkLike bookmarkLike = bookmarkLikeRepository
         .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId)
