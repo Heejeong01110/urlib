@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
@@ -43,9 +44,9 @@ class MemberServiceTest {
         .build();
 
     Member existing = Member.builder()
-        .id(1L)
         .email(new Email("existing@example.com"))
         .build();
+    ReflectionTestUtils.setField(existing, "memberId", 1L);
     given(memberRepository.findMemberByOauthTypeAndIdentifier(authType, userInfo.oAuthId()))
         .willReturn(Optional.of(existing));
 
@@ -74,9 +75,9 @@ class MemberServiceTest {
         .willReturn(Optional.empty());
 
     Member saved = Member.builder()
-        .id(2L)
         .email(new Email("new@example.com"))
         .build();
+    ReflectionTestUtils.setField(saved, "memberId", 2L);
     given(memberRepository.save(any(Member.class))).willReturn(saved);
 
     // when
@@ -93,9 +94,9 @@ class MemberServiceTest {
   void findById_existing() {
     // given
     Member member = Member.builder()
-        .id(1L)
         .email(new Email("user@example.com"))
         .build();
+    ReflectionTestUtils.setField(member, "memberId", 1L);
     given(memberRepository.findById(1L)).willReturn(Optional.of(member));
 
     // when
@@ -122,7 +123,7 @@ class MemberServiceTest {
     // given
     Long memberId = 1L;
     Member member = org.mockito.Mockito.mock(Member.class);
-    given(member.getId()).willReturn(memberId);
+    given(member.getMemberId()).willReturn(memberId);
     given(member.getImageUrl()).willReturn("http://example.com/profile.png");
     given(member.getDescription()).willReturn("Profile description");
     given(memberRepository.findById(memberId)).willReturn(Optional.of(member));

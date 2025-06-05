@@ -26,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 public class BookmarkServiceEntityStateTest {
@@ -56,13 +57,13 @@ public class BookmarkServiceEntityStateTest {
     Member member = mock(Member.class);
 
     Bookmark bookmark = Bookmark.builder()
-        .bookmarkId(bookmarkId)
         .title("old-title")
         .description("old-desc")
         .imageUrl("old-img")
         .visibleToOthers(false)
         .member(member)
         .build();
+    ReflectionTestUtils.setField(bookmark, "bookmarkId", bookmarkId);
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
     doNothing().when(bookmarkPermissionService).isEditable(bookmark, memberId);

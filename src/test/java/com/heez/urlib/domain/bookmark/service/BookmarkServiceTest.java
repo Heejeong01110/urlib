@@ -44,6 +44,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class BookmarkServiceTest {
@@ -85,26 +86,28 @@ class BookmarkServiceTest {
         .build();
 
     Member member = Member.builder()
-        .id(memberId)
         .email(new Email("user@example.com"))
         .build();
+    ReflectionTestUtils.setField(member, "memberId", memberId);
 
     given(memberService.findById(memberId)).willReturn(member);
 
-    List<Hashtag> hashtags = List.of(
-        Hashtag.builder().hashtagId(1L).title("spring").build(),
-        Hashtag.builder().hashtagId(2L).title("java").build()
-    );
+    Hashtag hashtag1 = Hashtag.builder().title("spring").build();
+    Hashtag hashtag2 = Hashtag.builder().title("java").build();
+    ReflectionTestUtils.setField(hashtag1, "hashtagId", 1L);
+    ReflectionTestUtils.setField(hashtag2, "hashtagId", 2L);
+    List<Hashtag> hashtags = List.of(hashtag1, hashtag2);
+
     given(tagService.ensureTags(tagNames)).willReturn(hashtags);
 
     Bookmark saved = Bookmark.builder()
-        .bookmarkId(100L)
         .title(request.title())
         .description(request.description())
         .imageUrl(request.imageUrl())
         .visibleToOthers(request.visibleToOthers())
         .member(member)
         .build();
+    ReflectionTestUtils.setField(saved, "bookmarkId", 100L);
 
     hashtags.forEach(saved::addHashtag);
     Link linkEntity = Link.builder()
@@ -140,12 +143,11 @@ class BookmarkServiceTest {
   void getBookmark_success() {
     // given
     Member owner = mock(Member.class);
-    given(owner.getId()).willReturn(999L);
+    given(owner.getMemberId()).willReturn(999L);
     Long bookmarkId = 100L;
     Long memberId = 100L;
 
     Bookmark bookmark = Bookmark.builder()
-        .bookmarkId(bookmarkId)
         .title("T")
         .description("D")
         .imageUrl("U")
@@ -153,6 +155,7 @@ class BookmarkServiceTest {
         .viewCount(5L)
         .member(owner)
         .build();
+    ReflectionTestUtils.setField(bookmark, "bookmarkId", bookmarkId);
     when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bookmark));
     doNothing().when(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
 
@@ -191,13 +194,13 @@ class BookmarkServiceTest {
     Member owner = mock(Member.class);
 
     Bookmark bookmark = Bookmark.builder()
-        .bookmarkId(bookmarkId)
         .title("old")
         .description("old-desc")
         .imageUrl("old-img")
         .visibleToOthers(false)
         .member(owner)
         .build();
+    ReflectionTestUtils.setField(bookmark, "bookmarkId", bookmarkId);
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
     doNothing().when(bookmarkPermissionService).isEditable(bookmark, memberId);
@@ -214,18 +217,19 @@ class BookmarkServiceTest {
         linksReq
     );
 
-    List<Hashtag> tags = List.of(
-        Hashtag.builder().hashtagId(1L).title("spring").build(),
-        Hashtag.builder().hashtagId(2L).title("java").build());
+    Hashtag hashtag1 = Hashtag.builder().title("spring").build();
+    Hashtag hashtag2 = Hashtag.builder().title("java").build();
+    ReflectionTestUtils.setField(hashtag1, "hashtagId", 1L);
+    ReflectionTestUtils.setField(hashtag2, "hashtagId", 2L);
+    List<Hashtag> tags = List.of(hashtag1, hashtag2);
     given(tagService.ensureTags(tagsReq)).willReturn(tags);
 
-    List<Link> links = List.of(
-        Link.builder()
-            .linkId(1L)
-            .title("Example")
-            .url("http://example.com")
-            .build()
-    );
+    Link link = Link.builder()
+        .title("Example")
+        .url("http://example.com")
+        .build();
+    ReflectionTestUtils.setField(link, "linkId", 1L);
+    List<Link> links = List.of(link);
     given(linkService.ensureLinks(bookmarkId, linksReq)).willReturn(links);
 
     // when
@@ -265,9 +269,8 @@ class BookmarkServiceTest {
     // given
     Long bookmarkId = 7L;
     Long memberId = 7L;
-    Bookmark bookmark = Bookmark.builder()
-        .bookmarkId(bookmarkId)
-        .build();
+    Bookmark bookmark = Bookmark.builder().build();
+    ReflectionTestUtils.setField(bookmark, "bookmarkId", bookmarkId);
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
     willThrow(new AccessDeniedBookmarkModifyException())
@@ -292,10 +295,10 @@ class BookmarkServiceTest {
     // given
     Long ownerId = 2L;
     Long bookmarkId = 10L;
+    Member member = Member.builder().build();
+    ReflectionTestUtils.setField(member, "memberId", ownerId);
     Bookmark bookmark = Bookmark.builder()
-        .member(Member.builder()
-            .id(ownerId)
-            .build())
+        .member(member)
         .build();
     when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bookmark));
     doNothing().when(bookmarkPermissionService).isEditable(bookmark, ownerId);
@@ -327,10 +330,11 @@ class BookmarkServiceTest {
     Long memberId = 1L;
     Long ownerId = 2L;
     Long bookmarkId = 10L;
+
+    Member member = Member.builder().build();
+    ReflectionTestUtils.setField(member, "memberId", ownerId);
     Bookmark bookmark = Bookmark.builder()
-        .member(Member.builder()
-            .id(ownerId)
-            .build())
+        .member(member)
         .build();
     when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bookmark));
     willThrow(new AccessDeniedBookmarkModifyException())

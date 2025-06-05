@@ -46,6 +46,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = BookmarkController.class)
@@ -83,9 +84,9 @@ class BookmarkControllerTest {
         List.of(linkReq)
     );
 
-    List<LinkCreateResponse> linkRes = List.of(LinkCreateResponse.from(
-        new Link(1L, linkReq.url(), linkReq.title(), null)
-    ));
+    Link link = new Link(linkReq.url(), linkReq.title(), null);
+    ReflectionTestUtils.setField(link, "linkId", 1L);
+    List<LinkCreateResponse> linkRes = List.of(LinkCreateResponse.from(link));
     BookmarkCreateResponse resp = new BookmarkCreateResponse(
         100L,
         req.title(),
@@ -127,13 +128,13 @@ class BookmarkControllerTest {
     LocalDateTime createdAt = LocalDateTime.of(2025, 5, 23, 15, 0);
     LocalDateTime updatedAt = LocalDateTime.of(2025, 5, 23, 15, 0);
     Bookmark bookmark = Bookmark.builder()
-        .bookmarkId(bookmarkId)
         .title("My Bookmark")
         .description("A detailed description")
         .imageUrl("https://example.com/image.png")
         .visibleToOthers(true)
         .viewCount(42L)
         .build();
+    ReflectionTestUtils.setField(bookmark, "bookmarkId", bookmarkId);
     List<String> tags = List.of("spring", "java");
     List<LinkDetailResponse> links = List.of(
         new LinkDetailResponse(100L, "Google", "https://google.com"),
@@ -206,9 +207,9 @@ class BookmarkControllerTest {
         List.of(linkReq)
     );
 
-    List<LinkDetailResponse> linkRes = List.of(LinkDetailResponse.from(
-        new Link(1L, linkReq.title(), linkReq.url(), null)
-    ));
+    Link link = new Link(linkReq.title(), linkReq.url(), null);
+    ReflectionTestUtils.setField(link, "linkId", 1L);
+    List<LinkDetailResponse> linkRes = List.of(LinkDetailResponse.from(link));
     BookmarkDetailResponse resp = new BookmarkDetailResponse(
         bookmarkId,
         req.title(),

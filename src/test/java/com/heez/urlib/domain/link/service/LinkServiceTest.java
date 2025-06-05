@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class LinkServiceTest {
@@ -27,8 +28,10 @@ class LinkServiceTest {
   void findLinksByBookmarkId_returnsLinks() {
     // given
     Long bookmarkId = 123L;
-    Link link1 = new Link(1L, "http://a.com", "A", null);
-    Link link2 = new Link(2L, "http://b.com", "B", null);
+    Link link1 = new Link( "http://a.com", "A", null);
+    Link link2 = new Link( "http://b.com", "B", null);
+    ReflectionTestUtils.setField(link1, "linkId", 1L);
+    ReflectionTestUtils.setField(link2, "linkId", 2L);
     given(linkRepository.findAllByBookmark_BookmarkId(bookmarkId))
         .willReturn(List.of(link1, link2));
 

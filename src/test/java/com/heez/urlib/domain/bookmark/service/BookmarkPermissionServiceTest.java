@@ -42,7 +42,7 @@ class BookmarkPermissionServiceTest {
   void isVisible_privateBookmarkAndOwner_doesNotThrowException() {
     // given
     Member owner = mock(Member.class);
-    when(owner.getId()).thenReturn(1L);
+    when(owner.getMemberId()).thenReturn(1L);
 
     Bookmark bookmark = mock(Bookmark.class);
     when(bookmark.getMember()).thenReturn(owner);
@@ -57,7 +57,7 @@ class BookmarkPermissionServiceTest {
   void isVisible_privateBookmarkAndNonOwner_throwsAccessDeniedBookmarkException() {
     // given
     Member owner = mock(Member.class);
-    when(owner.getId()).thenReturn(1L);
+    when(owner.getMemberId()).thenReturn(1L);
 
     Bookmark bookmark = mock(Bookmark.class);
     when(bookmark.getMember()).thenReturn(owner);
@@ -72,7 +72,7 @@ class BookmarkPermissionServiceTest {
   void isEditable_owner_doesNotThrowException() {
     // given
     Member owner = mock(Member.class);
-    when(owner.getId()).thenReturn(1L);
+    when(owner.getMemberId()).thenReturn(1L);
 
     Bookmark bookmark = mock(Bookmark.class);
     when(bookmark.getMember()).thenReturn(owner);
@@ -86,7 +86,7 @@ class BookmarkPermissionServiceTest {
   void isEditable_nonOwner_throwsAccessDeniedBookmarkModifyException() {
     // given
     Member owner = mock(Member.class);
-    when(owner.getId()).thenReturn(1L);
+    when(owner.getMemberId()).thenReturn(1L);
 
     Bookmark bookmark = mock(Bookmark.class);
     when(bookmark.getMember()).thenReturn(owner);

@@ -122,7 +122,7 @@ class BookmarkLikeServiceTest {
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
     willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
     given(bookmarkLikeRepository
-        .findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId))
+        .findByBookmark_BookmarkIdAndMember_MemberId(bookmarkId, memberId))
         .willReturn(Optional.of(existingLike));
 
     // when
@@ -145,7 +145,7 @@ class BookmarkLikeServiceTest {
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
     willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
     willThrow(new AlreadyUnlikedException())
-        .given(bookmarkLikeRepository).findByBookmark_BookmarkIdAndMember_Id(bookmarkId, memberId);
+        .given(bookmarkLikeRepository).findByBookmark_BookmarkIdAndMember_MemberId(bookmarkId, memberId);
 
     // when / then
     assertThatThrownBy(() -> bookmarkLikeService.unlikeBookmark(memberId, bookmarkId))

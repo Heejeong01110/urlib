@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class TagServiceTest {
@@ -32,11 +33,11 @@ class TagServiceTest {
   void ensureTags_existingNames_returnsExistingEntities() {
     // given
     List<String> names = List.of("spring", "java");
-    given(tagRepository.findAllByTitleIn(names))
-        .willReturn(List.of(
-            Hashtag.builder().hashtagId(1L).title("spring").build(),
-            Hashtag.builder().hashtagId(2L).title("java").build()
-        ));
+    Hashtag hashtag1 = Hashtag.builder().title("spring").build();
+    Hashtag hashtag2 = Hashtag.builder().title("java").build();
+    ReflectionTestUtils.setField(hashtag1, "hashtagId", 1L);
+    ReflectionTestUtils.setField(hashtag2, "hashtagId", 2L);
+    given(tagRepository.findAllByTitleIn(names)).willReturn(List.of(hashtag1, hashtag2));
 
     // when
     List<Hashtag> result = tagService.ensureTags(names);
@@ -55,10 +56,9 @@ class TagServiceTest {
   void ensureTags_newNames_createsAndReturnsAll() {
     // given
     List<String> names = List.of("spring", "hibernate");
-    given(tagRepository.findAllByTitleIn(names))
-        .willReturn(List.of(
-            Hashtag.builder().hashtagId(1L).title("spring").build()
-        ));
+    Hashtag hashtag1 = Hashtag.builder().title("spring").build();
+    given(tagRepository.findAllByTitleIn(names)).willReturn(List.of(hashtag1));
+    ReflectionTestUtils.setField(hashtag1, "hashtagId", 1L);
     given(tagRepository.saveAll(any()))
         .willAnswer(invocation -> invocation.getArgument(0));
 
@@ -80,11 +80,12 @@ class TagServiceTest {
     // given
     List<String> namesWithDup = List.of("spring", "spring", "spring-boot");
     List<String> distinctNames = List.of("spring", "spring-boot");
-    given(tagRepository.findAllByTitleIn(distinctNames))
-        .willReturn(List.of(
-            Hashtag.builder().hashtagId(1L).title("spring").build(),
-            Hashtag.builder().hashtagId(2L).title("spring-boot").build()
-        ));
+    Hashtag hashtag1 = Hashtag.builder().title("spring").build();
+    Hashtag hashtag2 = Hashtag.builder().title("spring-boot").build();
+    ReflectionTestUtils.setField(hashtag1, "hashtagId", 1L);
+    ReflectionTestUtils.setField(hashtag2, "hashtagId", 2L);
+
+    given(tagRepository.findAllByTitleIn(distinctNames)).willReturn(List.of(hashtag1, hashtag2));
 
     // when
     List<Hashtag> result = tagService.ensureTags(namesWithDup);

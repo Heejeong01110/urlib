@@ -53,7 +53,7 @@ class FollowServiceTest {
 
     given(memberService.findById(followingId)).willReturn(followingMember);
     given(memberService.findById(followerId)).willReturn(followerMember);
-    given(followRepository.existsFollowByFollower_IdAndFollowing_Id(followerId,
+    given(followRepository.existsFollowByFollower_MemberIdAndFollowing_MemberId(followerId,
         followingId)).willReturn(false);
 
     // when
@@ -89,7 +89,7 @@ class FollowServiceTest {
 
     given(memberService.findById(followingId)).willReturn(followingMember);
     given(memberService.findById(followerId)).willReturn(followerMember);
-    given(followRepository.existsFollowByFollower_IdAndFollowing_Id(followerId,
+    given(followRepository.existsFollowByFollower_MemberIdAndFollowing_MemberId(followerId,
         followingId)).willReturn(true);
 
     // when & then
@@ -109,7 +109,7 @@ class FollowServiceTest {
 
     given(memberService.findById(followingId)).willReturn(followingMember);
     given(memberService.findById(followerId)).willReturn(followerMember);
-    given(followRepository.findByFollowerIdAndFollowingId(followerId, followingId))
+    given(followRepository.findByFollowerMemberIdAndFollowingMemberId(followerId, followingId))
         .willReturn(Optional.of(existingFollow));
 
     // when
@@ -140,7 +140,7 @@ class FollowServiceTest {
 
     given(memberService.findById(followingId)).willReturn(followingMember);
     given(memberService.findById(followerId)).willReturn(followerMember);
-    given(followRepository.findByFollowerIdAndFollowingId(followerId, followingId))
+    given(followRepository.findByFollowerMemberIdAndFollowingMemberId(followerId, followingId))
         .willReturn(Optional.empty());
 
     // when & then
@@ -154,7 +154,7 @@ class FollowServiceTest {
     Long followingId = 1L;
     Long followerId = 2L;
     Follow existingFollow = org.mockito.Mockito.mock(Follow.class);
-    given(followRepository.findByFollowerIdAndFollowingId(followerId, followingId))
+    given(followRepository.findByFollowerMemberIdAndFollowingMemberId(followerId, followingId))
         .willReturn(Optional.of(existingFollow));
 
     // when
@@ -169,7 +169,7 @@ class FollowServiceTest {
     // given
     Long followingId = 1L;
     Long followerId = 2L;
-    given(followRepository.findByFollowerIdAndFollowingId(followerId, followingId))
+    given(followRepository.findByFollowerMemberIdAndFollowingMemberId(followerId, followingId))
         .willReturn(Optional.empty());
 
     // when
