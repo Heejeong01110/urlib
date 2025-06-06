@@ -34,7 +34,7 @@ public class LoggingAspect {
     String requestUrl = getRequestUrl();
 
     if (elapsedTime > MAX_AFFORDABLE_TIME) {
-      log.warn(FORMAT, className, methodName, elapsedTime, requestUrl);
+      log.info(FORMAT, className, methodName, elapsedTime, requestUrl);
       /*
       메소드의 결과를 반환해주는 이유는 aop가 프록시로 구현되기 때문이다.
       프록시 객체가 원본 객체와 동일하게 결과를 반환해야 하기 때문에 여기서 원본 객체의 결과(proceed)를 return해줘야 프록시 객체가 원본 객체와 동일하게 작동할 수 있다.
