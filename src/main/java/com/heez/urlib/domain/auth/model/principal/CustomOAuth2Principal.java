@@ -35,6 +35,13 @@ public class CustomOAuth2Principal implements OAuth2User, UserPrincipal {
     this.authType = authType;
   }
 
+  public static CustomOAuth2Principal from(Member member, Map<String, Object> attributes,
+      AuthType authType) {
+    return new CustomOAuth2Principal(member.getMemberId(), member.getEmail(),
+        List.of(new SimpleGrantedAuthority(member.getRole().getKey())),
+        attributes, "id", authType);
+  }
+
   @Override
   public <A> A getAttribute(String name) {
     return OAuth2User.super.getAttribute(name);

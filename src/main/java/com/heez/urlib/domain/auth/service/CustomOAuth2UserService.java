@@ -6,10 +6,8 @@ import com.heez.urlib.domain.auth.model.principal.CustomOAuth2Principal;
 import com.heez.urlib.domain.auth.model.strategy.OAuth2StrategyComposite;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.service.MemberService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -34,9 +32,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         .getUserInfo(oAuth2User);
 
     Member member = memberService.findMemberOrCreate(userInfo);
-    return new CustomOAuth2Principal(member.getMemberId(), member.getEmail(),
-        List.of(new SimpleGrantedAuthority(member.getRole().getKey())),
-        oAuth2User.getAttributes(), "id", userInfo.authType());
+    return CustomOAuth2Principal.from(member, oAuth2User.getAttributes(), userInfo.authType());
   }
 
   private AuthType getSocialProvider(OAuth2UserRequest userRequest) {

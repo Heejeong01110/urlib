@@ -28,6 +28,12 @@ public class CustomUsernamePasswordPrincipal implements UserDetails, UserPrincip
     this.authType = authType;
   }
 
+  public static CustomUsernamePasswordPrincipal from(Member member) {
+    return new CustomUsernamePasswordPrincipal(
+        member.getMemberId(), member.getEmail(), member.getPassword(),
+        List.of(new SimpleGrantedAuthority(member.getRole().getKey())), member.getOauthType());
+  }
+
   @Override
   public Long getMemberId() {
     return memberId;
