@@ -1,5 +1,6 @@
 package com.heez.urlib.domain.auth.security.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heez.urlib.domain.auth.security.filter.CustomUsernamePasswordAuthenticationFilter;
 import com.heez.urlib.domain.auth.security.filter.JwtAuthenticationFilter;
 import com.heez.urlib.domain.auth.security.handler.CustomAccessDeniedHandler;
@@ -40,8 +41,8 @@ public class WebSecurityConfig {
   private final CustomUserDetailsService customUserDetailsService;
   private final CustomJwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final CustomAccessDeniedHandler accessDeniedHandler;
-  private final CustomUsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter;
   private final CorsConfig corsConfig;
+  private final ObjectMapper objectMapper;
 
   // OAuth2 처리하는 체인
   @Bean
@@ -63,7 +64,8 @@ public class WebSecurityConfig {
   // JWT 검증 처리하는 체인
   @Bean
   @Order(2)
-  SecurityFilterChain apiChain(HttpSecurity http) throws Exception {
+  SecurityFilterChain apiChain(HttpSecurity http, AuthenticationManager authenticationManager)
+      throws Exception {
     applyCommon(http);
     http
         .securityMatcher("/api/**")
@@ -76,7 +78,8 @@ public class WebSecurityConfig {
             .authenticationEntryPoint(jwtAuthenticationEntryPoint)
             .accessDeniedHandler(accessDeniedHandler))
         .addFilterBefore(
-            usernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            usernamePasswordAuthenticationFilter(authenticationManager),
+            UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(
             jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -121,9 +124,19 @@ public class WebSecurityConfig {
 
   @Bean
   public AuthenticationManager authenticationManager(
-      AuthenticationConfiguration authenticationConfiguration
-  ) throws Exception {
-    return authenticationConfiguration.getAuthenticationManager();
+      AuthenticationConfiguration authConfig) throws Exception {
+    return authConfig.getAuthenticationManager();
+  }
+
+  @Bean
+  public CustomUsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter(
+      AuthenticationManager authenticationManager
+  ) {
+    return new CustomUsernamePasswordAuthenticationFilter(
+        objectMapper,
+        customSuccessHandler,
+        customFailureHandler,
+        authenticationManager);
   }
 
 }

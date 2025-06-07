@@ -15,10 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
-@Component
 public class CustomUsernamePasswordAuthenticationFilter extends
     AbstractAuthenticationProcessingFilter {
 
@@ -28,7 +26,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends
 
   private final ObjectMapper objectMapper;
 
-  protected CustomUsernamePasswordAuthenticationFilter(
+  public CustomUsernamePasswordAuthenticationFilter(
       ObjectMapper objectMapper,
       CustomSuccessHandler successHandler,
       CustomFailureHandler failureHandler,
