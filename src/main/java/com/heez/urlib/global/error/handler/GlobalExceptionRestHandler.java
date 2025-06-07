@@ -12,7 +12,7 @@ import static com.heez.urlib.global.error.handler.ErrorCode.REQUEST_PARAM_MISSIN
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.heez.urlib.domain.auth.exception.ExpiredRefreshTokenException;
 import com.heez.urlib.domain.auth.exception.InvalidRefreshTokenException;
-import com.heez.urlib.domain.auth.jwt.JwtHeaderUtil;
+import com.heez.urlib.domain.auth.security.jwt.JwtHeaderUtil;
 import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkException;
 import com.heez.urlib.domain.bookmark.exception.AccessDeniedBookmarkModifyException;
 import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;

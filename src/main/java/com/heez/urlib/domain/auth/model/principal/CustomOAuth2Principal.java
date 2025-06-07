@@ -1,9 +1,13 @@
-package com.heez.urlib.domain.auth.model;
+package com.heez.urlib.domain.auth.model.principal;
 
+import com.heez.urlib.domain.auth.model.AuthType;
+import com.heez.urlib.domain.member.model.Member;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Getter

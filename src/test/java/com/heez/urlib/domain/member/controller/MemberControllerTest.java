@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.heez.urlib.domain.auth.jwt.AuthTokenProvider;
+import com.heez.urlib.domain.auth.security.jwt.AuthTokenProvider;
 import com.heez.urlib.domain.auth.model.WithMockCustomUser;
 import com.heez.urlib.domain.member.controller.dto.MemberDetailResponse;
 import com.heez.urlib.domain.member.service.MemberService;

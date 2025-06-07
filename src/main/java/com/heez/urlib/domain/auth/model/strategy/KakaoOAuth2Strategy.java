@@ -1,4 +1,4 @@
-package com.heez.urlib.domain.auth.strategy;
+package com.heez.urlib.domain.auth.model.strategy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

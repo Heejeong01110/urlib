@@ -1,4 +1,4 @@
-package com.heez.urlib.domain.auth.strategy;
+package com.heez.urlib.domain.auth.model.strategy;
 
 import static java.util.function.UnaryOperator.identity;
 import static java.util.stream.Collectors.toMap;

@@ -12,7 +12,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 import com.heez.urlib.domain.auth.exception.InvalidRefreshTokenException;
-import com.heez.urlib.domain.auth.jwt.AuthTokenProvider;
+import com.heez.urlib.domain.auth.security.jwt.AuthTokenProvider;
 import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.auth.service.dto.ReissueDto;
 import com.heez.urlib.domain.member.exception.MemberNotFoundException;

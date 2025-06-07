@@ -1,4 +1,4 @@
-package com.heez.urlib.domain.auth.strategy;
+package com.heez.urlib.domain.auth.model.strategy;
 
 import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.auth.model.OAuth2UserInfo;

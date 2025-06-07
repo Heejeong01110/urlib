@@ -1,5 +1,6 @@
 package com.heez.urlib.domain.auth.model;
 
+import com.heez.urlib.domain.auth.model.principal.CustomUsernamePasswordPrincipal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

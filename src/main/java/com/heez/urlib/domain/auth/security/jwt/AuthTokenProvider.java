@@ -1,4 +1,4 @@
-package com.heez.urlib.domain.auth.jwt;
+package com.heez.urlib.domain.auth.security.jwt;
 
 import com.heez.urlib.domain.auth.exception.ExpiredRefreshTokenException;
 import com.heez.urlib.domain.auth.exception.InvalidJwtFormatException;
@@ -9,8 +9,8 @@ import com.heez.urlib.domain.auth.exception.MissingJwtTokenException;
 import com.heez.urlib.domain.auth.exception.TokenExpiredException;
 import com.heez.urlib.domain.auth.exception.UnsupportedJwtTokenException;
 import com.heez.urlib.domain.auth.model.AuthType;
-import com.heez.urlib.domain.auth.model.CustomOAuth2Principal;
-import com.heez.urlib.domain.auth.model.CustomUsernamePasswordPrincipal;
+import com.heez.urlib.domain.auth.model.principal.CustomOAuth2Principal;
+import com.heez.urlib.domain.auth.model.principal.CustomUsernamePasswordPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;

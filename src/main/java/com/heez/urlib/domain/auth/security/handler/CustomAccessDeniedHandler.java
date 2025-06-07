@@ -1,4 +1,4 @@
-package com.heez.urlib.domain.auth.config;
+package com.heez.urlib.domain.auth.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heez.urlib.global.error.handler.ErrorCode;

@@ -1,7 +1,8 @@
 package com.heez.urlib.domain.bookmark.controller;
 
 
-import com.heez.urlib.domain.auth.model.UserPrincipal;
+import com.heez.urlib.domain.auth.model.principal.UserPrincipal;
+import com.heez.urlib.domain.auth.security.annotation.AuthUser;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
@@ -10,7 +11,6 @@ import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.LikeResponse;
 import com.heez.urlib.domain.bookmark.service.BookmarkLikeService;
 import com.heez.urlib.domain.bookmark.service.BookmarkService;
-import com.heez.urlib.domain.member.model.AuthUser;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.Optional;

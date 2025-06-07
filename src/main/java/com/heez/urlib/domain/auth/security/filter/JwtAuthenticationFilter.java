@@ -1,7 +1,7 @@
-package com.heez.urlib.domain.auth.config;
+package com.heez.urlib.domain.auth.security.filter;
 
-import com.heez.urlib.domain.auth.jwt.AuthTokenProvider;
-import com.heez.urlib.domain.auth.jwt.JwtHeaderUtil;
+import com.heez.urlib.domain.auth.security.jwt.AuthTokenProvider;
+import com.heez.urlib.domain.auth.security.jwt.JwtHeaderUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,7 +1,7 @@
-package com.heez.urlib.global.config;
+package com.heez.urlib.domain.auth.security.resolver;
 
-import com.heez.urlib.domain.auth.model.UserPrincipal;
-import com.heez.urlib.domain.member.model.AuthUser;
+import com.heez.urlib.domain.auth.model.principal.UserPrincipal;
+import com.heez.urlib.domain.auth.security.annotation.AuthUser;
 import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.access.AccessDeniedException;

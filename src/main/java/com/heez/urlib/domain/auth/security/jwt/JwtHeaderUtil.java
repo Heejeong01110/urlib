@@ -1,4 +1,4 @@
-package com.heez.urlib.domain.auth.jwt;
+package com.heez.urlib.domain.auth.security.jwt;
 
 import com.heez.urlib.domain.auth.exception.MissingJwtTokenException;
 import jakarta.servlet.http.Cookie;

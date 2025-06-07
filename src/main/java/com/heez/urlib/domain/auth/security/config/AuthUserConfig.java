@@ -1,5 +1,6 @@
-package com.heez.urlib.global.config;
+package com.heez.urlib.domain.auth.security.config;
 
+import com.heez.urlib.domain.auth.security.resolver.AuthUserArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @RequiredArgsConstructor
-public class WebConfig implements WebMvcConfigurer {
+public class AuthUserConfig implements WebMvcConfigurer {
 
   private final AuthUserArgumentResolver resolver;
 

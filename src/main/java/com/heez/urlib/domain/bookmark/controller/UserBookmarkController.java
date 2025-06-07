@@ -1,9 +1,9 @@
 package com.heez.urlib.domain.bookmark.controller;
 
-import com.heez.urlib.domain.auth.model.UserPrincipal;
+import com.heez.urlib.domain.auth.model.principal.UserPrincipal;
+import com.heez.urlib.domain.auth.security.annotation.AuthUser;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkSummaryResponse;
 import com.heez.urlib.domain.bookmark.service.BookmarkService;
-import com.heez.urlib.domain.member.model.AuthUser;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

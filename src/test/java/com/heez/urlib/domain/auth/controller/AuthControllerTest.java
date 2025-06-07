@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.heez.urlib.domain.auth.jwt.JwtHeaderUtil;
+import com.heez.urlib.domain.auth.security.jwt.JwtHeaderUtil;
 import com.heez.urlib.domain.auth.service.AuthService;
 import com.heez.urlib.domain.auth.service.dto.ReissueDto;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,9 +1,9 @@
 package com.heez.urlib.domain.member.controller;
 
-import com.heez.urlib.domain.auth.model.UserPrincipal;
+import com.heez.urlib.domain.auth.model.principal.UserPrincipal;
+import com.heez.urlib.domain.auth.security.annotation.AuthUser;
 import com.heez.urlib.domain.member.controller.dto.FollowStatusResponse;
 import com.heez.urlib.domain.member.controller.dto.MemberSummaryResponse;
-import com.heez.urlib.domain.member.model.AuthUser;
 import com.heez.urlib.domain.member.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

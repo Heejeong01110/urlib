@@ -1,8 +1,8 @@
 package com.heez.urlib.domain.auth.service;
 
 import com.heez.urlib.domain.auth.exception.InvalidRefreshTokenException;
-import com.heez.urlib.domain.auth.jwt.AuthTokenProvider;
 import com.heez.urlib.domain.auth.model.AuthType;
+import com.heez.urlib.domain.auth.security.jwt.AuthTokenProvider;
 import com.heez.urlib.domain.auth.service.dto.ReissueDto;
 import com.heez.urlib.domain.member.exception.MemberNotFoundException;
 import com.heez.urlib.domain.member.repository.MemberRepository;

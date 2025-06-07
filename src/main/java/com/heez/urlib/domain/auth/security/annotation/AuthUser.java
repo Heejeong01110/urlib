@@ -1,4 +1,4 @@
-package com.heez.urlib.domain.member.model;
+package com.heez.urlib.domain.auth.security.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

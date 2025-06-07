@@ -1,9 +1,9 @@
 package com.heez.urlib.domain.auth.service;
 
 import com.heez.urlib.domain.auth.model.AuthType;
-import com.heez.urlib.domain.auth.model.CustomOAuth2Principal;
 import com.heez.urlib.domain.auth.model.OAuth2UserInfo;
-import com.heez.urlib.domain.auth.strategy.OAuth2StrategyComposite;
+import com.heez.urlib.domain.auth.model.principal.CustomOAuth2Principal;
+import com.heez.urlib.domain.auth.model.strategy.OAuth2StrategyComposite;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.service.MemberService;
 import java.util.List;
