@@ -28,7 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String path = request.getServletPath();
     // JWT 필터를 제외할 URI
     return Stream.of(
-        "/api/*/auth/re-issue"
+        "/api/*/auth/re-issue",
+        "/api/*/auth/signup",
+        "/swagger-ui/**"
     ).anyMatch(pattern -> new AntPathMatcher().match(pattern, path));
   }
 
