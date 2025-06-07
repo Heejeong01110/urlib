@@ -1,8 +1,8 @@
-package com.heez.urlib.domain.auth.config;
+package com.heez.urlib.domain.auth.security.handler;
 
-import com.heez.urlib.domain.auth.jwt.AuthTokenProvider;
-import com.heez.urlib.domain.auth.jwt.JwtHeaderUtil;
-import com.heez.urlib.domain.auth.model.CustomOAuth2Principal;
+import com.heez.urlib.domain.auth.model.principal.UserPrincipal;
+import com.heez.urlib.domain.auth.security.jwt.AuthTokenProvider;
+import com.heez.urlib.domain.auth.security.jwt.JwtHeaderUtil;
 import com.heez.urlib.domain.auth.service.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
   private final AuthTokenProvider authTokenProvider;
   private final RedisService redis;
@@ -32,12 +32,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
       HttpServletResponse response,
       Authentication authentication) throws IOException {
 
-    CustomOAuth2Principal oAuth2User = (CustomOAuth2Principal) authentication.getPrincipal();
-    Long memberId = oAuth2User.getMemberId();
-    String email = oAuth2User.getEmail();
-    List<SimpleGrantedAuthority> authorities = toSimpleAuthorities(oAuth2User.getAuthorities());
+    UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+    Long memberId = userPrincipal.getMemberId();
+    String email = userPrincipal.getEmail();
+    List<SimpleGrantedAuthority> authorities = toSimpleAuthorities(userPrincipal.getAuthorities());
 
-    String accessToken = authTokenProvider.generateAccessToken(memberId, email, authorities, oAuth2User.getAuthType());
+    String accessToken = authTokenProvider.generateAccessToken(memberId, email, authorities,
+        userPrincipal.getAuthType());
     String refreshToken = authTokenProvider.generateRefreshToken(memberId);
     redis.saveToken(refreshToken, memberId);
 
