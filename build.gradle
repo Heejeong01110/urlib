@@ -50,6 +50,7 @@ dependencies {
 
 	// DB
 	runtimeOnly 'com.h2database:h2'
+	implementation 'it.ozimov:embedded-redis:0.7.2'
 	runtimeOnly 'com.mysql:mysql-connector-j:8.0.32'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
