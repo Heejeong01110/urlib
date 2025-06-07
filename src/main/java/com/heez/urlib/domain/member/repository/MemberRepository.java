@@ -3,6 +3,7 @@ package com.heez.urlib.domain.member.repository;
 import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.model.vo.Email;
+import com.heez.urlib.domain.member.model.vo.Nickname;
 import com.heez.urlib.domain.member.service.dto.TokenProjection;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +20,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
   Optional<TokenProjection> findEmailAndRoleById(@Param("id") Long id);
 
   Optional<Member> findMemberByOauthTypeAndIdentifier(AuthType authType, String identifier);
+
+  boolean existsByEmail(Email email);
+  boolean existsByNickname(Nickname nickname);
 
 }

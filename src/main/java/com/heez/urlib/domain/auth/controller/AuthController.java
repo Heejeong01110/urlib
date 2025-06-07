@@ -1,15 +1,19 @@
 package com.heez.urlib.domain.auth.controller;
 
+import com.heez.urlib.domain.auth.controller.dto.SignUpRequest;
 import com.heez.urlib.domain.auth.security.jwt.JwtHeaderUtil;
 import com.heez.urlib.domain.auth.service.AuthService;
 import com.heez.urlib.domain.auth.service.dto.ReissueDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
   private final AuthService authService;
+
+  @PostMapping("/signup")
+  public ResponseEntity<Void> signup(
+      @Valid @RequestBody SignUpRequest request) {
+    authService.signup(request);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
 
   @PostMapping("/re-issue")
   public ResponseEntity<Void> reissue(
