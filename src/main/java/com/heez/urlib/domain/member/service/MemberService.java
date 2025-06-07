@@ -47,4 +47,8 @@ public class MemberService {
         .build();
   }
 
+  public Member findByEmail(String email) {
+    return memberRepository.findMemberByEmail(new Email(email))
+        .orElseThrow(MemberNotFoundException::new);
+  }
 }
