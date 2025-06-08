@@ -1,4 +1,4 @@
-package com.heez.urlib.domain.auth.exception;
+package com.heez.urlib.global.error.exception;
 
 import com.heez.urlib.global.error.handler.ErrorCode;
 import org.springframework.security.core.AuthenticationException;
