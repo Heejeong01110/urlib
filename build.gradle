@@ -124,16 +124,12 @@ private excludedClassFilesForReport(classDirectories) {
 			files(classDirectories.files.collect {
 				fileTree(dir: it, exclude: [
 						"**/*Application*",
-
-						"**/*Config*",
-						"**/jwt/**",
-
+						"**/security/**",
+						"**/config/**",
 						"**/dto/**",
 						"**/vo/**",
-
 						"**/exception/**",
-						"**/global/error/**",
-						"**/global/log/**"
+						"**/log/**"
 
 				])
 			})
