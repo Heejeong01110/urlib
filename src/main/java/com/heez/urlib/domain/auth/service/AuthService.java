@@ -1,7 +1,8 @@
 package com.heez.urlib.domain.auth.service;
 
 import com.heez.urlib.domain.auth.controller.dto.SignUpRequest;
-import com.heez.urlib.domain.auth.exception.DuplicateEmailException;
+import com.heez.urlib.domain.auth.exception.DuplicateEmailByEmailTypeException;
+import com.heez.urlib.domain.auth.exception.DuplicateEmailByKakaoTypeException;
 import com.heez.urlib.domain.auth.exception.DuplicateNicknameException;
 import com.heez.urlib.domain.auth.exception.InvalidRefreshTokenException;
 import com.heez.urlib.domain.auth.model.AuthType;
@@ -55,9 +56,8 @@ public class AuthService {
   }
 
   public void signup(SignUpRequest request) {
-    if (memberRepository.existsByEmail(new Email(request.email()))) {
-      throw new DuplicateEmailException();
-    }
+    memberRepository.findAuthTypeByEmail(new Email(request.email()))
+        .ifPresent(this::throwByAuthType);
 
     if (memberRepository.existsByNickname(new Nickname(request.nickname()))) {
       throw new DuplicateNicknameException();
@@ -70,5 +70,14 @@ public class AuthService {
         .role(Role.USER)
         .oauthType(AuthType.EMAIL)
         .build());
+  }
+
+  private void throwByAuthType(AuthType authType) {
+    switch (authType) {
+      case KAKAO -> throw new DuplicateEmailByKakaoTypeException();
+      case EMAIL -> throw new DuplicateEmailByEmailTypeException();
+      default -> {
+      }
+    }
   }
 }

@@ -35,8 +35,9 @@ public enum ErrorCode {
   //Member
   NOT_FOUND_MEMBER("M001", "사용자 정보가 존재하지 않습니다."),
   NOT_FOUND_EMAIL("M002", "사용자 email 정보가 존재하지 않습니다."),
-  DUPLICATE_EMAIL("M003", "이미 존재하는 이메일입니다."),
+  DUPLICATE_EMAIL_BY_EMAIL("M003", "이미 가입한 이메일입니다."),
   DUPLICATE_NICKNAME("M004", "이미 존재하는 닉네임입니다."),
+  DUPLICATE_EMAIL_BY_KAKAO("M005", "카카오로 가입한 이메일입니다."),
 
   //follow
   SELF_FOLLOW("F001", "자기 자신을 팔로우 할 수 없습니다."),

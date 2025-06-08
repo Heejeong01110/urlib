@@ -21,7 +21,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
   Optional<Member> findMemberByOauthTypeAndIdentifier(AuthType authType, String identifier);
 
-  boolean existsByEmail(Email email);
+  @Query("SELECT m.oauthType "
+      + "FROM Member m "
+      + "WHERE m.email.value = :email")
+  Optional<AuthType> findAuthTypeByEmail(@Param("email") Email email);
+
   boolean existsByNickname(Nickname nickname);
 
 }
