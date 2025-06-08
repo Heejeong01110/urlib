@@ -44,7 +44,7 @@ public class WebSecurityConfig {
   private final CorsConfig corsConfig;
   private final ObjectMapper objectMapper;
 
-  // OAuth2 처리하는 체인
+  // OAuth2 체인
   @Bean
   @Order(1)
   public SecurityFilterChain oauth2Chain(HttpSecurity http) throws Exception {
@@ -61,7 +61,7 @@ public class WebSecurityConfig {
     return http.build();
   }
 
-  // JWT 검증 처리하는 체인
+  // JWT 검증 체인
   @Bean
   @Order(2)
   SecurityFilterChain apiChain(HttpSecurity http, AuthenticationManager authenticationManager)
@@ -69,9 +69,6 @@ public class WebSecurityConfig {
     applyCommon(http);
     http
         .securityMatcher("/api/**")
-        .authorizeHttpRequests(a -> a
-            .requestMatchers("/api/*/auth/**").permitAll()
-        )
         .authorizeHttpRequests(this::applySecurityPatterns)
         .authenticationProvider(daoAuthenticationProvider())
         .exceptionHandling(handler -> handler
@@ -90,14 +87,10 @@ public class WebSecurityConfig {
     http
         .sessionManagement(sm ->
             sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        // CORS
         .cors(c -> c.configurationSource(corsConfig.corsConfigurationSource()))
-        // CSRF
         .csrf(AbstractHttpConfigurer::disable)
-        // 기본 인증 폼 / HTTP Basic 비활성화
         .httpBasic(AbstractHttpConfigurer::disable)
         .formLogin(AbstractHttpConfigurer::disable)
-        // 헤더 프레임 옵션 해제 (예: H2 Console)
         .headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
   }
 
@@ -106,7 +99,7 @@ public class WebSecurityConfig {
           .AuthorizationManagerRequestMatcherRegistry auth
   ) {
     SecurityPatterns.RULES.forEach(rule -> rule.apply(auth));
-    auth.anyRequest().permitAll();
+    auth.anyRequest().authenticated();
   }
 
   @Bean

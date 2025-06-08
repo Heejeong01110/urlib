@@ -3,7 +3,6 @@ package com.heez.urlib.domain.auth.security.config;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.security.authorization.AuthenticatedAuthorizationManager.authenticated;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -14,11 +13,21 @@ import org.springframework.security.config.annotation.web.configurers.AuthorizeH
 public class SecurityPatterns {
 
   public static final List<MatcherRule> RULES = List.of(
-      new MatcherRule(GET, "/api/*/auth/**",
-          (auth, r) -> auth.requestMatchers(r.method(), r.pattern()).permitAll()),
-      new MatcherRule(POST, "/api/*/auth/**",
-          (auth, r) -> auth.requestMatchers(r.method(), r.pattern()).access(authenticated()))
+      permitAll(POST, "/api/*/auth/signup"),
+      permitAll(POST, "/api/*/auth/login"),
+      permitAll(GET, "/api/*/bookmarks"),
+      permitAll(GET, "/api/*/bookmarks/*"),
+      permitAll(GET, "/api/*/users/*"),
+      permitAll(GET, "/api/*/users/*/bookmarks"),
+      permitAll(GET, "/api/*/users/*/follow"),
+      permitAll(GET, "/api/*/users/*/following"),
+      permitAll(GET, "/api/*/users/*/follower")
   );
+
+  private static MatcherRule permitAll(HttpMethod method, String pattern) {
+    return new MatcherRule(method, pattern,
+        (auth, r) -> auth.requestMatchers(r.method(), r.pattern()).permitAll());
+  }
 
   public record MatcherRule(
       HttpMethod method,
