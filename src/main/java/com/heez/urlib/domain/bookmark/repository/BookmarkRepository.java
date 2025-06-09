@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -55,5 +56,17 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
       """)
   @EntityGraph(attributePaths = {"member"})
   Page<BookmarkSummaryProjection> findPageByAnonymous(Pageable pageable);
+
+  @Modifying
+  @Query("UPDATE Bookmark b SET b.viewCount = b.viewCount + 1 WHERE b.bookmarkId = :bookmarkId")
+  void incrementViewCount(@Param("bookmarkId") Long bookmarkId);
+
+  @Modifying
+  @Query("UPDATE Bookmark b SET b.likeCount = b.likeCount + 1 WHERE b.bookmarkId = :bookmarkId")
+  void incrementLikeCount(@Param("bookmarkId") Long bookmarkId);
+
+  @Modifying
+  @Query("UPDATE Bookmark b SET b.likeCount = b.likeCount - 1 WHERE b.bookmarkId = :bookmarkId AND b.likeCount > 0")
+  void decrementLikeCount(@Param("bookmarkId") Long bookmarkId);
 
 }

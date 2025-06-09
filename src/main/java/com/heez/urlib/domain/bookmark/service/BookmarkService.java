@@ -73,8 +73,13 @@ public class BookmarkService {
         .stream()
         .map(LinkDetailResponse::from)
         .toList();
-    bookmark.addViewCount();
+    addBookmarkViewCount(bookmarkId);
     return BookmarkDetailResponse.from(bookmark, tags, links, bookmark.getMember().getMemberId());
+  }
+
+  @Transactional
+  public void addBookmarkViewCount(Long bookmarkId) {
+    bookmarkRepository.incrementViewCount(bookmarkId);
   }
 
   @Transactional

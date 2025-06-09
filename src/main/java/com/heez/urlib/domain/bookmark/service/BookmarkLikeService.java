@@ -40,7 +40,7 @@ public class BookmarkLikeService {
           .member(member)
           .build();
       bookmarkLikeRepository.save(like);
-      bookmark.incrementLikes();
+      bookmarkRepository.incrementLikeCount(bookmarkId);
     } catch (DataIntegrityViolationException e) {
       throw new AlreadyLikedException();
     }
@@ -62,7 +62,7 @@ public class BookmarkLikeService {
         .orElseThrow(AlreadyUnlikedException::new);
 
     bookmarkLikeRepository.delete(bookmarkLike);
-    bookmark.decrementLikes();
+    bookmarkRepository.decrementLikeCount(bookmarkId);
 
     return LikeResponse.builder()
         .liked(false)

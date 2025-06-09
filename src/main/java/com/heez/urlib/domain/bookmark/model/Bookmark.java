@@ -93,10 +93,6 @@ public class Bookmark extends BaseEntity {
     this.visibleToOthers = visibleToOthers;
   }
 
-  public void addViewCount() {
-    this.viewCount++;
-  }
-
   public void addHashtag(Hashtag tag) {
     BookmarkHashtag bh = BookmarkHashtag.builder()
         .bookmark(this)
@@ -121,13 +117,4 @@ public class Bookmark extends BaseEntity {
     links.forEach(this::addLink);
   }
 
-  public void incrementLikes() {
-    this.likeCount++;
-  }
-
-  public void decrementLikes() {
-    if (this.likeCount > 0) {
-      this.likeCount--;
-    }
-  }
 }
