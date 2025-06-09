@@ -126,6 +126,7 @@ private excludedClassFilesForReport(classDirectories) {
 						"**/*Application*",
 						"**/security/**",
 						"**/config/**",
+						"**/model/**",
 						"**/dto/**",
 						"**/vo/**",
 						"**/exception/**",
