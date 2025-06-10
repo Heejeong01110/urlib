@@ -55,6 +55,8 @@ public class AuthService {
     redisService.delete(refreshToken);
   }
 
+
+  @Transactional
   public void signup(SignUpRequest request) {
     memberRepository.findAuthTypeByEmail(new Email(request.email()))
         .ifPresent(this::throwByAuthType);
