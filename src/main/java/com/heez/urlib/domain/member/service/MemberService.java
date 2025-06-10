@@ -50,7 +50,7 @@ public class MemberService {
         .build();
   }
 
-  public String generateUniqueNickname(AuthType authType) {
+  private String generateUniqueNickname(AuthType authType) {
     String base = authType.getProvider() + "_";
     String nickname = base + UUID.randomUUID().toString().substring(0, 8);
     int retry = 0;

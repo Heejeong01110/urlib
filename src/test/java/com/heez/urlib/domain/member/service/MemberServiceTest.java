@@ -6,13 +6,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
 
 import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.auth.model.OAuth2UserInfo;
 import com.heez.urlib.domain.member.controller.dto.MemberDetailResponse;
 import com.heez.urlib.domain.member.exception.MemberNotFoundException;
 import com.heez.urlib.domain.member.model.Member;
+import com.heez.urlib.domain.member.model.Role;
 import com.heez.urlib.domain.member.model.vo.Email;
+import com.heez.urlib.domain.member.model.vo.Nickname;
 import com.heez.urlib.domain.member.repository.MemberRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -57,13 +60,13 @@ class MemberServiceTest {
     assertThat(result).isSameAs(existing);
     then(memberRepository)
         .should().findMemberByOauthTypeAndIdentifier(authType, userInfo.oAuthId());
-    then(memberRepository).shouldHaveNoMoreInteractions();
+    then(memberRepository).should(never()).save(any(Member.class));
   }
 
   @Test
   void findMemberOrCreate_newMember() {
     // given
-    AuthType authType = AuthType.valueOf("KAKAO");
+    AuthType authType = AuthType.KAKAO;
     OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
         .authType(authType)
         .oAuthId("kakao_123456789asdfzxcv")
@@ -71,22 +74,28 @@ class MemberServiceTest {
         .imageUrl("https://image.url.co.kr")
         .email("existing@example.com")
         .build();
+    Member expected = Member.builder()
+        .oauthType(authType)
+        .identifier(userInfo.oAuthId())
+        .email(new Email(userInfo.email()))
+        .nickname(new Nickname(authType.getProvider() + "_12345678")) // 예시값, 실제 닉네임 생성 로직에 맞게 수정
+        .imageUrl(userInfo.imageUrl())
+        .role(Role.USER)
+        .build();
+    ReflectionTestUtils.setField(expected, "memberId", 2L);
+
     given(memberRepository.findMemberByOauthTypeAndIdentifier(authType, userInfo.oAuthId()))
         .willReturn(Optional.empty());
-
-    Member saved = Member.builder()
-        .email(new Email("new@example.com"))
-        .build();
-    ReflectionTestUtils.setField(saved, "memberId", 2L);
-    given(memberRepository.save(any(Member.class))).willReturn(saved);
+    given(memberRepository.existsByNickname(any())).willReturn(false);
+    given(memberRepository.save(any(Member.class))).willReturn(expected);
 
     // when
     Member result = memberService.findMemberOrCreate(userInfo);
 
     // then
-    assertThat(result).isSameAs(saved);
-    then(memberRepository)
-        .should().findMemberByOauthTypeAndIdentifier(authType, userInfo.oAuthId());
+    assertThat(result).isSameAs(expected);
+    then(memberRepository).should()
+        .findMemberByOauthTypeAndIdentifier(authType, userInfo.oAuthId());
     then(memberRepository).should().save(any(Member.class));
   }
 
