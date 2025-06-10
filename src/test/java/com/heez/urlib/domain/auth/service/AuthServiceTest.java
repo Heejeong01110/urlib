@@ -27,7 +27,6 @@ import com.heez.urlib.domain.member.model.vo.Email;
 import com.heez.urlib.domain.member.model.vo.Nickname;
 import com.heez.urlib.domain.member.repository.MemberRepository;
 import com.heez.urlib.domain.member.service.dto.TokenProjection;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,27 +54,20 @@ class AuthServiceTest {
     // given
     String oldRefreshToken = "old-refresh";
     Long memberId = 42L;
-    given(redisService.getValue(oldRefreshToken))
-        .willReturn(Optional.of(memberId.toString()));
+    given(redisService.getValue(oldRefreshToken)).willReturn(Optional.of(memberId.toString()));
 
     TokenProjection tokenProjection = mock(TokenProjection.class);
     Email email = new Email("user@example.com");
     given(tokenProjection.getEmail()).willReturn(email);
     given(tokenProjection.getRole()).willReturn(Role.USER);
-    given(memberRepository.findEmailAndRoleById(memberId))
-        .willReturn(Optional.of(tokenProjection));
+    given(memberRepository.findEmailAndRoleById(memberId)).willReturn(Optional.of(tokenProjection));
 
     String newAccess = "new-access-token";
     given(authTokenProvider.generateAccessToken(
-        eq(memberId),
-        eq(email.getValue()),
-        any(List.class),
-        eq(AuthType.NONE)))
-        .willReturn(newAccess);
+        eq(memberId), eq(email.getValue()), any(), eq(AuthType.NONE))).willReturn(newAccess);
 
     String newRefresh = "new-refresh-token";
-    given(authTokenProvider.generateRefreshToken(memberId))
-        .willReturn(newRefresh);
+    given(authTokenProvider.generateRefreshToken(memberId)).willReturn(newRefresh);
 
     // when
     ReissueDto dto = authService.reissue(oldRefreshToken);
@@ -92,12 +84,10 @@ class AuthServiceTest {
   void reissue_invalidRefreshToken_throws() {
     // given
     String oldRefreshToken = "old-refresh";
-    given(redisService.getValue(oldRefreshToken))
-        .willReturn(Optional.empty());
+    given(redisService.getValue(oldRefreshToken)).willReturn(Optional.empty());
 
     // when / then
-    assertThrows(InvalidRefreshTokenException.class,
-        () -> authService.reissue(oldRefreshToken));
+    assertThrows(InvalidRefreshTokenException.class, () -> authService.reissue(oldRefreshToken));
 
     then(redisService).should(never()).saveToken(anyString(), anyLong());
   }
@@ -107,14 +97,11 @@ class AuthServiceTest {
     // given
     String oldRefreshToken = "old-refresh";
     Long memberId = 42L;
-    given(redisService.getValue(oldRefreshToken))
-        .willReturn(Optional.of(memberId.toString()));
-    given(memberRepository.findEmailAndRoleById(memberId))
-        .willReturn(Optional.empty());
+    given(redisService.getValue(oldRefreshToken)).willReturn(Optional.of(memberId.toString()));
+    given(memberRepository.findEmailAndRoleById(memberId)).willReturn(Optional.empty());
 
     // when / then
-    assertThrows(MemberNotFoundException.class,
-        () -> authService.reissue(oldRefreshToken));
+    assertThrows(MemberNotFoundException.class, () -> authService.reissue(oldRefreshToken));
 
     then(authTokenProvider).should(never())
         .generateAccessToken(anyLong(), anyString(), any(), any());
@@ -136,20 +123,20 @@ class AuthServiceTest {
   void signup_whenEmailExistsByKakao_throwsException() {
     // given
     SignUpRequest signUpRequest = new SignUpRequest("test@email.com", "pw12345678", "nick");
-    given(memberRepository.findAuthTypeByEmail(any(Email.class)))
-        .willReturn(Optional.of(AuthType.KAKAO));
+    given(memberRepository.findAuthTypeByEmail(any(Email.class))).willReturn(
+        Optional.of(AuthType.KAKAO));
 
     // when, then
-    assertThatThrownBy(() -> authService.signup(signUpRequest))
-        .isInstanceOf(DuplicateEmailByKakaoTypeException.class);
+    assertThatThrownBy(() -> authService.signup(signUpRequest)).isInstanceOf(
+        DuplicateEmailByKakaoTypeException.class);
   }
 
   @Test
   void signup_whenEmailExistsByEmail_throwsException() {
     // given
     SignUpRequest signUpRequest = new SignUpRequest("test@email.com", "pw12345678", "nick");
-    given(memberRepository.findAuthTypeByEmail(any(Email.class)))
-        .willReturn(Optional.of(AuthType.EMAIL));
+    given(memberRepository.findAuthTypeByEmail(any(Email.class))).willReturn(
+        Optional.of(AuthType.EMAIL));
 
     // when, then
     assertThatThrownBy(() -> authService.signup(signUpRequest))
