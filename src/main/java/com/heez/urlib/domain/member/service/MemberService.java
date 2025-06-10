@@ -1,5 +1,7 @@
 package com.heez.urlib.domain.member.service;
 
+import com.heez.urlib.domain.auth.exception.NicknameAutoGenerationFailedException;
+import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.auth.model.OAuth2UserInfo;
 import com.heez.urlib.domain.member.controller.dto.MemberDetailResponse;
 import com.heez.urlib.domain.member.exception.MemberNotFoundException;
@@ -8,6 +10,7 @@ import com.heez.urlib.domain.member.model.Role;
 import com.heez.urlib.domain.member.model.vo.Email;
 import com.heez.urlib.domain.member.model.vo.Nickname;
 import com.heez.urlib.domain.member.repository.MemberRepository;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,10 +44,24 @@ public class MemberService {
         .oauthType(userInfo.authType())
         .identifier(userInfo.oAuthId())
         .email(new Email(userInfo.email()))
-        .nickname(new Nickname(userInfo.nickname()))
+        .nickname(new Nickname(generateUniqueNickname(userInfo.authType())))
         .imageUrl(userInfo.imageUrl())
         .role(Role.USER)
         .build();
+  }
+
+  public String generateUniqueNickname(AuthType authType) {
+    String base = authType.getProvider() + "_";
+    String nickname = base + UUID.randomUUID().toString().substring(0, 8);
+    int retry = 0;
+    while (memberRepository.existsByNickname(new Nickname(nickname))) {
+      retry++;
+      if (retry > 10) {
+        throw new NicknameAutoGenerationFailedException();
+      }
+      nickname = base + UUID.randomUUID().toString().substring(0, 6);
+    }
+    return nickname;
   }
 
   public Member findByEmail(String email) {

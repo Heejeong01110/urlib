@@ -24,13 +24,14 @@ public enum ErrorCode {
   OAUTH_CLIENT_SERVER_ERROR("L004", "oauth 클라이언트 서버 에러입니다."),
   IS_LOGOUT_TOKEN("L005", "이미 로그아웃한 토큰입니다."),
   FORBIDDEN("L006", "권한이 없는 사용자입니다."),
+  NICKNAME_AUTO_GENERATION_FAILED("L007", "닉네임 자동생성을 실패했습니다."),
 
   //jwt
-  UNSUPPORTED_TOKEN("L007", "지원되지 않는 JWT 토큰입니다."),
-  INVALID_TOKEN_FORMAT("L008", "잘못된 JWT 토큰 형식입니다."),
-  INVALID_SIGNATURE("L009", "JWT 토큰 서명 검증에 실패했습니다."),
-  MISSING_TOKEN("L010", "JWT 토큰이 존재하지 않습니다."),
-  TOKEN_PROCESSING_ERROR("L011", "JWT 토큰 처리 중 알 수 없는 오류가 발생했습니다."),
+  UNSUPPORTED_TOKEN("J001", "지원되지 않는 JWT 토큰입니다."),
+  INVALID_TOKEN_FORMAT("J002", "잘못된 JWT 토큰 형식입니다."),
+  INVALID_SIGNATURE("J003", "JWT 토큰 서명 검증에 실패했습니다."),
+  MISSING_TOKEN("J004", "JWT 토큰이 존재하지 않습니다."),
+  TOKEN_PROCESSING_ERROR("J005", "JWT 토큰 처리 중 알 수 없는 오류가 발생했습니다."),
 
   //Member
   NOT_FOUND_MEMBER("M001", "사용자 정보가 존재하지 않습니다."),
