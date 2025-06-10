@@ -41,14 +41,17 @@ public class BookmarkLikeService {
           .build();
       bookmarkLikeRepository.save(like);
       bookmarkRepository.incrementLikeCount(bookmarkId);
+
+      Bookmark updated = bookmarkRepository.findById(bookmarkId)
+          .orElseThrow(BookmarkNotFoundException::new);
+
+      return LikeResponse.builder()
+          .liked(true)
+          .likeCount(updated.getLikeCount())
+          .build();
     } catch (DataIntegrityViolationException e) {
       throw new AlreadyLikedException();
     }
-
-    return LikeResponse.builder()
-        .liked(true)
-        .likeCount(bookmark.getLikeCount())
-        .build();
   }
 
   @Transactional
@@ -64,9 +67,12 @@ public class BookmarkLikeService {
     bookmarkLikeRepository.delete(bookmarkLike);
     bookmarkRepository.decrementLikeCount(bookmarkId);
 
+    Bookmark updated = bookmarkRepository.findById(bookmarkId)
+        .orElseThrow(BookmarkNotFoundException::new);
+
     return LikeResponse.builder()
         .liked(false)
-        .likeCount(bookmark.getLikeCount())
+        .likeCount(updated.getLikeCount())
         .build();
   }
 }

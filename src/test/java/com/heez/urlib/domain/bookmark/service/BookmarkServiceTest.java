@@ -147,6 +147,7 @@ class BookmarkServiceTest {
     Long bookmarkId = 100L;
     Long memberId = 100L;
 
+    List<String> tags = List.of("a", "b");
     Bookmark bookmark = Bookmark.builder()
         .title("T")
         .description("D")
@@ -155,19 +156,28 @@ class BookmarkServiceTest {
         .viewCount(5L)
         .member(owner)
         .build();
+    Bookmark updated = Bookmark.builder()
+        .title("T")
+        .description("D")
+        .imageUrl("U")
+        .visibleToOthers(true)
+        .viewCount(6L)
+        .member(owner)
+        .build();
+    Link link = Link.builder()
+        .title("L1")
+        .url("URL1")
+        .build();
+    ReflectionTestUtils.setField(link, "linkId", 11L);
     ReflectionTestUtils.setField(bookmark, "bookmarkId", bookmarkId);
-    when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bookmark));
+    ReflectionTestUtils.setField(updated, "bookmarkId", bookmarkId);
+
+    given(bookmarkRepository.findById(bookmarkId))
+        .willReturn(Optional.of(bookmark))
+        .willReturn(Optional.of(updated));
     doNothing().when(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
-
-    List<String> tags = List.of("a", "b");
-    when(tagService.getTagTitlesByBookmarkId(bookmarkId)).thenReturn(tags);
-
-    Link link1 = mock(Link.class);
-    when(link1.getLinkId()).thenReturn(11L);
-    when(link1.getTitle()).thenReturn("L1");
-    when(link1.getUrl()).thenReturn("URL1");
-    when(linkService.findLinksByBookmarkId(bookmarkId))
-        .thenReturn(List.of(link1));
+    given(tagService.getTagTitlesByBookmarkId(bookmarkId)).willReturn(tags);
+    given(linkService.findLinksByBookmarkId(bookmarkId)).willReturn(List.of(link));
 
     // when
     BookmarkDetailResponse result = bookmarkService.getBookmark(Optional.of(memberId), bookmarkId);

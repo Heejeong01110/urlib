@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.mock;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.times;
 
 import com.heez.urlib.domain.bookmark.controller.dto.LikeResponse;
 import com.heez.urlib.domain.bookmark.exception.AlreadyLikedException;
@@ -53,9 +54,14 @@ class BookmarkLikeServiceTest {
     Bookmark bookmark = Bookmark.builder()
         .likeCount(5L)
         .build();
+    Bookmark updatedBookmark = Bookmark.builder()
+        .likeCount(6L)
+        .build();
     Member member = mock(Member.class);
 
-    given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
+    given(bookmarkRepository.findById(bookmarkId))
+        .willReturn(Optional.of(bookmark))
+        .willReturn(Optional.of(updatedBookmark));
     willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
     given(memberService.findById(memberId)).willReturn(member);
 
@@ -66,10 +72,11 @@ class BookmarkLikeServiceTest {
     assertThat(response.liked()).isTrue();
     assertThat(response.likeCount()).isEqualTo(6);
 
-    then(bookmarkRepository).should().findById(bookmarkId);
-    then(memberService).should().findById(memberId);
+    then(bookmarkRepository).should(times(2)).findById(bookmarkId);
     then(bookmarkPermissionService).should().isVisible(bookmark, Optional.of(memberId));
+    then(memberService).should().findById(memberId);
     then(bookmarkLikeRepository).should().save(any(BookmarkLike.class));
+    then(bookmarkRepository).should().incrementLikeCount(bookmarkId);
   }
 
   @Test
@@ -117,9 +124,14 @@ class BookmarkLikeServiceTest {
     Bookmark bookmark = Bookmark.builder()
         .likeCount(5L)
         .build();
+    Bookmark updated = Bookmark.builder()
+        .likeCount(4L)
+        .build();
     BookmarkLike existingLike = mock(BookmarkLike.class);
 
-    given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
+    given(bookmarkRepository.findById(bookmarkId))
+        .willReturn(Optional.of(bookmark))
+        .willReturn(Optional.of(updated));
     willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
     given(bookmarkLikeRepository
         .findByBookmark_BookmarkIdAndMember_MemberId(bookmarkId, memberId))
@@ -130,7 +142,7 @@ class BookmarkLikeServiceTest {
 
     // then
     assertThat(response.liked()).isFalse();
-    assertThat(response.likeCount()).isEqualTo(4);
+    assertThat(response.likeCount()).isEqualTo(4L);
 
     then(bookmarkLikeRepository).should().delete(existingLike);
   }
@@ -144,8 +156,8 @@ class BookmarkLikeServiceTest {
 
     given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
     willDoNothing().given(bookmarkPermissionService).isVisible(bookmark, Optional.of(memberId));
-    willThrow(new AlreadyUnlikedException())
-        .given(bookmarkLikeRepository).findByBookmark_BookmarkIdAndMember_MemberId(bookmarkId, memberId);
+    given(bookmarkLikeRepository.findByBookmark_BookmarkIdAndMember_MemberId(bookmarkId, memberId))
+        .willReturn(Optional.empty());
 
     // when / then
     assertThatThrownBy(() -> bookmarkLikeService.unlikeBookmark(memberId, bookmarkId))

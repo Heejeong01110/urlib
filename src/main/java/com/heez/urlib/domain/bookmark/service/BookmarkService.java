@@ -73,13 +73,15 @@ public class BookmarkService {
         .stream()
         .map(LinkDetailResponse::from)
         .toList();
-    addBookmarkViewCount(bookmarkId);
-    return BookmarkDetailResponse.from(bookmark, tags, links, bookmark.getMember().getMemberId());
+    Bookmark updated = addBookmarkViewCount(bookmarkId);
+    return BookmarkDetailResponse.from(updated, tags, links, updated.getMember().getMemberId());
   }
 
   @Transactional
-  public void addBookmarkViewCount(Long bookmarkId) {
+  public Bookmark addBookmarkViewCount(Long bookmarkId) {
     bookmarkRepository.incrementViewCount(bookmarkId);
+    return bookmarkRepository.findById(bookmarkId)
+        .orElseThrow(BookmarkNotFoundException::new);
   }
 
   @Transactional
