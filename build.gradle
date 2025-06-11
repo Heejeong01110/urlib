@@ -53,6 +53,7 @@ dependencies {
 	implementation 'it.ozimov:embedded-redis:0.7.2'
 	runtimeOnly 'com.mysql:mysql-connector-j:8.0.32'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.session:spring-session-data-redis'
 
 	//RestDocs
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
@@ -130,6 +131,9 @@ private excludedClassFilesForReport(classDirectories) {
 						"**/dto/**",
 						"**/vo/**",
 						"**/exception/**",
+						"**/error/**",
+						"**/auth/service/Custom*",
+						"**/auth/service/Redis*",
 						"**/log/**"
 
 				])
