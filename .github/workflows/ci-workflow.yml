@@ -29,15 +29,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set Yml
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: ./src/main/resources/application-test.yml
-        env:
-          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
-          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
-          SECURITY_SECRET_KEY: ${{ secrets.SECURITY_SECRET_KEY }}
-
       - name: Grant execute permisson for gradlew
         run: chmod +x gradlew
         shell: bash
