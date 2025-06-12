@@ -3,44 +3,45 @@ spring:
     activate:
       on-profile: local
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${PROD_MYSQL_URL}
-    username: ${PROD_MYSQL_USERNAME}
-    password: ${PROD_MYSQL_PASSWORD}
+    driver-class-name: org.h2.Driver
+    url: "jdbc:h2:mem:urlib_test_db;MODE=MYSQL;DB_CLOSE_DELAY=-1"
+    username: sa
+    password:
     hikari:
       minimum-idle: 1
       maximum-pool-size: 5
-      pool-name: MYSQL_DB
-
+      pool-name: H2_DB
   jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    open-in-view: false
-    show-sql: false
+    show-sql: true
+    defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
-    defer-datasource-initialization: true
+    #      ddl-auto: create-drop
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+        format_sql: true
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+      host: localhost
+      port: 6379
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
   security:
     jwt:
-      access-token-expiry: 600
-      refresh-token-expiry: 3600
-      secret-key: ${SECURITY_SECRET_KEY}
+      access-token-expiry: 600 # 10 minutes
+      refresh-token-expiry: 3600 # 1 hour
+      secret-key: ${SECURITY_SECRET_KEY}    # 32 bytes
     oauth2:
       client:
         registration:
           kakao:
             client-id: ${KAKAO_CLIENT_ID}  # rest api 키
-            client-secret:  ${KAKAO_CLIENT_SECRET} # client secret 키
+            client-secret: ${KAKAO_CLIENT_SECRET} # client secret 키
             redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
