@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
+import com.heez.urlib.domain.auth.exception.NicknameAutoGenerationFailedException;
 import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.auth.model.OAuth2UserInfo;
 import com.heez.urlib.domain.member.controller.dto.MemberDetailResponse;
@@ -35,7 +36,7 @@ class MemberServiceTest {
   private MemberService memberService;
 
   @Test
-  void findMemberOrCreate_existingMember() {
+  void findMemberOrCreate_existingMember_returnMember() {
     // given
     AuthType authType = AuthType.valueOf("KAKAO");
     OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
@@ -64,7 +65,7 @@ class MemberServiceTest {
   }
 
   @Test
-  void findMemberOrCreate_newMember() {
+  void findMemberOrCreate_newMemberCreated_success() {
     // given
     AuthType authType = AuthType.KAKAO;
     OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
@@ -97,6 +98,29 @@ class MemberServiceTest {
     then(memberRepository).should()
         .findMemberByOauthTypeAndIdentifier(authType, userInfo.oAuthId());
     then(memberRepository).should().save(any(Member.class));
+  }
+
+  @Test
+  void findMemberOrCreate_nicknameGenerationFails_throwException() {
+    // given
+    AuthType authType = AuthType.KAKAO;
+    OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
+        .authType(authType)
+        .oAuthId("kakao_123456789asdfzxcv")
+        .nickname("nickname")
+        .imageUrl("https://image.url.co.kr")
+        .email("existing@example.com")
+        .build();
+
+    given(memberRepository.findMemberByOauthTypeAndIdentifier(userInfo.authType(), userInfo.oAuthId()))
+        .willReturn(Optional.empty());
+    given(memberRepository.existsByNickname(any(Nickname.class))).willReturn(true);
+
+    // when / then
+    assertThatThrownBy(() -> memberService.findMemberOrCreate(userInfo))
+        .isInstanceOf(NicknameAutoGenerationFailedException.class);
+
+    then(memberRepository).should(never()).save(any(Member.class));
   }
 
   @Test
@@ -157,4 +181,34 @@ class MemberServiceTest {
     assertThatThrownBy(() -> memberService.getProfile(missingId))
         .isInstanceOf(MemberNotFoundException.class);
   }
+
+  @Test
+  void findByEmail_existing() {
+    // given
+    Email email = new Email("user@example.com");
+    Member member = Member.builder()
+        .email(email)
+        .build();
+    given(memberRepository.findMemberByEmail(any(Email.class))).willReturn(Optional.of(member));
+
+    // when
+    Member result = memberService.findByEmail("user@example.com");
+
+    // then
+    assertThat(result).isSameAs(member);
+    then(memberRepository).should().findMemberByEmail(any(Email.class));
+  }
+
+  @Test
+  void findByEmail_notFound_throws() {
+    // given
+    Email email = new Email("user@example.com");
+    given(memberRepository.findMemberByEmail(any(Email.class))).willReturn(Optional.empty());
+
+    // when & then
+    assertThatThrownBy(() -> memberService.findByEmail("user@example.com"))
+        .isInstanceOf(MemberNotFoundException.class);
+    then(memberRepository).should().findMemberByEmail(any(Email.class));
+  }
+
 }
