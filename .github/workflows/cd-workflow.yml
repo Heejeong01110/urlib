@@ -8,6 +8,18 @@ on:
     types:
       - completed
 
+
+env:
+  MYSQL_URL: ${{ secrets.PROD_MYSQL_URL }}
+  MYSQL_USERNAME: ${{ secrets.PROD_MYSQL_USERNAME }}
+  MYSQL_PASSWORD: ${{ secrets.PROD_MYSQL_PASSWORD }}
+  KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+  KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+  SECURITY_SECRET_KEY: ${{ secrets.SECURITY_SECRET_KEY }}
+  REDIS_HOST: ${{ secrets.REDIS_HOST }}
+  REDIS_PORT: ${{ secrets.REDIS_PORT }}
+
+
 jobs:
   deploy:
 
@@ -15,8 +27,9 @@ jobs:
     if: >
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push'
-      runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     permissions:
+      checks: write
       contents: read
       packages: write
 
@@ -31,27 +44,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # GitHub Actions secrets에 설정한 값을 application-prod.yml 환경변수로 주입
-      - name: Set Yml
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: ./src/main/resources/application-prod.yml
-        env:
-          spring.datasource.url: ${{ secrets.MYSQL_URL }}
-          spring.datasource.username: ${{ secrets.MYSQL_USERNAME }}
-          spring.datasource.password: ${{ secrets.MYSQL_PASSWORD }}
-          spring.data.redis.host: ${{ secrets.REDIS_HOST }}
-          spring.data.redis.port: ${{ secrets.REDIS_PORT }}
-          spring.security.jwt.secret-key: ${{ secrets.SECURITY_SECRET_KEY }}
-          spring.security.oauth2.client.registration.kakao.client-id: ${{ secrets.KAKAO_CLIENT_ID }}
-          spring.security.oauth2.client.registration.kakao.client-secret: ${{ secrets.KAKAO_CLIENT_ID }}
-
-      - name: Build with Gradle (prod profile)
-        run: ./gradlew clean build -Dspring.profiles.active=prod -Dfile.encoding=UTF-8 -Duser.language=ko -Duser.country=KR
-
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
         shell: bash
+
+      - name: Build with Gradle (prod profile)
+        run: ./gradlew clean build -Dspring.profiles.active=prod -Dfile.encoding=UTF-8 -Duser.language=ko -Duser.country=KR
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
