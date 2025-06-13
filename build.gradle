@@ -15,16 +15,14 @@ version = '0.0.1-SNAPSHOT'
 configurations {
 	//RestDocs
 	asciidoctorExt
+
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
 }
 
 jar {
 	enabled = false
-}
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
 }
 
 java {
