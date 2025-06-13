@@ -16,8 +16,8 @@ env:
   KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
   KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
   SECURITY_SECRET_KEY: ${{ secrets.SECURITY_SECRET_KEY }}
-  REDIS_HOST: ${{ secrets.REDIS_HOST }}
-  REDIS_PORT: ${{ secrets.REDIS_PORT }}
+  PROD_REDIS_HOST: ${{ secrets.PROD_REDIS_HOST }}
+  PROD_REDIS_PORT: ${{ secrets.PROD_REDIS_PORT }}
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: urlib/urlib_backend
   ECS_SERVICE: urlib_backend_service                 # set this to your Amazon ECS service name
@@ -93,8 +93,8 @@ jobs:
             KAKAO_CLIENT_ID=${{ env.KAKAO_CLIENT_ID }}
             KAKAO_CLIENT_SECRET=${{ env.KAKAO_CLIENT_SECRET }}
             SECURITY_SECRET_KEY=${{ env.SECURITY_SECRET_KEY }}
-            REDIS_HOST=${{ env.REDIS_HOST }}
-            REDIS_PORT=${{ env.REDIS_PORT }}
+            PROD_REDIS_HOST=${{ env.PROD_REDIS_HOST }}
+            PROD_REDIS_PORT=${{ env.PROD_REDIS_PORT }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1

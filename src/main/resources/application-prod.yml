@@ -28,8 +28,8 @@ spring:
       max-request-size: 10MB
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+      host: ${PROD_REDIS_HOST}
+      port: ${PROD_REDIS_PORT}
   security:
     jwt:
       access-token-expiry: 600 # 10 minutes
