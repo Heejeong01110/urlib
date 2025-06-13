@@ -10,9 +10,9 @@ on:
 
 
 env:
-  MYSQL_URL: ${{ secrets.PROD_MYSQL_URL }}
-  MYSQL_USERNAME: ${{ secrets.PROD_MYSQL_USERNAME }}
-  MYSQL_PASSWORD: ${{ secrets.PROD_MYSQL_PASSWORD }}
+  PROD_MYSQL_URL: ${{ secrets.PROD_MYSQL_URL }}
+  PROD_MYSQL_USERNAME: ${{ secrets.PROD_MYSQL_USERNAME }}
+  PROD_MYSQL_PASSWORD: ${{ secrets.PROD_MYSQL_PASSWORD }}
   KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
   KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
   SECURITY_SECRET_KEY: ${{ secrets.SECURITY_SECRET_KEY }}
@@ -88,9 +88,9 @@ jobs:
           image: ${{ steps.build-image.outputs.image }}
           environment-variables: |
             SPRING_PROFILES_ACTIVE=prod
-            MYSQL_URL=${{ env.MYSQL_URL }}
-            MYSQL_USERNAME=${{ env.MYSQL_USERNAME }}
-            MYSQL_PASSWORD=${{ env.MYSQL_PASSWORD }}
+            PROD_MYSQL_URL=${{ env.PROD_MYSQL_URL }}
+            PROD_MYSQL_USERNAME=${{ env.PROD_MYSQL_USERNAME }}
+            PROD_MYSQL_PASSWORD=${{ env.PROD_MYSQL_PASSWORD }}
             KAKAO_CLIENT_ID=${{ env.KAKAO_CLIENT_ID }}
             KAKAO_CLIENT_SECRET=${{ env.KAKAO_CLIENT_SECRET }}
             SECURITY_SECRET_KEY=${{ env.SECURITY_SECRET_KEY }}

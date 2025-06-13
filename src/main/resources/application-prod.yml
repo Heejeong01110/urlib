@@ -4,9 +4,9 @@ spring:
       on-profile: prod
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${MYSQL_URL}
-    username: ${MYSQL_USERNAME}
-    password: ${MYSQL_PASSWORD}
+    url: ${PROD_MYSQL_URL}
+    username: ${PROD_MYSQL_USERNAME}
+    password: ${PROD_MYSQL_PASSWORD}
     hikari:
       minimum-idle: 1
       maximum-pool-size: 5
