@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.util.StringUtils;
 import redis.embedded.RedisServer;
 
-@Profile("test")
+@Profile({"local", "test"})
 @Configuration
 public class EmbeddedRedisConfig {
 
