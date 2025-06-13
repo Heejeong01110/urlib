@@ -16,6 +16,10 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+      packages: write
 
     steps:
       # 코드 체크아웃
@@ -36,3 +40,9 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -Dspring.profiles.active=test -Duser.language=ko -Duser.country=KR
         shell: bash
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: ${{ always() }}
+        with:
+          files: build/test-results/**/*.xml
