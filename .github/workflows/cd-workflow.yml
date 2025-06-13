@@ -1,4 +1,4 @@
-name: Deploy Docker Image to ECR
+name: Deploy Docker Image to ECR and ECS
 
 
 # CI workflow 완료 시 트리거
@@ -20,7 +20,10 @@ env:
   REDIS_PORT: ${{ secrets.REDIS_PORT }}
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: urlib/urlib_backend
-
+  ECS_SERVICE: urlib_backend_service                 # set this to your Amazon ECS service name
+  ECS_CLUSTER: urlib_ecs_deploy                 # set this to your Amazon ECS cluster name
+  ECS_TASK_DEFINITION: .aws/ecs-task.json # set this to the path to your Amazon ECS task definition
+  CONTAINER_NAME: urlib_backend          # set this to the name of the container in the
 
 jobs:
   deploy:
@@ -71,5 +74,32 @@ jobs:
           # push it to ECR so that it can
           # be deployed to ECS.
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+          environment-variables: |
+            MYSQL_URL=${{ env.MYSQL_URL }}
+            MYSQL_USERNAME=${{ env.MYSQL_USERNAME }}
+            MYSQL_PASSWORD=${{ env.MYSQL_PASSWORD }}
+            KAKAO_CLIENT_ID=${{ env.KAKAO_CLIENT_ID }}
+            KAKAO_CLIENT_SECRET=${{ env.KAKAO_CLIENT_SECRET }}
+            SECURITY_SECRET_KEY=${{ env.SECURITY_SECRET_KEY }}
+            REDIS_HOST=${{ env.REDIS_HOST }}
+            REDIS_PORT=${{ env.REDIS_PORT }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
