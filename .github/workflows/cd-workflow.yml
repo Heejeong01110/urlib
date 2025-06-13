@@ -87,6 +87,7 @@ jobs:
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
           environment-variables: |
+            SPRING_PROFILES_ACTIVE=prod
             MYSQL_URL=${{ env.MYSQL_URL }}
             MYSQL_USERNAME=${{ env.MYSQL_USERNAME }}
             MYSQL_PASSWORD=${{ env.MYSQL_PASSWORD }}
