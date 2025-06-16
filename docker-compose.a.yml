@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  urlib-a:
+    container_name: urlib-a
+    image: ${DOCKERHUB_USERNAME}/urlib
+    volumes:
+      - ./logs:/app/logs
+    ports:
+      - "8081:8080"
+    restart: always
+
+networks:
+  default:
+    external:
+      name: urlib

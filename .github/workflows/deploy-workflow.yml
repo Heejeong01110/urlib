@@ -1,0 +1,58 @@
+name: Deploy Ec2
+
+on:
+  workflow_run:
+    workflows: [ "Deploy Docker Image" ]
+    types:
+      - completed
+  workflow_dispatch:
+
+env:
+  PROD_MYSQL_URL: ${{ secrets.PROD_MYSQL_URL }}
+  PROD_MYSQL_USERNAME: ${{ secrets.PROD_MYSQL_USERNAME }}
+  PROD_MYSQL_PASSWORD: ${{ secrets.PROD_MYSQL_PASSWORD }}
+  KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+  KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+  SECURITY_SECRET_KEY: ${{ secrets.SECURITY_SECRET_KEY }}
+  PROD_REDIS_HOST: ${{ secrets.PROD_REDIS_HOST }}
+  PROD_REDIS_PORT: ${{ secrets.PROD_REDIS_PORT }}
+
+jobs:
+  deploy:
+
+    if: >
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create .env file
+        run: |
+          echo "PROD_MYSQL_URL=${{ secrets.PROD_MYSQL_URL }}" >> .env
+          echo "PROD_MYSQL_USERNAME=${{ secrets.PROD_MYSQL_USERNAME }}" >> .env
+          echo "PROD_MYSQL_PASSWORD=${{ secrets.PROD_MYSQL_PASSWORD }}" >> .env
+          echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+          echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> .env
+          echo "SECURITY_SECRET_KEY=${{ secrets.SECURITY_SECRET_KEY }}" >> .env
+          echo "PROD_REDIS_HOST=${{ secrets.PROD_REDIS_HOST }}" >> .env
+          echo "PROD_REDIS_PORT=${{ secrets.PROD_REDIS_PORT }}" >> .env
+
+      - name: Copy deploy files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          source: "./docker-compose.a.yml,./docker-compose.b.yml,./scripts/deploy.sh,./.env"
+          target: "/home/ubuntu/"
+
+      - name: Execute deploy.sh script remotely
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            chmod +x /home/ubuntu/deploy.sh
+            /home/ubuntu/deploy.sh
