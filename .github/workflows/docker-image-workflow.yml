@@ -57,3 +57,4 @@ jobs:
           file: Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/urlib-server:latest
+          no-cache: true

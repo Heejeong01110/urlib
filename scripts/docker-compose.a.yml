@@ -7,4 +7,13 @@ services:
       - ./logs:/app/logs
     ports:
       - "8081:8080"
+    environment:
+      - SECURITY_SECRET_KEY=${SECURITY_SECRET_KEY}
+      - PROD_MYSQL_URL=${PROD_MYSQL_URL}
+      - PROD_MYSQL_USERNAME=${PROD_MYSQL_USERNAME}
+      - PROD_MYSQL_PASSWORD=${PROD_MYSQL_PASSWORD}
+      - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+      - KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
+      - PROD_REDIS_HOST=${PROD_REDIS_HOST}
+      - PROD_REDIS_PORT=${PROD_REDIS_PORT}
     restart: always

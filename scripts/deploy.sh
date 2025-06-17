@@ -65,8 +65,10 @@ do
         echo "check server start.."
 
         # 스프링부트에 등록했던 actuator로 실행되었는지 확인
-        UP=$(curl -s http://127.0.0.1:${START_PORT}/actuator/health | grep 'UP')
-        if [ -z "${UP}" ] # 실행되었다면 break
+        # UP=$(curl -s http://127.0.0.1:${START_PORT}/actuator/health | grep 'UP')
+        # if [ -z "${UP}" ] # 실행되었다면 break
+        status=$(curl -s http://127.0.0.1:${START_PORT}/actuator/health | jq -r '.status')
+        if [ "$status" = "UP" ]
         then
                 echo "server not start.."
         else
