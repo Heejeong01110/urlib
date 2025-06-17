@@ -83,6 +83,16 @@ public class WebSecurityConfig {
     return http.build();
   }
 
+  @Bean
+  @Order(3)
+  SecurityFilterChain actuatorChain(HttpSecurity http) throws Exception {
+    applyCommon(http);
+    http
+        .securityMatcher("/actuator/**")
+        .authorizeHttpRequests(a -> a.anyRequest().permitAll());
+    return http.build();
+  }
+
   private void applyCommon(HttpSecurity http) throws Exception {
     http
         .sessionManagement(sm ->
