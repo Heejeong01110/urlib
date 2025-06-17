@@ -68,11 +68,11 @@ do
         # UP=$(curl -s http://127.0.0.1:${START_PORT}/actuator/health | grep 'UP')
         # if [ -z "${UP}" ] # 실행되었다면 break
         status=$(curl -s http://127.0.0.1:${START_PORT}/actuator/health | jq -r '.status')
-        if [ "$status" = "UP" ]
-        then
-                echo "server not start.."
+        if [ "$status" = "UP" ]; then
+            echo "server started successfully!"
+            break
         else
-                break
+            echo "server not ready yet..."
         fi
 
         echo "wait 10 seconds" # 10 초간 대기
@@ -95,7 +95,7 @@ sudo sed -i "s/${TERMINATE_PORT}/${START_PORT}/" /etc/nginx/conf.d/service-url.i
 
 # 새로운 포트로 스프링부트가 구동 되고, nginx의 포트를 변경해주었다면, nginx 재시작해줍니다.
 echo "nginx reload.."
-sudo service nginx reload
+sudo nginx -t && sudo service nginx reload
 
 # 기존에 실행 중이었던 docker-compose는 종료시켜줍니다.
 echo "urlib-${TERMINATE_CONTAINER} down"
