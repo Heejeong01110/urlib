@@ -1,4 +1,34 @@
+#!/bin/bash
+
+cleanup() {
+  echo "Deleting .env from server..."
+  rm -f /home/ubuntu/.env
+}
+trap cleanup EXIT
+
 RUNNING_CONTAINER=$(sudo docker ps)
+ENV_FILE="/home/ubuntu/.env"
+DOCKER_COMPOSE_DIR="/home/ubuntu/scripts"
+
+# ⬇️ 환경변수 불러오기 추가
+if [ -f "$ENV_FILE" ]; then
+  set -o allexport
+  source "$ENV_FILE"
+  set +o allexport
+else
+  echo ".env 파일이 존재하지 않습니다: $ENV_FILE"
+  exit 1
+fi
+
+
+echo ${DOCKER_ACCESS_TOKEN} | docker login -u ${DOCKER_USERNAME} --password-stdin
+if [ $? -ne 0 ]; then
+  echo "❌ Docker login failed"
+  exit 1
+else
+  echo "✅ Docker login succeeded"
+fi
+
 echo "실행중인 컨테이너 목록: ${RUNNING_CONTAINER}"
 
 # 실행 중인 도커 컴포즈 확인
@@ -25,7 +55,7 @@ echo "urlib-${START_CONTAINER} up"
 
 # 실행해야하는 컨테이너 docker-compose로 실행. -p는 docker-compose 프로젝트에 이름을 부여
 # -f는 docker-compose파일 경로를 지정
-sudo docker-compose -f docker-compose.${START_CONTAINER}.yml --env-file /home/ubuntu/.env up -d --build
+sudo docker-compose -f ${DOCKER_COMPOSE_DIR}/docker-compose.${START_CONTAINER}.yml --env-file ${ENV_FILE} up -d --build
 
 RUNNING_CONTAINER=$(sudo docker ps)
 echo "실행중인 컨테이너 목록: ${RUNNING_CONTAINER}"
@@ -67,9 +97,5 @@ sudo service nginx reload
 
 # 기존에 실행 중이었던 docker-compose는 종료시켜줍니다.
 echo "urlib-${TERMINATE_CONTAINER} down"
-sudo docker-compose -f docker-compose.${TERMINATE_CONTAINER}.yml down
+sudo docker-compose -f ${DOCKER_COMPOSE_DIR}/docker-compose.${TERMINATE_CONTAINER}.yml down
 echo "success deployment"
-
-# docker-compose up 이후 .env 삭제
-echo "Deleting .env from server..."
-rm -f /home/ubuntu/.env
