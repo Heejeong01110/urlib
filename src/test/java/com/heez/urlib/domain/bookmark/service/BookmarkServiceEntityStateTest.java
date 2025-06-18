@@ -74,7 +74,7 @@ public class BookmarkServiceEntityStateTest {
         "new-img",
         true,
         List.of("spring", "java"),
-        List.of(new BaseLinkRequest("Example", "http://example.com"))
+        List.of(new BaseLinkRequest(1L,"Example", "http://example.com"))
     );
 
     given(tagService.ensureTags(req.tags())).willReturn(List.of(
@@ -86,6 +86,7 @@ public class BookmarkServiceEntityStateTest {
         .title("Example")
         .url("http://example.com")
         .build();
+    ReflectionTestUtils.setField(link1, "linkId", 1L);
     given(linkService.ensureLinks(bookmarkId, req.links()))
         .willReturn(List.of(link1));
 
