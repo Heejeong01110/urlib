@@ -16,8 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.heez.urlib.domain.auth.security.jwt.AuthTokenProvider;
 import com.heez.urlib.domain.auth.model.WithMockCustomUser;
+import com.heez.urlib.domain.auth.security.jwt.AuthTokenProvider;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkCreateResponse;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkDetailResponse;
@@ -74,7 +74,7 @@ class BookmarkControllerTest {
     // given
     Long memberId = 42L;
     List<String> tags = List.of("spring", "java");
-    BaseLinkRequest linkReq = new BaseLinkRequest("http://example.com", "Example");
+    BaseLinkRequest linkReq = new BaseLinkRequest(null, "http://example.com", "Example");
     BookmarkCreateRequest req = new BookmarkCreateRequest(
         "My Bookmark",
         "A description",
@@ -197,7 +197,7 @@ class BookmarkControllerTest {
     LocalDateTime createdAt = LocalDateTime.of(2025, 5, 23, 15, 0);
     LocalDateTime updatedAt = LocalDateTime.of(2025, 5, 26, 15, 0);
     List<String> tags = List.of("spring", "java");
-    BaseLinkRequest linkReq = new BaseLinkRequest("Example", "http://example.com");
+    BaseLinkRequest linkReq = new BaseLinkRequest(1L,"Example", "http://example.com");
     BookmarkUpdateRequest req = new BookmarkUpdateRequest(
         "My Bookmark",
         "A description",

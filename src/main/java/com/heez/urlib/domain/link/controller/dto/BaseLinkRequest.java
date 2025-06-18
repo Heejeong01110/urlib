@@ -5,6 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record BaseLinkRequest(
+    Long id,
     @NotBlank
     String title,
     @NotBlank

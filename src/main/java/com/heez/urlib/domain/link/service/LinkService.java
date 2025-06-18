@@ -1,10 +1,9 @@
 package com.heez.urlib.domain.link.service;
 
 import com.heez.urlib.domain.link.controller.dto.BaseLinkRequest;
+import com.heez.urlib.domain.link.exception.LinkNotFoundException;
 import com.heez.urlib.domain.link.model.Link;
 import com.heez.urlib.domain.link.repository.LinkRepository;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,51 +28,25 @@ public class LinkService {
   @Transactional
   public List<Link> ensureLinks(Long bookmarkId, List<BaseLinkRequest> requests) {
     List<Link> existing = linkRepository.findAllByBookmark_BookmarkId(bookmarkId);
+    Map<Long, Link> idToLink = existing.stream()
+        .filter(link -> link.getLinkId() != null)
+        .collect(Collectors.toMap(Link::getLinkId, Function.identity()));
 
-    Map<String, Link> keyToLink = existing.stream()
-        .collect(Collectors.toMap(
-            link -> buildKey(link.getTitle(), link.getUrl()),
-            Function.identity()
-        ));
-
-    List<Link> links = new ArrayList<>(requests.size());
+    List<Link> links = new ArrayList<>();
     for (BaseLinkRequest req : requests) {
-      String key = buildKey(req.title(), req.url());
-      Link link = keyToLink.computeIfAbsent(key, (i) -> Link.builder()
-          .title(req.title())
-          .url(req.url())
-          .build());
-      links.add(link);
+      links.add(resolveLink(req, idToLink));
     }
     return links;
   }
 
-  private String buildKey(String title, String url) {
-    String t = title == null ? "" : title.trim();
-    String u = normalizeUrl(url);
-    return t + "||" + u;
-  }
-
-  private String normalizeUrl(String raw) {
-    try {
-      URI uri = new URI(raw.trim());
-      String scheme = uri.getScheme().toLowerCase();
-      String host = uri.getHost().toLowerCase();
-      String path = Optional.ofNullable(uri.getPath()).orElse("/");
-      if (path.endsWith("/") && path.length() > 1) {
-        path = path.substring(0, path.length() - 1);
-      }
-      return new URI(
-          scheme,
-          null,
-          host,
-          uri.getPort(),
-          path,
-          uri.getQuery(),
-          null
-      ).toString();
-    } catch (URISyntaxException e) {
-      return raw.trim().toLowerCase();
+  private Link resolveLink(BaseLinkRequest req, Map<Long, Link> idToLink) {
+    if(req.id() != null) {
+      return Optional.ofNullable(idToLink.get(req.id()))
+          .orElseThrow(LinkNotFoundException::new);
     }
+    return Link.builder()
+        .title(req.title())
+        .url(req.url())
+        .build();
   }
 }
