@@ -119,7 +119,7 @@ public class BookmarkService {
   public void deleteBookmark(Long memberId, Long bookmarkId) {
     Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
-    bookmarkPermissionService.isEditable(bookmark, memberId);
+    bookmarkPermissionService.isOwner(bookmark, memberId);
     bookmarkRepository.delete(bookmark);
   }
 
