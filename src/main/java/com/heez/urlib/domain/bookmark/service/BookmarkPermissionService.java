@@ -28,10 +28,13 @@ public class BookmarkPermissionService {
   public void isVisible(Bookmark bookmark, Optional<Long> viewerId) {
     boolean isOwner = viewerId.map(id -> bookmark.getMember().getMemberId().equals(id))
         .orElse(false);
-    boolean isShared = bookmark.getBookmarkShares().stream().anyMatch(
-        item -> item.getMember().getMemberId().equals(viewerId)
-            && (item.getRole().equals(ShareRole.BOOKMARK_EDITOR)
-            || item.getRole().equals(ShareRole.BOOKMARK_VIEWER)));
+
+    boolean isShared = viewerId
+        .map(id -> bookmark.getBookmarkShares().stream().anyMatch(
+            item -> item.getMember().getMemberId().equals(id) &&
+                (item.getRole() == ShareRole.BOOKMARK_EDITOR ||
+                    item.getRole() == ShareRole.BOOKMARK_VIEWER)))
+        .orElse(false);
     if (bookmark.isVisibleToOthers() || isOwner || isShared) {
       return;
     }
