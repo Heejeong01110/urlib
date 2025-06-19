@@ -62,10 +62,13 @@ public class Bookmark extends BaseEntity {
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
+  @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<BookmarkShare> bookmarkShares = new ArrayList<>();
+
   @Builder
   public Bookmark(String title, String description, String imageUrl, boolean visibleToOthers,
       Long viewCount, Long likeCount, List<BookmarkHashtag> bookmarkHashtags, List<Link> links,
-      Member member) {
+      Member member, List<BookmarkShare> bookmarkShares) {
     this.title = title;
     this.description = description;
     this.imageUrl = imageUrl;
@@ -75,6 +78,7 @@ public class Bookmark extends BaseEntity {
     this.bookmarkHashtags = (bookmarkHashtags != null) ? bookmarkHashtags : new ArrayList<>();
     this.links = (links != null) ? links : new ArrayList<>();
     this.member = member;
+    this.bookmarkShares = (bookmarkShares != null) ? bookmarkShares : new ArrayList<>();
   }
 
   public void changeTitle(String title) {
@@ -117,4 +121,19 @@ public class Bookmark extends BaseEntity {
     links.forEach(this::addLink);
   }
 
+  public void shareWith(Member member, ShareRole role) {
+    BookmarkShare bookmarkShare = bookmarkShares.stream()
+        .filter(share -> share.getMember().equals(member))
+        .findFirst()
+        .orElseGet(() -> {
+          BookmarkShare newShare = BookmarkShare.builder()
+              .bookmark(this)
+              .member(member)
+              .role(role)
+              .build();
+          bookmarkShares.add(newShare);
+          return newShare;
+        });
+    bookmarkShare.changeRole(role);
+  }
 }
