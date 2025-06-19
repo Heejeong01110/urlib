@@ -311,7 +311,7 @@ class BookmarkServiceTest {
         .member(member)
         .build();
     when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bookmark));
-    doNothing().when(bookmarkPermissionService).isEditable(bookmark, ownerId);
+    doNothing().when(bookmarkPermissionService).isOwner(bookmark, ownerId);
 
     // when
     bookmarkService.deleteBookmark(ownerId, bookmarkId);
@@ -349,7 +349,7 @@ class BookmarkServiceTest {
     when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bookmark));
     willThrow(new AccessDeniedBookmarkModifyException())
         .given(bookmarkPermissionService)
-        .isEditable(bookmark, memberId);
+        .isOwner(bookmark, memberId);
 
     // when + then
     assertThatThrownBy(() -> bookmarkService.deleteBookmark(memberId, bookmarkId))
