@@ -65,30 +65,28 @@ public class BookmarkServiceEntityStateTest {
         .build();
     ReflectionTestUtils.setField(bookmark, "bookmarkId", bookmarkId);
 
-    given(bookmarkRepository.findById(bookmarkId)).willReturn(Optional.of(bookmark));
-    doNothing().when(bookmarkPermissionService).isEditable(bookmark, memberId);
-
     BookmarkUpdateRequest req = new BookmarkUpdateRequest(
         "new-title",
         "new-desc",
         "new-img",
         true,
         List.of("spring", "java"),
-        List.of(new BaseLinkRequest(1L,"Example", "http://example.com"))
+        List.of(new BaseLinkRequest(1L, "Example", "http://example.com"))
     );
-
-    given(tagService.ensureTags(req.tags())).willReturn(List.of(
-        Hashtag.builder().title("spring").build(),
-        Hashtag.builder().title("java").build()
-    ));
 
     Link link1 = Link.builder()
         .title("Example")
         .url("http://example.com")
         .build();
     ReflectionTestUtils.setField(link1, "linkId", 1L);
-    given(linkService.ensureLinks(bookmarkId, req.links()))
-        .willReturn(List.of(link1));
+
+    given(bookmarkRepository.findByIdWithLock(bookmarkId)).willReturn(Optional.of(bookmark));
+    doNothing().when(bookmarkPermissionService).isEditable(bookmark, memberId);
+    given(tagService.ensureTags(req.tags())).willReturn(List.of(
+        Hashtag.builder().title("spring").build(),
+        Hashtag.builder().title("java").build()
+    ));
+    given(linkService.ensureLinks(bookmarkId, req.links())).willReturn(List.of(link1));
 
     // when
     BookmarkDetailResponse dto = bookmarkService.updateBookmark(memberId, bookmarkId, req);
