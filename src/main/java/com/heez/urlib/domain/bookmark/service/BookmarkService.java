@@ -89,7 +89,7 @@ public class BookmarkService {
       Long memberId,
       Long bookmarkId,
       BookmarkUpdateRequest request) {
-    Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+    Bookmark bookmark = bookmarkRepository.findByIdWithLock(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
     bookmarkPermissionService.isEditable(bookmark, memberId);
 
@@ -117,7 +117,7 @@ public class BookmarkService {
 
   @Transactional
   public void deleteBookmark(Long memberId, Long bookmarkId) {
-    Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+    Bookmark bookmark = bookmarkRepository.findByIdWithLock(bookmarkId)
         .orElseThrow(BookmarkNotFoundException::new);
     bookmarkPermissionService.isOwner(bookmark, memberId);
     bookmarkRepository.delete(bookmark);
