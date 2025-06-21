@@ -21,7 +21,11 @@ public class SecurityPatterns {
       permitAll(GET, "/api/*/users/*/bookmarks"),
       permitAll(GET, "/api/*/users/*/follow"),
       permitAll(GET, "/api/*/users/*/following"),
-      permitAll(GET, "/api/*/users/*/follower")
+      permitAll(GET, "/api/*/users/*/follower"),
+      permitAll(GET, "/api/*/users/*"),
+      permitAll(GET, "/api/*/users/*/bookmarks"),
+      permitAll(GET, "/api/*/bookmarks/*/comments"),
+      permitAll(GET, "/api/*/comments/*/replies")
   );
 
   private static MatcherRule permitAll(HttpMethod method, String pattern) {
