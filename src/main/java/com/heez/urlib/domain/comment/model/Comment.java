@@ -27,7 +27,9 @@ public class Comment extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "comment_id", nullable = false)
   private Long commentId;
+
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "bookmark_id", nullable = false)
   private Bookmark bookmark;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -35,7 +37,7 @@ public class Comment extends BaseEntity {
   private Member member;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "parent_comment_id", nullable = false)
+  @JoinColumn(name = "parent_comment_id")
   private Comment parentComment;
 
   @Column(nullable = false, name = "content")
@@ -46,6 +48,10 @@ public class Comment extends BaseEntity {
     this.bookmark = bookmark;
     this.member = member;
     this.parentComment = parentComment;
+    this.content = content;
+  }
+
+  public void changeContent(String content) {
     this.content = content;
   }
 }
