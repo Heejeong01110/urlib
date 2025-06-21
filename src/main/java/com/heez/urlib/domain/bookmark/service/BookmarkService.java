@@ -63,8 +63,7 @@ public class BookmarkService {
   }
 
   public BookmarkDetailResponse getBookmark(Optional<Long> memberId, Long bookmarkId) {
-    Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
-        .orElseThrow(BookmarkNotFoundException::new);
+    Bookmark bookmark = findByBookmarkId(bookmarkId);
     bookmarkPermissionService.isVisible(bookmark, memberId);
 
     List<String> tags = tagService.getTagTitlesByBookmarkId(bookmarkId);
@@ -80,8 +79,7 @@ public class BookmarkService {
   @Transactional
   public Bookmark addBookmarkViewCount(Long bookmarkId) {
     bookmarkRepository.incrementViewCount(bookmarkId);
-    return bookmarkRepository.findById(bookmarkId)
-        .orElseThrow(BookmarkNotFoundException::new);
+    return findByBookmarkId(bookmarkId);
   }
 
   @Transactional
@@ -138,5 +136,10 @@ public class BookmarkService {
             .map(BookmarkSummaryResponse::from))
         .orElseGet(() -> bookmarkRepository.findPageByAnonymous(pageable)
             .map(BookmarkSummaryResponse::from));
+  }
+
+  public Bookmark findByBookmarkId(Long bookmarkId) {
+    return bookmarkRepository.findById(bookmarkId)
+        .orElseThrow(BookmarkNotFoundException::new);
   }
 }
