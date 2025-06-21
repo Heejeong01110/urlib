@@ -28,6 +28,8 @@ import com.heez.urlib.domain.bookmark.exception.AlreadyLikedException;
 import com.heez.urlib.domain.bookmark.exception.AlreadyUnlikedException;
 import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;
 import com.heez.urlib.domain.bookmark.exception.BookmarkShareNotFoundException;
+import com.heez.urlib.domain.comment.exception.AccessDeniedCommentModifyException;
+import com.heez.urlib.domain.comment.exception.CommentNotFoundException;
 import com.heez.urlib.domain.link.exception.LinkNotFoundException;
 import com.heez.urlib.domain.member.exception.AlreadyFollowingException;
 import com.heez.urlib.domain.member.exception.MemberNotFoundException;
@@ -187,6 +189,7 @@ public class GlobalExceptionRestHandler {
 
   @ExceptionHandler({
       AccessDeniedBookmarkException.class,
+      AccessDeniedCommentModifyException.class,
       AccessDeniedBookmarkModifyException.class
   })
   protected ResponseEntity<ErrorResponse> handleForbiddenException(AbstractGlobalException ex) {
@@ -199,6 +202,7 @@ public class GlobalExceptionRestHandler {
       BookmarkNotFoundException.class,
       LinkNotFoundException.class,
       BookmarkShareNotFoundException.class,
+      CommentNotFoundException.class,
       MemberNotFoundException.class
   })
   protected ResponseEntity<ErrorResponse> handleNotFoundException(AbstractGlobalException ex) {

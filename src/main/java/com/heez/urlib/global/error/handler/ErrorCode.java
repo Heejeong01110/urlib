@@ -52,6 +52,10 @@ public enum ErrorCode {
   ALREADY_UNLIKED_BOOKMARK("B004", "이미 좋아요를 취소한 북마크입니다."),
   BOOKMARK_SHARE_NOT_FOUND("B005", "북마크 공유 권한이 존재하지 않습니다."),
 
+  //Comment
+  COMMENT_NOT_FOUND("C001", "댓글 정보를 찾을 수 없습니다."),
+  ACCESS_DENIED_COMMENT_MODIFY("C002", "댓글 수정 권한이 존재하지 않습니다."),
+
   //Link
   LINK_NOT_FOUND("Li001", "링크 정보가 존재하지 않습니다.");
 
