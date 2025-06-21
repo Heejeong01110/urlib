@@ -93,4 +93,29 @@ public class CommentService {
     return commentRepository.findById(commentId)
         .orElseThrow(CommentNotFoundException::new);
   }
+
+  @Transactional
+  public CommentDetailResponse updateComment(
+      Long memberId, Long commentId, CommentUpdateRequest request) {
+    Comment comment = findById(commentId);
+    isOwner(memberId, comment);
+
+    comment.changeContent(request.content());
+    return CommentDetailResponse.from(comment, memberService.findById(memberId));
+  }
+
+  @Transactional
+  public void deleteComment(Long memberId, Long commentId) {
+    Comment comment = findById(commentId);
+    isOwner(memberId, comment);
+    commentRepository.delete(comment);
+  }
+
+  private void isOwner(Long memberId, Comment comment) {
+    if (!comment.getMember().getMemberId().equals(memberId)) {
+      throw new AccessDeniedCommentModifyException();
+    }
+  }
+
+
 }
