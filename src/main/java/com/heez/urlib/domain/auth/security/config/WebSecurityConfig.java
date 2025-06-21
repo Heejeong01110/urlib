@@ -88,7 +88,12 @@ public class WebSecurityConfig {
   SecurityFilterChain actuatorChain(HttpSecurity http) throws Exception {
     applyCommon(http);
     http
-        .securityMatcher("/actuator/**")
+        .securityMatcher(
+            "/actuator/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/urlib-api/**")
         .authorizeHttpRequests(a -> a.anyRequest().permitAll());
     return http.build();
   }

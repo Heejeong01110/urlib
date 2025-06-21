@@ -30,7 +30,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     return Stream.of(
         "/api/*/auth/re-issue",
         "/api/*/auth/signup",
-        "/swagger-ui/**"
+        "/actuator/**",
+        "/v3/api-docs/**",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/urlib-api/**"
     ).anyMatch(pattern -> new AntPathMatcher().match(pattern, path));
   }
 

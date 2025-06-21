@@ -1,179 +1,134 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.4'
-	id 'io.spring.dependency-management' version '1.1.7'
-
-	//RestDocs
-	id "org.asciidoctor.jvm.convert" version "3.3.2"
-
-	id 'jacoco'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.4'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
 }
 
 group = 'com.heez'
 version = '0.0.1-SNAPSHOT'
 
 configurations {
-	//RestDocs
-	asciidoctorExt
-
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 jar {
-	enabled = false
+    enabled = false
 }
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testImplementation 'org.projectlombok:lombok:1.18.22'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    testImplementation 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-	// DB
-	runtimeOnly 'com.h2database:h2'
-	implementation 'it.ozimov:embedded-redis:0.7.2'
-	runtimeOnly 'com.mysql:mysql-connector-j:8.0.32'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.springframework.session:spring-session-data-redis'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // DB
+    runtimeOnly 'com.h2database:h2'
+    implementation 'it.ozimov:embedded-redis:0.7.2'
+    runtimeOnly 'com.mysql:mysql-connector-j:8.0.32'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.session:spring-session-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-	//RestDocs
-	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    //Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
 
-	//test
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation "org.testcontainers:junit-jupiter:1.19.0"
+    //test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.testcontainers:junit-jupiter:1.19.0"
 
-	// Spring Security, JWT
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	testImplementation 'org.springframework.security:spring-security-test'
-	implementation "com.auth0:java-jwt:3.19.2"
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	runtimeOnly    'io.jsonwebtoken:jjwt-jackson:0.11.5'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // Spring Security, JWT
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+    implementation "com.auth0:java-jwt:3.19.2"
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-	// OAuth2
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    // OAuth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
-	finalizedBy jacocoTestReport
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
-
-//RestDocs start
-ext {
-	snippetsDir = file('build/generated-snippets')
-}
-
-test {
-	outputs.dir snippetsDir
-}
-
-asciidoctor.doFirst {
-	delete file('src/main/resources/static/docs')
-}
-
-asciidoctor {
-	inputs.dir snippetsDir
-	configurations 'asciidoctorExt'
-	dependsOn test
-}
-
-bootJar {
-	dependsOn asciidoctor
-	from("${asciidoctor.outputDir}/html5") {
-		into 'static/docs'
-	}
-}
-
-tasks.register('copyDocument', Copy) {
-	dependsOn asciidoctor
-	from file("build/docs/asciidoc")
-	into file("src/main/resources/static/docs")
-}
-
-build {
-	dependsOn copyDocument
-}
-//RestDocs end
 
 //jacoco start
 private excludedClassFilesForReport(classDirectories) {
-	classDirectories.setFrom(
-			files(classDirectories.files.collect {
-				fileTree(dir: it, exclude: [
-						"**/*Application*",
-						"**/security/**",
-						"**/config/**",
-						"**/model/**",
-						"**/dto/**",
-						"**/vo/**",
-						"**/exception/**",
-						"**/error/**",
-						"**/auth/service/Custom*",
-						"**/auth/service/Redis*",
-						"**/log/**"
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "**/*Application*",
+                        "**/security/**",
+                        "**/config/**",
+                        "**/model/**",
+                        "**/dto/**",
+                        "**/vo/**",
+                        "**/exception/**",
+                        "**/error/**",
+                        "**/auth/service/Custom*",
+                        "**/auth/service/Redis*",
+                        "**/log/**"
 
-				])
-			})
-	)
+                ])
+            })
+    )
 }
 
 jacoco {
-	toolVersion = "0.8.9"
+    toolVersion = "0.8.9"
 }
 jacocoTestReport {
-	dependsOn test  // report를 생성하기 전에 테스트를 실행해야합니다.
-	reports {
-		xml.required = true
-		csv.required = false
-		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
-	}
-	excludedClassFilesForReport(classDirectories)
-	finalizedBy jacocoTestCoverageVerification  // 테스트 실행 후 항상 테스트 커버리지 검증을 실행합니다.
+    dependsOn test  // report를 생성하기 전에 테스트를 실행해야합니다.
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+    excludedClassFilesForReport(classDirectories)
+    finalizedBy jacocoTestCoverageVerification  // 테스트 실행 후 항상 테스트 커버리지 검증을 실행합니다.
 }
 jacocoTestCoverageVerification {  // 코드 커버리지를 검증합니다. 규칙을 만족하지 못하면 빌드는 실패합니다.
-	excludedClassFilesForReport(classDirectories)
-	violationRules {
-		rule {  // 규칙을 지정합니다.
-			enabled = true
-			element = 'CLASS'  // 클래스 단위로 규칙을 체크합니다.
+    excludedClassFilesForReport(classDirectories)
+    violationRules {
+        rule {  // 규칙을 지정합니다.
+            enabled = true
+            element = 'CLASS'  // 클래스 단위로 규칙을 체크합니다.
 
-			// 브랜치 커버리지를 최소 만족시켜야 합니다.
-			limit {
-				counter = 'BRANCH'
-				value = 'COVEREDRATIO'
-				minimum = 0.70
-			}
+            // 브랜치 커버리지를 최소 만족시켜야 합니다.
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.70
+            }
 
-			// 라인 커버리지를 최소 만족시켜야 합니다.
-			limit {
-				counter = 'LINE'
-				value = 'COVEREDRATIO'
-				minimum = 0.70
-			}
-		}
-	}
+            // 라인 커버리지를 최소 만족시켜야 합니다.
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.70
+            }
+        }
+    }
 }
 //jacoco end
 
