@@ -6,6 +6,9 @@ import com.heez.urlib.domain.bookmark.service.BookmarkPermissionService;
 import com.heez.urlib.domain.bookmark.service.BookmarkService;
 import com.heez.urlib.domain.comment.controller.dto.CommentCreateRequest;
 import com.heez.urlib.domain.comment.controller.dto.CommentDetailResponse;
+import com.heez.urlib.domain.comment.controller.dto.CommentUpdateRequest;
+import com.heez.urlib.domain.comment.exception.AccessDeniedCommentModifyException;
+import com.heez.urlib.domain.comment.exception.CommentNotFoundException;
 import com.heez.urlib.domain.comment.model.Comment;
 import com.heez.urlib.domain.comment.repository.CommentRepository;
 import com.heez.urlib.domain.member.model.Member;
@@ -37,6 +40,15 @@ public class CommentService {
         .map(CommentDetailResponse::from);
   }
 
+  public Page<CommentDetailResponse> getChildrenComments(
+      Optional<Long> memberId, Long commentId, Pageable pageable) {
+    Comment comment = findById(commentId);
+    bookmarkPermissionService.isVisible(comment.getBookmark(), memberId);
+
+    return commentRepository.findRepliesByCommentId(comment.getCommentId(), pageable)
+        .map(CommentDetailResponse::from);
+  }
+
   @Transactional
   public CommentDetailResponse createComment(Long bookmarkId, Long memberId,
       CommentCreateRequest request) {
@@ -45,6 +57,21 @@ public class CommentService {
     Member member = memberService.findById(memberId);
     return CommentDetailResponse.from(
         saveComment(bookmark, member, request.content(), null), member);
+  }
+
+  @Transactional
+  public CommentDetailResponse createReplyComment(Long commentId, Long memberId,
+      CommentCreateRequest request) {
+    Member member = memberService.findById(memberId);
+    Comment parentComment = findById(commentId);
+    Bookmark bookmark = parentComment.getBookmark();
+    bookmarkPermissionService.isVisible(bookmark, Optional.of(memberId));
+
+    if (parentComment.getParentComment() != null) {
+      throw new IllegalArgumentException("대댓글의 대댓글은 허용되지 않습니다.");
+    }
+    return CommentDetailResponse.from(
+        saveComment(bookmark, member, request.content(), parentComment), member);
   }
 
   @Transactional
@@ -61,4 +88,9 @@ public class CommentService {
         .build());
   }
 
+
+  public Comment findById(Long commentId) {
+    return commentRepository.findById(commentId)
+        .orElseThrow(CommentNotFoundException::new);
+  }
 }

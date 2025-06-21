@@ -23,4 +23,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
       @Param("bookmarkId") Long bookmarkId,
       Pageable pageable);
 
+  @Query("""
+          SELECT c
+          FROM Comment c
+          WHERE c.parentComment.commentId IN :parentCommentId
+          ORDER BY c.createdAt ASC
+      """)
+  Page<CommentDetailProjection> findRepliesByCommentId(
+      @Param("commentId") Long commentId,
+      Pageable pageable);
 }
