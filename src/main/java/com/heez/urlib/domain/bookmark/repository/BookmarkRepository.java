@@ -22,10 +22,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
   Optional<Bookmark> findByIdWithLock(
       @Param("bookmarkId") Long bookmarkId);
 
-  boolean existsByBookmarkIdAndMember_MemberId(
-      @Param("bookmarkId") Long bookmarkId,
-      @Param("id") Long memberId);
-
   @Query("""
         select b
           from Bookmark b
