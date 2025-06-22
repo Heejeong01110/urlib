@@ -209,7 +209,10 @@ public class BookmarkController {
   })
   @PostMapping("/{bookmarkId}/like")
   public ResponseEntity<LikeResponse> like(
+      @Parameter(hidden = true)
       @AuthUser(required = true) UserPrincipal userPrincipal,
+
+      @Parameter(description = "좋아요 누를 북마크 ID", example = "42")
       @PathVariable Long bookmarkId
   ) {
     return ResponseEntity.ok(
@@ -238,6 +241,8 @@ public class BookmarkController {
   @DeleteMapping("/{bookmarkId}/like")
   public ResponseEntity<LikeResponse> unlike(
       @AuthUser(required = true) UserPrincipal userPrincipal,
+
+      @Parameter(description = "좋아요 해제할 북마크 ID", example = "42")
       @PathVariable Long bookmarkId
   ) {
     return ResponseEntity.ok(
