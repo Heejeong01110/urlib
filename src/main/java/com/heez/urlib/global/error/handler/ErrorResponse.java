@@ -12,7 +12,7 @@ import org.springframework.validation.BindingResult;
  * Global Exception Rest Handler에서 발생한 에러에 대한 응답 처리를 관리
  */
 
-@Schema(description = "에러 응답 DTO")
+@Schema(description = "에러 응답")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ErrorResponse {
