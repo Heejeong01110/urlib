@@ -11,14 +11,17 @@ import com.heez.urlib.domain.bookmark.controller.dto.BookmarkUpdateRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.LikeResponse;
 import com.heez.urlib.domain.bookmark.service.BookmarkLikeService;
 import com.heez.urlib.domain.bookmark.service.BookmarkService;
-import com.heez.urlib.domain.comment.controller.dto.CommentDetailResponse;
-import com.heez.urlib.global.error.handler.ErrorResponse;
+import com.heez.urlib.global.swagger.ApiErrorResponses_BadRequestOnly;
+import com.heez.urlib.global.swagger.ApiErrorResponses_Forbidden;
+import com.heez.urlib.global.swagger.ApiErrorResponses_Unauthorized;
+import com.heez.urlib.global.swagger.ApiErrorResponses_Unauthorized_Forbidden;
+import com.heez.urlib.global.swagger.ApiErrorResponses_Unauthorized_Forbidden_Conflict;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -54,15 +57,19 @@ public class BookmarkController {
   @Operation(
       summary = "북마크 목록 조회",
       description = "전체 공개 북마크 목록을 조회합니다. (로그인 시 공유받은 북마크와 본인 북마크도 함께 조회됩니다.)",
-      security = @SecurityRequirement(name = "JWT")
-  )
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "북마크 목록 조회 성공",
-          content = @Content(schema = @Schema(implementation = CommentDetailResponse.class)))
-  })
+      security = @SecurityRequirement(name = "JWT"))
+  @ApiResponse(
+      responseCode = "200",
+      description = "북마크 목록 조회 성공",
+      content = @Content(
+          mediaType = "application/json",
+          array = @ArraySchema(schema = @Schema(implementation = BookmarkSummaryResponse.class))))
+  @ApiErrorResponses_BadRequestOnly
   @GetMapping("")
   public ResponseEntity<Page<BookmarkSummaryResponse>> getBookmarks(
-      @Parameter(hidden = true) @AuthUser Optional<UserPrincipal> userPrincipal,
+      @Parameter(hidden = true)
+      @AuthUser Optional<UserPrincipal> userPrincipal,
+
       @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
   ) {
     return ResponseEntity.ok(
@@ -73,17 +80,13 @@ public class BookmarkController {
   @Operation(
       summary = "북마크 생성",
       description = "로그인한 사용자가 새 북마크를 생성합니다.",
-      security = @SecurityRequirement(name = "JWT")
-  )
-  @ApiResponses({
-      @ApiResponse(responseCode = "201", description = "북마크 생성 성공",
-          content = @Content(schema = @Schema(implementation = BookmarkCreateResponse.class))),
-      @ApiResponse(responseCode = "400", description = "잘못된 요청 (필드 검증 실패 등)",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "401", description = "인증되지 않음 (토큰 없음, 만료 등)",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "404", description = "생성자 정보 없음")
-  })
+      security = @SecurityRequirement(name = "JWT"))
+  @ApiResponse(
+      responseCode = "201",
+      description = "북마크 생성 성공",
+      content = @Content(schema = @Schema(implementation = BookmarkCreateResponse.class)))
+  @ApiErrorResponses_Unauthorized
+
   @PostMapping("")
   public ResponseEntity<BookmarkCreateResponse> generateBookmark(
       @Parameter(hidden = true)
@@ -104,18 +107,12 @@ public class BookmarkController {
   @Operation(
       summary = "북마크 상세정보 조회",
       description = "북마크 상세정보를 조회합니다. (로그인 시 본인이 조회 가능한 북마크인 경우 포함 조회합니다.)",
-      security = @SecurityRequirement(name = "JWT")
-  )
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "북마크 조회 성공",
-          content = @Content(schema = @Schema(implementation = BookmarkDetailResponse.class))),
-      @ApiResponse(responseCode = "400", description = "요청 형식 오류 (잘못된 bookmarkId 등)",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "403", description = "접근 권한 없음 (조회권한 없는 북마크 접근 시)",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "404", description = "북마크를 찾을 수 없음",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-  })
+      security = @SecurityRequirement(name = "JWT"))
+  @ApiResponse(
+      responseCode = "200",
+      description = "북마크 조회 성공",
+      content = @Content(schema = @Schema(implementation = BookmarkDetailResponse.class)))
+  @ApiErrorResponses_Forbidden
   @GetMapping("/{bookmarkId}")
   public ResponseEntity<BookmarkDetailResponse> getBookmark(
       @Parameter(hidden = true)
@@ -131,20 +128,12 @@ public class BookmarkController {
   @Operation(
       summary = "북마크 수정",
       description = "북마크 정보를 수정합니다.",
-      security = @SecurityRequirement(name = "JWT")
-  )
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "북마크 수정 성공",
-          content = @Content(schema = @Schema(implementation = BookmarkDetailResponse.class))),
-      @ApiResponse(responseCode = "400", description = "요청 형식 오류 (잘못된 bookmarkId 등)",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "403", description = "접근 권한 없음 (수정권한 없는 북마크 접근 시)",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "404", description = "북마크를 찾을 수 없음",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-  })
+      security = @SecurityRequirement(name = "JWT"))
+  @ApiResponse(
+      responseCode = "200",
+      description = "북마크 수정 성공",
+      content = @Content(schema = @Schema(implementation = BookmarkDetailResponse.class)))
+  @ApiErrorResponses_Unauthorized_Forbidden
   @PutMapping("/{bookmarkId}")
   public ResponseEntity<BookmarkDetailResponse> updateBookmark(
       @Parameter(hidden = true)
@@ -162,20 +151,11 @@ public class BookmarkController {
   @Operation(
       summary = "북마크 삭제",
       description = "북마크 정보를 삭제합니다.",
-      security = @SecurityRequirement(name = "JWT")
-  )
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "북마크 삭제 성공",
-          content = @Content(schema = @Schema(implementation = BookmarkDetailResponse.class))),
-      @ApiResponse(responseCode = "400", description = "요청 형식 오류 (잘못된 bookmarkId 등)",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "403", description = "접근 권한 없음 (삭제권한 없는 북마크 접근 시)",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "404", description = "북마크를 찾을 수 없음",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-  })
+      security = @SecurityRequirement(name = "JWT"))
+  @ApiResponse(
+      responseCode = "204",
+      description = "북마크 삭제 성공")
+  @ApiErrorResponses_Unauthorized_Forbidden
   @DeleteMapping("/{bookmarkId}")
   public ResponseEntity<Void> deleteBookmark(
       @Parameter(hidden = true)
@@ -191,22 +171,12 @@ public class BookmarkController {
   @Operation(
       summary = "북마크 좋아요",
       description = "로그인한 사용자가 북마크에 좋아요를 누릅니다.",
-      security = @SecurityRequirement(name = "JWT")
-  )
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "좋아요 성공",
-          content = @Content(schema = @Schema(implementation = LikeResponse.class))),
-      @ApiResponse(responseCode = "400", description = "요청 파라미터 오류",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "403", description = "접근 권한 없음",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "404", description = "북마크를 찾을 수 없음",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "409", description = "이미 좋아요한 북마크",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-  })
+      security = @SecurityRequirement(name = "JWT"))
+  @ApiResponse(
+      responseCode = "200",
+      description = "좋아요 성공",
+      content = @Content(schema = @Schema(implementation = LikeResponse.class)))
+  @ApiErrorResponses_Unauthorized_Forbidden_Conflict
   @PostMapping("/{bookmarkId}/like")
   public ResponseEntity<LikeResponse> like(
       @Parameter(hidden = true)
@@ -222,22 +192,12 @@ public class BookmarkController {
   @Operation(
       summary = "북마크 좋아요 해제",
       description = "로그인한 사용자가 북마크에 좋아요 해제를 누릅니다.",
-      security = @SecurityRequirement(name = "JWT")
-  )
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "좋아요 해제 성공",
-          content = @Content(schema = @Schema(implementation = LikeResponse.class))),
-      @ApiResponse(responseCode = "400", description = "요청 파라미터 오류",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "403", description = "접근 권한 없음",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "404", description = "북마크를 찾을 수 없음",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-      @ApiResponse(responseCode = "409", description = "이미 좋아요한 북마크",
-          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-  })
+      security = @SecurityRequirement(name = "JWT"))
+  @ApiResponse(
+      responseCode = "200",
+      description = "좋아요 해제 성공",
+      content = @Content(schema = @Schema(implementation = LikeResponse.class)))
+  @ApiErrorResponses_Unauthorized_Forbidden_Conflict
   @DeleteMapping("/{bookmarkId}/like")
   public ResponseEntity<LikeResponse> unlike(
       @AuthUser(required = true) UserPrincipal userPrincipal,
