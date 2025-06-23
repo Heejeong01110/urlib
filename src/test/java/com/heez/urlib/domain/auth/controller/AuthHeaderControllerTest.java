@@ -58,7 +58,7 @@ class AuthHeaderControllerTest {
 
       // when, then
       mockMvc.perform(post("/api/v1/auth/re-issue"))
-          .andExpect(status().isOk())
+          .andExpect(status().isNoContent())
           .andExpect(header().string(JwtHeaderUtil.HEADER_AUTHORIZATION,
               JwtHeaderUtil.TOKEN_PREFIX + dto.accessToken()))
           .andExpect(

@@ -53,7 +53,7 @@ class BookmarkShareControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
         )
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     then(bookmarkPermissionService)
         .should()

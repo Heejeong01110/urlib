@@ -17,10 +17,10 @@ import com.heez.urlib.domain.auth.exception.DuplicateEmailByEmailTypeException;
 import com.heez.urlib.domain.auth.exception.DuplicateEmailByKakaoTypeException;
 import com.heez.urlib.domain.auth.exception.DuplicateNicknameException;
 import com.heez.urlib.domain.auth.exception.InvalidRefreshTokenException;
+import com.heez.urlib.domain.auth.exception.RefreshTokenUserNotFoundException;
 import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.auth.security.jwt.AuthTokenProvider;
 import com.heez.urlib.domain.auth.service.dto.ReissueDto;
-import com.heez.urlib.domain.member.exception.MemberNotFoundException;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.model.Role;
 import com.heez.urlib.domain.member.model.vo.Email;
@@ -101,7 +101,8 @@ class AuthServiceTest {
     given(memberRepository.findEmailAndRoleById(memberId)).willReturn(Optional.empty());
 
     // when / then
-    assertThrows(MemberNotFoundException.class, () -> authService.reissue(oldRefreshToken));
+    assertThrows(RefreshTokenUserNotFoundException.class,
+        () -> authService.reissue(oldRefreshToken));
 
     then(authTokenProvider).should(never())
         .generateAccessToken(anyLong(), anyString(), any(), any());
