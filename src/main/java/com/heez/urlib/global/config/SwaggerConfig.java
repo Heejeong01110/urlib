@@ -22,10 +22,11 @@ public class SwaggerConfig {
         .addSecurityItem(new io.swagger.v3.oas.models.security.SecurityRequirement().addList("JWT"))
         .components(new Components().addSecuritySchemes("JWT",
             new SecurityScheme()
-                .name("JWT")
+                .name("Authorization")
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("JWT")
+                .in(SecurityScheme.In.HEADER)
         ));
   }
 }
