@@ -5,10 +5,10 @@ import com.heez.urlib.domain.auth.exception.DuplicateEmailByEmailTypeException;
 import com.heez.urlib.domain.auth.exception.DuplicateEmailByKakaoTypeException;
 import com.heez.urlib.domain.auth.exception.DuplicateNicknameException;
 import com.heez.urlib.domain.auth.exception.InvalidRefreshTokenException;
+import com.heez.urlib.domain.auth.exception.RefreshTokenUserNotFoundException;
 import com.heez.urlib.domain.auth.model.AuthType;
 import com.heez.urlib.domain.auth.security.jwt.AuthTokenProvider;
 import com.heez.urlib.domain.auth.service.dto.ReissueDto;
-import com.heez.urlib.domain.member.exception.MemberNotFoundException;
 import com.heez.urlib.domain.member.model.Member;
 import com.heez.urlib.domain.member.model.Role;
 import com.heez.urlib.domain.member.model.vo.Email;
@@ -37,7 +37,7 @@ public class AuthService {
     Long memberId = Long.valueOf(redisService.getValue(oldRefreshToken)
         .orElseThrow(InvalidRefreshTokenException::new));
     TokenProjection info = memberRepository.findEmailAndRoleById(memberId)
-        .orElseThrow(MemberNotFoundException::new);
+        .orElseThrow(RefreshTokenUserNotFoundException::new);
 
     String accessToken = authTokenProvider.generateAccessToken(
         memberId,
