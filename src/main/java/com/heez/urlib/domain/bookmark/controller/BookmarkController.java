@@ -86,7 +86,6 @@ public class BookmarkController {
       description = "북마크 생성 성공",
       content = @Content(schema = @Schema(implementation = BookmarkCreateResponse.class)))
   @ApiErrorResponses_Unauthorized
-
   @PostMapping("")
   public ResponseEntity<BookmarkCreateResponse> generateBookmark(
       @Parameter(hidden = true)
