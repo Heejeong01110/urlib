@@ -13,8 +13,8 @@ import org.springframework.security.config.annotation.web.configurers.AuthorizeH
 public class SecurityPatterns {
 
   public static final List<MatcherRule> RULES = List.of(
-      permitAll(POST, "/api/*/auth/signup"),
-      permitAll(POST, "/api/*/auth/login"),
+      anonymous(POST, "/api/*/auth/signup"),
+      anonymous(POST, "/api/*/auth/login"),
       permitAll(GET, "/api/*/bookmarks"),
       permitAll(GET, "/api/*/bookmarks/*"),
       permitAll(GET, "/api/*/users/*"),
@@ -31,6 +31,11 @@ public class SecurityPatterns {
   private static MatcherRule permitAll(HttpMethod method, String pattern) {
     return new MatcherRule(method, pattern,
         (auth, r) -> auth.requestMatchers(r.method(), r.pattern()).permitAll());
+  }
+
+  private static MatcherRule anonymous(HttpMethod method, String pattern) {
+    return new MatcherRule(method, pattern,
+        (auth, r) -> auth.requestMatchers(r.method(), r.pattern()).anonymous());
   }
 
   public record MatcherRule(
