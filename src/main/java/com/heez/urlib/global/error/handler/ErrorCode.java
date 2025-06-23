@@ -25,6 +25,7 @@ public enum ErrorCode {
   IS_LOGOUT_TOKEN("L005", "이미 로그아웃한 토큰입니다."),
   FORBIDDEN("L006", "권한이 없는 사용자입니다."),
   NICKNAME_AUTO_GENERATION_FAILED("L007", "닉네임 자동생성을 실패했습니다."),
+  REFRESH_TOKEN_USER_NOT_FOUND("L008", "Refresh token정보에 맞는 사용자 정보를 찾을 수 없습니다."),
 
   //jwt
   UNSUPPORTED_TOKEN("J001", "지원되지 않는 JWT 토큰입니다."),
@@ -32,7 +33,6 @@ public enum ErrorCode {
   INVALID_SIGNATURE("J003", "JWT 토큰 서명 검증에 실패했습니다."),
   MISSING_TOKEN("J004", "JWT 토큰이 존재하지 않습니다."),
   TOKEN_PROCESSING_ERROR("J005", "JWT 토큰 처리 중 알 수 없는 오류가 발생했습니다."),
-
   //Member
   NOT_FOUND_MEMBER("M001", "사용자 정보가 존재하지 않습니다."),
   NOT_FOUND_EMAIL("M002", "사용자 email 정보가 존재하지 않습니다."),

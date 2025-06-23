@@ -19,6 +19,7 @@ import com.heez.urlib.domain.auth.exception.InvalidJwtSignatureException;
 import com.heez.urlib.domain.auth.exception.InvalidRefreshTokenException;
 import com.heez.urlib.domain.auth.exception.JwtTokenProcessingException;
 import com.heez.urlib.domain.auth.exception.MissingJwtTokenException;
+import com.heez.urlib.domain.auth.exception.RefreshTokenUserNotFoundException;
 import com.heez.urlib.domain.auth.exception.TokenExpiredException;
 import com.heez.urlib.domain.auth.exception.TokenValidFailedException;
 import com.heez.urlib.domain.auth.exception.UnsupportedJwtTokenException;
@@ -171,6 +172,7 @@ public class GlobalExceptionRestHandler {
   }
 
   @ExceptionHandler({
+      RefreshTokenUserNotFoundException.class,
       ExpiredRefreshTokenException.class,
       InvalidRefreshTokenException.class,
       InvalidJwtFormatException.class,
