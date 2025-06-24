@@ -103,5 +103,5 @@ sudo nginx -t && sudo service nginx reload
 
 # 기존에 실행 중이었던 docker-compose는 종료시켜줍니다.
 echo "urlib-${TERMINATE_CONTAINER} down"
-sudo docker-compose -f ${DOCKER_COMPOSE_DIR}/docker-compose.${TERMINATE_CONTAINER}.yml down
+sudo docker-compose -f ${DOCKER_COMPOSE_DIR}/docker-compose.${TERMINATE_CONTAINER}.yml --env-file ${ENV_FILE} down --volumes
 echo "success deployment"
