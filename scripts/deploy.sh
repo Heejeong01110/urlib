@@ -51,6 +51,10 @@ else
         TERMINATE_PORT=8081
 fi
 
+echo "Docker unused 리소스 정리"
+sudo docker system prune -a -f
+sudo docker image prune -a -f
+
 echo "urlib-${START_CONTAINER} up"
 
 # 실행해야하는 컨테이너 docker-compose로 실행. -p는 docker-compose 프로젝트에 이름을 부여
