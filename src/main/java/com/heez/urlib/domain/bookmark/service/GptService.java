@@ -2,10 +2,12 @@ package com.heez.urlib.domain.bookmark.service;
 
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkTitleSuggestRequest;
 import com.heez.urlib.domain.bookmark.controller.dto.BookmarkTitleSuggestResponse;
+import com.heez.urlib.domain.bookmark.exception.GptResponseParsingException;
 import com.heez.urlib.global.common.openai.OpenAiProperties;
 import com.heez.urlib.global.common.openai.PromptHelper;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -42,15 +44,15 @@ public class GptService {
         Map.class
     );
 
-    log.info("GPT 응답: {}", response.getBody());
+    String content = Optional.ofNullable(response.getBody())
+        .map(body -> (List<?>) body.get("choices"))
+        .filter(choices -> !choices.isEmpty())
+        .map(choices -> (Map<?, ?>) choices.get(0))
+        .map(choice -> (Map<?, ?>) choice.get("message"))
+        .map(message -> message.get("content"))
+        .map(Object::toString)
+        .orElseThrow(GptResponseParsingException::new);
 
-    Map responseBody = response.getBody();
-    List choices = (List) responseBody.get("choices");
-    Map firstChoice = (Map) choices.get(0);
-    Map message = (Map) firstChoice.get("message");
-    String content = (String) message.get("content");
-
-    log.debug("추천 결과: {}", content);
     return BookmarkTitleSuggestResponse.builder()
         .recommend(content)
         .build();
