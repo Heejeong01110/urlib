@@ -75,3 +75,8 @@ springdoc:
     operations-sorter: alpha  # delete - get - patch - post - put 순으로 정렬, alpha를 사용하면 알파벳 순으로 정렬 가능
   paths-to-match:
     - /api/** # swagger-ui에 표시할 api의 엔드포인트 패턴
+openai:
+  model: gpt-4.1-nano
+  api:
+    url: https://api.openai.com/v1/chat/completions
+    key: ${CHATGPT_SECRET_KEY}
