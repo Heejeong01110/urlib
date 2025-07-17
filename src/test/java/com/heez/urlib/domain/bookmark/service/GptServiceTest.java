@@ -100,4 +100,21 @@ class GptServiceTest {
     assertThatThrownBy(() -> gptService.getSuggestion(request))
         .isInstanceOf(GptResponseParsingException.class);
   }
+
+  @Test
+  void getSuggestion_whenChoicesIsEmpty_throwsException() {
+    // given
+    BookmarkTitleSuggestRequest request = new BookmarkTitleSuggestRequest(List.of("링크 제목"));
+    Map<String, Object> response = Map.of("choices", List.of());
+
+    given(restTemplate.postForEntity(
+        any(String.class),
+        any(HttpEntity.class),
+        eq(Map.class)
+    )).willReturn(new ResponseEntity<>(response, HttpStatus.OK));
+
+    // when & then
+    assertThatThrownBy(() -> gptService.getSuggestion(request))
+        .isInstanceOf(GptResponseParsingException.class);
+  }
 }
