@@ -29,6 +29,7 @@ import com.heez.urlib.domain.bookmark.exception.AlreadyLikedException;
 import com.heez.urlib.domain.bookmark.exception.AlreadyUnlikedException;
 import com.heez.urlib.domain.bookmark.exception.BookmarkNotFoundException;
 import com.heez.urlib.domain.bookmark.exception.BookmarkShareNotFoundException;
+import com.heez.urlib.domain.bookmark.exception.GptResponseParsingException;
 import com.heez.urlib.domain.comment.exception.AccessDeniedCommentModifyException;
 import com.heez.urlib.domain.comment.exception.CommentNotFoundException;
 import com.heez.urlib.domain.link.exception.LinkNotFoundException;
@@ -214,6 +215,7 @@ public class GlobalExceptionRestHandler {
   }
 
   @ExceptionHandler({
+      GptResponseParsingException.class,
       DuplicateEmailByEmailTypeException.class,
       DuplicateEmailByKakaoTypeException.class,
       DuplicateNicknameException.class,

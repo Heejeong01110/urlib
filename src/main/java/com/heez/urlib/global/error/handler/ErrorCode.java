@@ -57,7 +57,10 @@ public enum ErrorCode {
   ACCESS_DENIED_COMMENT_MODIFY("C002", "댓글 수정 권한이 존재하지 않습니다."),
 
   //Link
-  LINK_NOT_FOUND("Li001", "링크 정보가 존재하지 않습니다.");
+  LINK_NOT_FOUND("Li001", "링크 정보가 존재하지 않습니다."),
+
+  //AI
+  GPT_RESPONSE_PARSING_EXCEPTION("GPT001", "GPT 응답 중 오류가 발생했습니다.");
 
   private final String code;
   private final String message;
