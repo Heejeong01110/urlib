@@ -16,6 +16,7 @@ env:
   SECURITY_SECRET_KEY: ${{ secrets.SECURITY_SECRET_KEY }}
   PROD_REDIS_HOST: ${{ secrets.PROD_REDIS_HOST }}
   PROD_REDIS_PORT: ${{ secrets.PROD_REDIS_PORT }}
+  CHATGPT_SECRET_KEY: ${{ secrets.CHATGPT_SECRET_KEY }}
 
 jobs:
   deploy:
@@ -40,6 +41,7 @@ jobs:
           echo "PROD_REDIS_PORT=${{ secrets.PROD_REDIS_PORT }}" >> .env
           echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env
           echo "DOCKER_ACCESS_TOKEN=${{ secrets.DOCKER_ACCESS_TOKEN }}" >> .env
+          echo "CHATGPT_SECRET_KEY=${{ secrets.CHATGPT_SECRET_KEY }}" >> .env
 
       - name: Copy .env to EC2
         uses: appleboy/scp-action@master

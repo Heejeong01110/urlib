@@ -16,6 +16,7 @@ env:
   SECURITY_SECRET_KEY: ${{ secrets.SECURITY_SECRET_KEY }}
   PROD_REDIS_HOST: ${{ secrets.PROD_REDIS_HOST }}
   PROD_REDIS_PORT: ${{ secrets.PROD_REDIS_PORT }}
+  CHATGPT_SECRET_KEY: ${{ secrets.CHATGPT_SECRET_KEY }}
 
 jobs:
   deploy:
