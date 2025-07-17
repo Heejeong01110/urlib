@@ -87,6 +87,7 @@ private excludedClassFilesForReport(classDirectories) {
                         "**/error/**",
                         "**/auth/service/Custom*",
                         "**/auth/service/Redis*",
+                        "**/openai/PromptHelper.class",
                         "**/log/**"
 
                 ])
